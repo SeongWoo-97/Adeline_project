@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:web_scraper/web_scraper.dart';
 
 class InitSettingsScreen extends StatefulWidget {
   @override
@@ -8,8 +9,10 @@ class InitSettingsScreen extends StatefulWidget {
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
+  var job,level;
   int _currentStep = 0;
   TextEditingController textEditingController = TextEditingController();
+  final webScraper = WebScraper('https://lostark.game.onstove.com');
   // 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
   @override
   Widget build(BuildContext context) {
@@ -65,23 +68,50 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ],
         ),
         PlatformWidgetBuilder(
-          cupertino: (_,child, __) => CupertinoTextField(
+          cupertino: (_, child, __) => CupertinoTextField(
             textAlign: TextAlign.center,
             controller: textEditingController,
           ),
-          material: (_,child, __) => TextField(
+          material: (_, child, __) => TextField(
             textAlign: TextAlign.center,
             controller: textEditingController,
           ),
         ),
         PlatformElevatedButton(
           child: Text('캐릭터 정보확인'),
-          onPressed: (){
+          onPressed: () {
             // AlertDialog 확인유무 체크후 캐릭터 불러온후 다음단계로 이동
+            showPlatformDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return PlatformAlertDialog(
+                    title: Text('성우웅 (인파이터)'),
+                    content: Column(
+                      children: [
+                        Text('Lv.1430.50'),
+                      ],
+                    ),
+                    actions: [
+                      PlatformDialogAction(
+                        child: PlatformText('예'),
+                        // 캐릭터 순서 페이지로 이동
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      PlatformDialogAction(
+                        child: PlatformText('아니오'),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  );
+                });
           },
         )
       ],
     );
+  }
+
+  charInfoCheck() {
+
   }
 
   Widget stepTwo() {
