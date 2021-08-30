@@ -3,23 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:web_scraper/web_scraper.dart';
 
+
+
 class InitSettingsScreen extends StatefulWidget {
   @override
   _InitSettingsScreenState createState() => _InitSettingsScreenState();
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
-  var job,level;
-  int _currentStep = 0;
   TextEditingController textEditingController = TextEditingController();
   final webScraper = WebScraper('https://lostark.game.onstove.com');
-  // 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
+  int _currentStep = 0;
+  var job, level;
+
+  /// 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
         appBar: PlatformAppBar(
-          title: Text('초기설정'),
-        ),
+            title: Text('초기설정'),
+            /// 초기화면으로 넘어가게 할지 고려
+            leading: _currentStep != 0
+                ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
+                : Container()),
         body: SafeArea(
           child: Stepper(
             type: StepperType.horizontal,
@@ -54,10 +60,13 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         ));
   }
 
-  tapped(int step) {
-    setState(() => _currentStep = step);
-  }
-
+  /// 파일별로 단계페이지를 나누고 싶었지만 해당 build 에서 선언된 변수들이 결합되어 있기 때문에
+  /// 나눌수가 없으며 이런 문제점 때문에 상태관리 패키지를 사용하는것 같음
+  /// step 이 넘어갈수록 엄청 복잡해질꺼 같다.
+  /// init 폴더에 init_constant 파일을 만들고 변수를 집어넣어야 할것같다.
+  /// 중복가능성이 있는 변수명들은 init_job, init_level 이런식으로 변경해야 할것같다.
+  /// 밑의 소스는 보류 (65~102줄)
+  /// 리팩토링 과정중 stepper 위젯의 결합도가 높다고 판단하여 백업..
   Widget stepOne() {
     return Column(
       children: [
@@ -81,37 +90,11 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           child: Text('캐릭터 정보확인'),
           onPressed: () {
             // AlertDialog 확인유무 체크후 캐릭터 불러온후 다음단계로 이동
-            showPlatformDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return PlatformAlertDialog(
-                    title: Text('성우웅 (인파이터)'),
-                    content: Column(
-                      children: [
-                        Text('Lv.1430.50'),
-                      ],
-                    ),
-                    actions: [
-                      PlatformDialogAction(
-                        child: PlatformText('예'),
-                        // 캐릭터 순서 페이지로 이동
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      PlatformDialogAction(
-                        child: PlatformText('아니오'),
-                        onPressed: () => Navigator.pop(context),
-                      )
-                    ],
-                  );
-                });
+            charInfoCheck(textEditingController.value.text);
           },
         )
       ],
     );
-  }
-
-  charInfoCheck() {
-
   }
 
   Widget stepTwo() {
@@ -120,5 +103,108 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
   Widget stepThree() {
     return Container();
+  }
+  // 캐릭터 정보확인
+  charInfoCheck(String nickName) async {
+    bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/$nickName');
+    if (loadWebPage & getCharStateCheck(nickName)) {
+      job = webScraper.getElementAttribute(
+          'div > main > div > div.profile-character-info > img', 'alt');
+      level = webScraper.getElementTitle(
+          'div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
+
+      showPlatformDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return PlatformAlertDialog(
+              title: Text('$nickName'),
+              content: Column(
+                children: [
+                  Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+                ],
+              ),
+              actions: [
+                PlatformDialogAction(
+                  child: PlatformText('맞습니다'),
+                  // 캐릭터 순서 페이지로 이동
+                  onPressed: () {
+                    Navigator.pop(context);
+                    continued();
+                  },
+                ),
+                PlatformDialogAction(
+                  child: PlatformText('아닙니다'),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            );
+          });
+    } else if (getCharStateCheck(nickName) == false) {
+      showPlatformDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return PlatformAlertDialog(
+              title: Text('오류'),
+              content: Column(
+                children: [
+                  Text('존재하지 않는 닉네임입니다.'),
+                ],
+              ),
+              actions: [
+                PlatformDialogAction(
+                  child: PlatformText('이전'),
+                  // 캐릭터 순서 페이지로 이동
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          });
+    } else {
+      // 인터넷 연결상태 또는 서버 점검 문구
+      showPlatformDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return PlatformAlertDialog(
+              title: Text('오류'),
+              content: Column(
+                children: [
+                  Text('로스트아크 서버 점검 또는 네트워크 연결이 원활하지 않아 데이터를 불러올 수가 없습니다.'),
+                ],
+              ),
+              actions: [
+                PlatformDialogAction(
+                  child: PlatformText('이전'),
+                  // 캐릭터 순서 페이지로 이동
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          });
+    }
+  }
+
+  // 닉네임 존재여부 확인
+  bool getCharStateCheck(String nickName) {
+    bool state = webScraper
+        .getElementTitle('div.profile-ingame > div.profile-attention')
+        .toString()
+        .contains('캐릭터 정보가 없습니다.');
+
+    return state ? false : true;
+  }
+
+  // 화면전환
+  tapped(int step) {
+    setState(() => _currentStep = step);
+  }
+
+  // 다음단계
+  continued() {
+    _currentStep < 2 ? setState(() => _currentStep += 1) : null;
+  }
+
+  // 이전단계
+  cancel() {
+    _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
 }
