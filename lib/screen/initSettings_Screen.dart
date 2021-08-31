@@ -1,9 +1,10 @@
+import 'package:drag_and_drop_lists/drag_and_drop_item.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:web_scraper/web_scraper.dart';
-
-
 
 class InitSettingsScreen extends StatefulWidget {
   @override
@@ -11,10 +12,12 @@ class InitSettingsScreen extends StatefulWidget {
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController textEditingController = TextEditingController(text: '성우웅');
   final webScraper = WebScraper('https://lostark.game.onstove.com');
   int _currentStep = 0;
   var job, level;
+  List<String> characters = [];
+  late DragAndDropList charactersOrder = DragAndDropList(children: []);
 
   /// 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
   @override
@@ -22,6 +25,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     return PlatformScaffold(
         appBar: PlatformAppBar(
             title: Text('초기설정'),
+
             /// 초기화면으로 넘어가게 할지 고려
             leading: _currentStep != 0
                 ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
@@ -98,12 +102,60 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   }
 
   Widget stepTwo() {
-    return Container();
+    return Card(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: DragAndDropLists(
+          children: [charactersOrder],
+          onItemReorder: _onItemReorder,
+          onListReorder: _onListReorder,
+          listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+          itemDivider: Divider(
+            thickness: 1,
+            height: 10,
+            color: Colors.grey[350],
+          ),
+          itemDecorationWhileDragging: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 3,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+            ],
+          ),
+          listInnerDecoration: BoxDecoration(
+            color: Theme.of(context).canvasColor,
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+          lastItemTargetHeight: 8,
+          addLastItemTargetHeightToTop: true,
+          lastListTargetSize: 40,
+          listDragHandle: DragHandle(
+            verticalAlignment: DragHandleVerticalAlignment.top,
+            child: Container(),
+          ),
+          itemDragHandle: DragHandle(
+            child: Padding(
+              padding: EdgeInsets.only(right: 5),
+              child: Icon(
+                Icons.menu,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget stepThree() {
     return Container();
   }
+
   // 캐릭터 정보확인
   charInfoCheck(String nickName) async {
     bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/$nickName');
@@ -129,6 +181,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                   // 캐릭터 순서 페이지로 이동
                   onPressed: () {
                     Navigator.pop(context);
+                    getCharList();
                     continued();
                   },
                 ),
@@ -193,18 +246,99 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     return state ? false : true;
   }
 
-  // 화면전환
+  // 캐릭터 List 가져오기
+  getCharList() {
+    characters =
+        webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
+    charactersOrder = DragAndDropList(
+        header: Column(
+          children: <Widget>[
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 8, bottom: 4),
+                  child: Text(
+                    '캐릭터 순서 지정',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        children: List.generate(characters.length, (index) {
+          return DragAndDropItem(
+            child: ListTile(
+              title: Text(characters[index],style: TextStyle(fontSize: 14),),
+              trailing: IconButton(onPressed: (){
+                print('누름');
+                delCharInList(index);
+              },icon: Icon(Icons.delete_forever),),
+            ),
+          );
+        }));
+  }
+  // 캐릭터 삭제
+  delCharInList(int index) {
+    characters.removeAt(index);
+    charactersOrder = DragAndDropList(
+        header: Column(
+          children: <Widget>[
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 8, bottom: 4),
+                  child: Text(
+                    '캐릭터 순서 지정',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        children: List.generate(characters.length, (index) {
+          return DragAndDropItem(
+            child: ListTile(
+              title: Text(characters[index],style: TextStyle(fontSize: 14),),
+              trailing: IconButton(onPressed: (){
+                print('누름');
+                delCharInList(index);
+              },icon: Icon(Icons.delete_forever),),
+            ),
+          );
+        }));
+    setState(() {
+
+    });
+  }
+
+ // 화면전환
   tapped(int step) {
     setState(() => _currentStep = step);
   }
 
-  // 다음단계
+ // 다음단계
   continued() {
     _currentStep < 2 ? setState(() => _currentStep += 1) : null;
   }
 
-  // 이전단계
+ // 이전단계
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
+  }
+
+  _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = charactersOrder.children.removeAt(oldItemIndex);
+      charactersOrder.children.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      // var movedList = charactersOrder.removeAt(oldListIndex);
+      // _contents.insert(newListIndex, movedList);
+    });
   }
 }

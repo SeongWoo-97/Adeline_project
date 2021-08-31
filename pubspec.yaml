@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_platform_widgets: ^1.9.5
   web_scraper: ^0.1.4
+  drag_and_drop_lists: ^0.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
