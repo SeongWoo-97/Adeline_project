@@ -1,4 +1,5 @@
 import 'package:adeline_app/model/characterModel.dart';
+import 'package:adeline_app/screen/contentSettings_screen.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_item.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
@@ -35,9 +36,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           leading: _currentStep != 0
               ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
               : Container(),
-          trailingActions: [TextButton(onPressed: () {
-
-          }, child: Text('다음'))],
+          trailingActions: [TextButton(onPressed: () {}, child: Text('다음'))],
         ),
         body: SafeArea(
           child: Stepper(
@@ -47,23 +46,23 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             onStepTapped: (step) => tapped(step),
             steps: <Step>[
               Step(
-                title: Text('대표 캐릭터'),
+                title: Text('캐릭터 불러오기'),
                 content: stepOne(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
               ),
               Step(
-                title: Text('캐릭터 순서'),
+                title: Text('초기 설정'),
                 content: stepTwo(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
               ),
-              Step(
-                title: Text('화면 설정'),
-                content: stepThree(),
-                isActive: _currentStep >= 0,
-                state: _currentStep >= 2 ? StepState.complete : StepState.disabled,
-              ),
+              // Step(
+              //   title: Text('스케줄 설정'),
+              //   content: stepThree(),
+              //   isActive: _currentStep >= 0,
+              //   state: _currentStep >= 2 ? StepState.complete : StepState.disabled,
+              // ),
             ],
             controlsBuilder: (BuildContext context,
                 {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
@@ -85,14 +84,17 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       children: [
         Column(
           children: [
-            Text('본 캐릭터의 닉네임을 입력해주시길 바랍니다.'),
-            Text('대표 캐릭터는 메인화면 상단에 고정 됩니다.'),
+            Text('본인 캐릭터 닉네임을 입력해주시길 바랍니다.'),
+            Text(''),
           ],
         ),
         PlatformWidgetBuilder(
-          cupertino: (_, child, __) => CupertinoTextField(
-            textAlign: TextAlign.center,
-            controller: textEditingController,
+          cupertino: (_, child, __) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CupertinoTextField(
+              textAlign: TextAlign.center,
+              controller: textEditingController,
+            ),
           ),
           material: (_, child, __) => TextField(
             textAlign: TextAlign.center,
@@ -117,7 +119,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           child: Text(
-            '캐릭터 순서 지정',
+            '캐릭터 순서 & 컨텐츠 설정',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
         ),
@@ -302,6 +304,49 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       // }
     }
     charactersOrder = DragAndDropList(
+      // header: Column(
+      //   children: <Widget>[
+      //     Row(
+      //       children: [
+      //         Padding(
+      //           padding: EdgeInsets.only(left: 8, bottom: 4),
+      //           child: Text(
+      //             '캐릭터 순서 지정',
+      //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ],
+      // ),
+      children: List.generate(characters.length, (index) {
+        return DragAndDropItem(
+          child: Card(
+            child: ListTile(
+                title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+                subtitle: Text(
+                    '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
+                trailing: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        delCharInList(index);
+                      });
+                    }, icon: Icon(Icons.delete_forever)),onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen()));
+            },),
+            elevation: 3,
+          ),
+        );
+      }),
+    );
+    print(charModels.length);
+  }
+
+  // 캐릭터 삭제
+  delCharInList(int index) {
+    charModels.removeAt(index);
+    print('del : ${charModels.length}');
+    charactersOrder = DragAndDropList(
         // header: Column(
         //   children: <Widget>[
         //     Row(
@@ -317,54 +362,18 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         //     ),
         //   ],
         // ),
-        children: List.generate(characters.length, (index) {
-      return DragAndDropItem(
-        child: Card(
-          child: ListTile(
-            title: Text(characters[index], style: TextStyle(fontSize: 16)),
-            subtitle: Text(
-                '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
-            trailing: IconButton(
-              onPressed: () => delCharInList(index),
-              icon: Icon(Icons.delete_forever),
-            ),
-          ),
-          elevation: 3,
-        ),
-      );
-    }));
-    print(charModels.length);
-  }
-
-  // 캐릭터 삭제
-  delCharInList(int index) {
-    charModels.removeAt(index);
-    charactersOrder = DragAndDropList(
-        header: Column(
-          children: <Widget>[
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 8, bottom: 4),
-                  child: Text(
-                    '캐릭터 순서 지정',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        children: List.generate(characters.length, (index) {
+        children: List.generate(charModels.length, (index) {
           return DragAndDropItem(
             child: ListTile(
-              title: Text(characters[index], style: TextStyle(fontSize: 14)),
+              title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 14)),
               subtitle: Text(
                   '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
               trailing: IconButton(
                 onPressed: () {
                   print('누름');
-                  delCharInList(index);
+                  setState(() {
+                    delCharInList(index);
+                  });
                 },
                 icon: Icon(Icons.delete_forever),
               ),
