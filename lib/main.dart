@@ -1,3 +1,5 @@
+import 'package:adeline_app/screen/contentSettings_screen.dart';
+import 'package:adeline_app/screen/initSettings_Screen.dart';
 import 'package:adeline_app/screen/loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +36,14 @@ class MyApp extends StatelessWidget {
             DefaultCupertinoLocalizations.delegate,
           ],
           title: 'Flutter Platform Widgets',
-          home: LoadingScreen(),
+          home: InitSettingsScreen(),
           material: (_, __) => MaterialAppData(
             theme: materialTheme,
           ),
           cupertino: (_, __) => CupertinoAppData(
             theme: CupertinoThemeData(
                 // primaryColor: Color(0xff127EFB),
-                textTheme: CupertinoTextThemeData()),
+                ),
           ),
           debugShowCheckedModeBanner: false,
         ),

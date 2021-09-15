@@ -36,7 +36,9 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           leading: _currentStep != 0
               ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
               : Container(),
-          trailingActions: [TextButton(onPressed: () {}, child: Text('다음'))],
+          trailingActions: [
+            _currentStep == 1 ? TextButton(onPressed: () {}, child: Text('완료')) : Container()
+          ],
         ),
         body: SafeArea(
           child: Stepper(
@@ -323,17 +325,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         return DragAndDropItem(
           child: Card(
             child: ListTile(
-                title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 16)),
-                subtitle: Text(
-                    '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
-                trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        delCharInList(index);
-                      });
-                    }, icon: Icon(Icons.delete_forever)),onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen()));
-            },),
+              title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+              subtitle: Text(
+                  '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
+              trailing: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      delCharInList(index);
+                    });
+                  },
+                  icon: Icon(Icons.delete_forever)),
+              onTap: () async {
+                charModels[index] = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ContentSettingsScreen(charModels[index])));
+                print('갖고와써욤');
+              },
+            ),
             elevation: 3,
           ),
         );
@@ -363,23 +372,23 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         //   ],
         // ),
         children: List.generate(charModels.length, (index) {
-          return DragAndDropItem(
-            child: ListTile(
-              title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 14)),
-              subtitle: Text(
-                  '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
-              trailing: IconButton(
-                onPressed: () {
-                  print('누름');
-                  setState(() {
-                    delCharInList(index);
-                  });
-                },
-                icon: Icon(Icons.delete_forever),
-              ),
-            ),
-          );
-        }));
+      return DragAndDropItem(
+        child: ListTile(
+          title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 14)),
+          subtitle: Text(
+              '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
+          trailing: IconButton(
+            onPressed: () {
+              print('누름');
+              setState(() {
+                delCharInList(index);
+              });
+            },
+            icon: Icon(Icons.delete_forever),
+          ),
+        ),
+      );
+    }));
   }
 
   // 화면전환
