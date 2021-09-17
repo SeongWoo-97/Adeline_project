@@ -133,11 +133,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             onItemReorder: _onItemReorder,
             onListReorder: _onListReorder,
             listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-            // itemDivider: Divider(
-            //   thickness: 1,
-            //   height: 10,
-            //   color: Colors.grey[350],
-            // ),
             itemDecorationWhileDragging: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -280,6 +275,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   // 캐릭터 List 가져오기
   getCharList() async {
     // 계정의 모든캐릭터 (검색한 닉네임 포함), 추후 역순으로 변경
+    charModels.clear();
     characters =
         webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
     // print('characters.length : ${characters.length}');
@@ -294,6 +290,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             'div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
         // print('${_job[0].toString()} ${_level[0].toString()}');
         // List 에 들어갈 CharacterModel 의 인스턴스가 생성되지않는것 같다
+        // 새로운 인스턴스를 만들어야...하는건가
         CharacterModel characterModel = CharacterModel(_nickName, _level[0], _job[0]);
         charModels.add(characterModel);
         // charModels = List.generate(1, (index) {
@@ -305,22 +302,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       //   // 점검또는 네트워크 또는 기타오류 출력 추가하기
       // }
     }
+    charModels = List.from(charModels.reversed);
     charactersOrder = DragAndDropList(
-      // header: Column(
-      //   children: <Widget>[
-      //     Row(
-      //       children: [
-      //         Padding(
-      //           padding: EdgeInsets.only(left: 8, bottom: 4),
-      //           child: Text(
-      //             '캐릭터 순서 지정',
-      //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
       children: List.generate(characters.length, (index) {
         return DragAndDropItem(
           child: Card(
@@ -340,15 +323,14 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ContentSettingsScreen(charModels[index])));
-                print('갖고와써욤');
               },
             ),
-            elevation: 3,
+            elevation: 2,
           ),
         );
       }),
     );
-    print(charModels.length);
+
   }
 
   // 캐릭터 삭제

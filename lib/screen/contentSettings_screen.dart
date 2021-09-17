@@ -1,6 +1,7 @@
 import 'package:adeline_app/constant.dart';
 import 'package:adeline_app/model/characterModel.dart';
 import 'package:adeline_app/model/dailyContent.dart';
+import 'package:adeline_app/model/weeklyContent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
@@ -76,6 +77,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 icon: Icon(Icons.add),
                                 iconSize: 30,
                                 onPressed: () async {
+                                  controller.clear();
                                   await showDialog(
                                       context: context,
                                       builder: (_) {
@@ -153,8 +155,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                           );
                                         });
                                       });
-                                  setState(() {
-                                  });
+                                  setState(() {});
                                 },
                               ),
                             )
@@ -206,7 +207,87 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                               child: IconButton(
                                 icon: Icon(Icons.add),
                                 iconSize: 30,
-                                onPressed: () {},
+                                onPressed: () async {
+                                  controller.clear();
+                                  await showDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return StatefulBuilder(builder: (context, setState) {
+                                          return AlertDialog(
+                                            title: Form(
+                                              key: key,
+                                              child: TextFormField(
+                                                controller: controller,
+                                              ),
+                                            ),
+                                            content: Container(
+                                              width: MediaQuery.of(context).size.width * 0.7,
+                                              child: GridView.builder(
+                                                  itemCount: iconList.length,
+                                                  shrinkWrap: true,
+                                                  scrollDirection: Axis.vertical,
+                                                  gridDelegate:
+                                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                                    maxCrossAxisExtent: 65,
+                                                    mainAxisSpacing: 10,
+                                                    crossAxisSpacing: 10,
+                                                  ),
+                                                  itemBuilder: (_, index) {
+                                                    // list[index] = IconModel(list[index].iconName);
+                                                    return Padding(
+                                                      padding: EdgeInsets.all(8),
+                                                      child: InkWell(
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                              BorderRadius.circular(10),
+                                                              border: Border.all(
+                                                                  color: _selected == index
+                                                                      ? Colors.grey
+                                                                      : Colors.white,
+                                                                  width: 1.5)),
+                                                          child: Image.asset(
+                                                            '${iconList[index].iconName}',
+                                                            width: 100,
+                                                            height: 100,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            _selected = index;
+                                                            iconName = iconList[index].iconName;
+                                                          });
+                                                        },
+                                                      ),
+                                                    );
+                                                  }),
+                                            ),
+                                            actions: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      characterModel.weeklyContentList.add(
+                                                          WeeklyContent(controller.text.toString(),
+                                                              iconName.toString(), true));
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text('확인'),
+                                                  ),
+                                                  ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('취소')),
+                                                ],
+                                              )
+                                            ],
+                                          );
+                                        });
+                                      });
+                                  setState(() {});
+                                },
                               ),
                             )
                           ],
@@ -230,73 +311,75 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.black26, width: 1),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15),
-                              child: Text(
-                                '기타 컨텐츠',
-                                style: TextStyle(
-                                    fontSize: 19,
-                                    fontFamily: 'NotoSansKR',
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 5),
-                              child: IconButton(
-                                icon: Icon(Icons.add),
-                                iconSize: 30,
-                                onPressed: () {},
-                              ),
-                            )
-                          ],
-                        ),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                            child: ListView(
-                              shrinkWrap: true,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 7),
-                                  child: ticketContents(),
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+
+                /// 태양의 회랑 및 디멘션 큐브 티켓 갯수 추후 추가예
+                // Padding(
+                //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                //   child: Card(
+                //     shape: RoundedRectangleBorder(
+                //       side: BorderSide(color: Colors.black26, width: 1),
+                //       borderRadius: BorderRadius.circular(5),
+                //     ),
+                //     child: Column(
+                //       children: [
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //           children: [
+                //             Padding(
+                //               padding: const EdgeInsets.only(left: 15),
+                //               child: Text(
+                //                 '기타 컨텐츠',
+                //                 style: TextStyle(
+                //                     fontSize: 19,
+                //                     fontFamily: 'NotoSansKR',
+                //                     fontWeight: FontWeight.w300),
+                //               ),
+                //             ),
+                //             Padding(
+                //               padding: const EdgeInsets.only(right: 5),
+                //               child: IconButton(
+                //                 icon: Icon(Icons.add),
+                //                 iconSize: 30,
+                //                 onPressed: () {},
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //         ConstrainedBox(
+                //           constraints: BoxConstraints(),
+                //           child: Padding(
+                //             padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                //             child: ListView(
+                //               shrinkWrap: true,
+                //               children: [
+                //                 Padding(
+                //                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 7),
+                //                   child: ticketContents(),
+                //                 )
+                //               ],
+                //             ),
+                //           ),
+                //         )
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
         ));
   }
 
-  /// 추후 body - column 안에 있는 padding 3개를
+  /// 추후 body - column 안에 있는 padding 3개를정
   /// dailyContents 로 병합하기
   Widget dailyContents() {
     dailyCardList = [];
-    print('응? ');
     for (int i = 0; i < characterModel.dailyContentList.length; i++) {
       Card card = Card(
         elevation: 2,
         child: CheckboxListTile(
-            title: Row(
+          title: InkWell(
+            child: Row(
               children: [
                 Image.asset(
                   characterModel.dailyContentList[i].iconName,
@@ -315,15 +398,96 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                 ),
               ],
             ),
+            onTap: () async {
+              controller.text = '${characterModel.dailyContentList[i].name}';
+              await showDialog(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(builder: (context, setState) {
+                      return AlertDialog(
+                        title: Form(
+                          key: key,
+                          child: TextFormField(
+                            controller: controller,
+                          ),
+                        ),
+                        content: Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: GridView.builder(
+                              itemCount: iconList.length,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 65,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                              ),
+                              itemBuilder: (_, index) {
+                                // list[index] = IconModel(list[index].iconName);
+                                return Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: InkWell(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color:
+                                                  _selected == index ? Colors.grey : Colors.white,
+                                              width: 1.5)),
+                                      child: Image.asset(
+                                        '${iconList[index].iconName}',
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        _selected = index;
+                                        iconName = iconList[index].iconName;
+                                      });
+                                    },
+                                  ),
+                                );
+                              }),
+                        ),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  characterModel.dailyContentList[i] =
+                                      DailyContent(controller.text, iconName.toString(), true);
+                                  Navigator.pop(context);
+                                },
+                                child: Text('확인'),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('취소')),
+                            ],
+                          )
+                        ],
+                      );
+                    });
+                  });
+              setState(() {});
+            },
+          ),
 
-            /// _isChecked 를 characterModel -> dailyContent 에서 가져오기
-            /// model 에 _isChecked bool 형태로 추가하기
-            value: characterModel.dailyContentList[i].isChecked,
-            onChanged: (value) {
-              setState(() {
-                characterModel.dailyContentList[i].isChecked = value!;
-              });
-            }),
+          /// _isChecked 를 characterModel -> dailyContent 에서 가져오기
+          /// model 에 _isChecked bool 형태로 추가하기
+          value: characterModel.dailyContentList[i].isChecked,
+          onChanged: (value) {
+            setState(() {
+              characterModel.dailyContentList[i].isChecked = value!;
+            });
+          },
+          // CheckBoxTile 위아래 padding 삭제
+          contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+        ),
       );
       dailyCardList.add(card);
     }
@@ -331,39 +495,119 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
   }
 
   Widget cropsContents() {
+    weeklyCardList = [];
     for (int i = 0; i < characterModel.weeklyContentList.length; i++) {
-      if (characterModel.weeklyContentList[i].view == true) {
-        Card card = Card(
-          elevation: 2,
-          child: CheckboxListTile(
-              title: Row(
-                children: [
-                  Image.asset(
-                    characterModel.weeklyContentList[i].iconName,
-                    width: 30,
-                    height: 30,
+      Card card = Card(
+        elevation: 2,
+        child: CheckboxListTile(
+          title: InkWell(
+            child: Row(
+              children: [
+                Image.asset(
+                  characterModel.weeklyContentList[i].iconName,
+                  width: 30,
+                  height: 30,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                PlatformWidget(
+                  cupertino: (_, __) => Text(
+                    characterModel.weeklyContentList[i].name,
+                    style: contentStyle,
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  PlatformWidget(
-                    cupertino: (_, __) => Text(
-                      characterModel.weeklyContentList[i].name,
-                      style: contentStyle,
-                    ),
-                    material: (_, __) => Text(''),
-                  ),
-                ],
-              ),
-              value: _isChecked,
-              onChanged: (value) {
-                setState(() {
-                  _isChecked = value!;
-                });
-              }),
-        );
-        weeklyCardList.add(card);
-      }
+                  material: (_, __) => Text(''),
+                ),
+              ],
+            ),
+            onTap: () async {
+              controller.text = '${characterModel.weeklyContentList[i].name}';
+              await showDialog(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(builder: (context, setState) {
+                      return AlertDialog(
+                        title: Form(
+                          key: key,
+                          child: TextFormField(
+                            controller: controller,
+                          ),
+                        ),
+                        content: Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: GridView.builder(
+                              itemCount: iconList.length,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 65,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                              ),
+                              itemBuilder: (_, index) {
+                                // list[index] = IconModel(list[index].iconName);
+                                return Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: InkWell(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color:
+                                                  _selected == index ? Colors.grey : Colors.white,
+                                              width: 1.5)),
+                                      child: Image.asset(
+                                        '${iconList[index].iconName}',
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        _selected = index;
+                                        iconName = iconList[index].iconName;
+                                      });
+                                    },
+                                  ),
+                                );
+                              }),
+                        ),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  characterModel.weeklyContentList[i] =
+                                      WeeklyContent(controller.text, iconName.toString(), true);
+                                  Navigator.pop(context);
+                                },
+                                child: Text('확인'),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('취소')),
+                            ],
+                          )
+                        ],
+                      );
+                    });
+                  });
+              setState(() {});
+            },
+          ),
+          value: characterModel.weeklyContentList[i].isChecked,
+          onChanged: (value) {
+            setState(() {
+              characterModel.weeklyContentList[i].isChecked = value!;
+            });
+          },
+          contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+        ),
+      );
+      weeklyCardList.add(card);
     }
     return Column(children: weeklyCardList);
   }

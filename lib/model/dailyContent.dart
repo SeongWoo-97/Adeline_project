@@ -10,5 +10,5 @@ class DailyContent implements AbstractContent{
   bool view;
 
 
-  DailyContent(this.name,this.iconName,this.view,{this.isChecked = true});
+  DailyContent(this.name,this.iconName,this.view,{this.isChecked = false});
 }
