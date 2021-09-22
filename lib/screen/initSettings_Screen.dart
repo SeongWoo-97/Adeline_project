@@ -1,11 +1,14 @@
-import 'package:adeline_app/model/characterModel.dart';
+import 'package:adeline_app/model/user/characterModel/characterModel.dart';
+import 'package:adeline_app/model/user/user.dart';
 import 'package:adeline_app/screen/contentSettings_screen.dart';
+import 'package:adeline_app/screen/home_screen.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_item.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive/hive.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 class InitSettingsScreen extends StatefulWidget {
@@ -19,8 +22,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   int _currentStep = 0;
   var job, level;
   bool loading = false;
-  List<String> characters = [];
-  List<CharacterModel> charModels = [];
+  List<String> nickNameList = [];
+  List<CharacterModel> characterModelList = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
 
   /// 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
@@ -37,7 +40,12 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
               : Container(),
           trailingActions: [
-            _currentStep == 1 ? TextButton(onPressed: () {}, child: Text('완료')) : Container()
+            _currentStep == 1 ? TextButton(child: Text('완료'), onPressed: () {
+              final box = Hive.box<User>('localDB');
+              box.put('user', User(characterList: characterModelList));
+              Navigator.pushAndRemoveUntil(
+                  context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+            }) : Container()
           ],
         ),
         body: SafeArea(
@@ -91,17 +99,19 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ],
         ),
         PlatformWidgetBuilder(
-          cupertino: (_, child, __) => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CupertinoTextField(
-              textAlign: TextAlign.center,
-              controller: textEditingController,
-            ),
-          ),
-          material: (_, child, __) => TextField(
-            textAlign: TextAlign.center,
-            controller: textEditingController,
-          ),
+          cupertino: (_, child, __) =>
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoTextField(
+                  textAlign: TextAlign.center,
+                  controller: textEditingController,
+                ),
+              ),
+          material: (_, child, __) =>
+              TextField(
+                textAlign: TextAlign.center,
+                controller: textEditingController,
+              ),
         ),
         PlatformElevatedButton(
           child: Text('캐릭터 정보확인'),
@@ -126,8 +136,14 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ),
         ),
         Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.5,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height * 0.5,
           child: DragAndDropLists(
             children: [charactersOrder],
             onItemReorder: _onItemReorder,
@@ -145,7 +161,9 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ],
             ),
             listInnerDecoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
+              color: Theme
+                  .of(context)
+                  .canvasColor,
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             lastItemTargetHeight: 8,
@@ -166,13 +184,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             ),
           ),
         ),
-        // ElevatedButton(
-        //     onPressed: () {
-        //       print(charModels[0].nickName.toString());
-        //       print(charModels[1].nickName.toString());
-        //       print(charModels[2].nickName.toString());
-        //     },
-        //     child: Text('테스트'))
       ],
     );
   }
@@ -275,15 +286,16 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   // 캐릭터 List 가져오기
   getCharList() async {
     // 계정의 모든캐릭터 (검색한 닉네임 포함), 추후 역순으로 변경
-    charModels.clear();
-    characters =
+    int id = 0;
+    characterModelList.clear();
+    nickNameList =
         webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
     // print('characters.length : ${characters.length}');
-    for (int i = 0; i < characters.length; i++) {
-      bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${characters[i]}');
-      print('/Profile/Character/${characters[i]}');
+    for (int i = 0; i < nickNameList.length; i++) {
+      bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
+      print('/Profile/Character/${nickNameList[i]}');
       if (loadWebPage) {
-        String _nickName = characters[i];
+        String _nickName = nickNameList[i];
         var _job = webScraper.getElementAttribute(
             'div > main > div > div.profile-character-info > img', 'alt');
         var _level = webScraper.getElementTitle(
@@ -291,9 +303,9 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         // print('${_job[0].toString()} ${_level[0].toString()}');
         // List 에 들어갈 CharacterModel 의 인스턴스가 생성되지않는것 같다
         // 새로운 인스턴스를 만들어야...하는건가
-        CharacterModel characterModel = CharacterModel(_nickName, _level[0], _job[0]);
-        charModels.add(characterModel);
-        // charModels = List.generate(1, (index) {
+        CharacterModel characterModel = CharacterModel(id, _nickName, _level[0], _job[0]);
+        characterModelList.add(characterModel);
+        // characterModelList = List.generate(1, (index) {
         //   print('$_nickName , ${_job[0]}, ${_level[0]}');
         //   return CharacterModel(_nickName, _job[0], _level[0]);
         // });
@@ -302,15 +314,18 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       //   // 점검또는 네트워크 또는 기타오류 출력 추가하기
       // }
     }
-    charModels = List.from(charModels.reversed);
+    characterModelList = List.from(characterModelList.reversed);
     charactersOrder = DragAndDropList(
-      children: List.generate(characters.length, (index) {
+      children: List.generate(nickNameList.length, (index) {
         return DragAndDropItem(
           child: Card(
             child: ListTile(
-              title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+              title: Text(
+                  characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
               subtitle: Text(
-                  '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
+                  '${characterModelList[index].level.toString()
+                      .replaceAll('달성 아이템 레벨', '')
+                      .replaceAll('.00', '')} ${characterModelList[index].job}'),
               trailing: IconButton(
                   onPressed: () {
                     setState(() {
@@ -319,10 +334,10 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                   },
                   icon: Icon(Icons.delete_forever)),
               onTap: () async {
-                charModels[index] = await Navigator.push(
+                characterModelList[index] = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ContentSettingsScreen(charModels[index])));
+                        builder: (context) => ContentSettingsScreen(characterModelList[index])));
               },
             ),
             elevation: 2,
@@ -330,47 +345,49 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         );
       }),
     );
-
   }
 
   // 캐릭터 삭제
   delCharInList(int index) {
-    charModels.removeAt(index);
-    print('del : ${charModels.length}');
+    characterModelList.removeAt(index);
+    print('del : ${characterModelList.length}');
     charactersOrder = DragAndDropList(
-        // header: Column(
-        //   children: <Widget>[
-        //     Row(
-        //       children: [
-        //         Padding(
-        //           padding: EdgeInsets.only(left: 8, bottom: 4),
-        //           child: Text(
-        //             '캐릭터 순서 지정',
-        //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
-        children: List.generate(charModels.length, (index) {
-      return DragAndDropItem(
-        child: ListTile(
-          title: Text(charModels[index].nickName.toString(), style: TextStyle(fontSize: 14)),
-          subtitle: Text(
-              '${charModels[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${charModels[index].job}'),
-          trailing: IconButton(
-            onPressed: () {
-              print('누름');
-              setState(() {
-                delCharInList(index);
-              });
-            },
-            icon: Icon(Icons.delete_forever),
-          ),
-        ),
-      );
-    }));
+      // header: Column(
+      //   children: <Widget>[
+      //     Row(
+      //       children: [
+      //         Padding(
+      //           padding: EdgeInsets.only(left: 8, bottom: 4),
+      //           child: Text(
+      //             '캐릭터 순서 지정',
+      //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ],
+      // ),
+        children: List.generate(characterModelList.length, (index) {
+          return DragAndDropItem(
+            child: ListTile(
+              title: Text(
+                  characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 14)),
+              subtitle: Text(
+                  '${characterModelList[index].level.toString()
+                      .replaceAll('달성 아이템 레벨', '')
+                      .replaceAll('.00', '')} ${characterModelList[index].job}'),
+              trailing: IconButton(
+                onPressed: () {
+                  print('누름');
+                  setState(() {
+                    delCharInList(index);
+                  });
+                },
+                icon: Icon(Icons.delete_forever),
+              ),
+            ),
+          );
+        }));
   }
 
   // 화면전환
@@ -394,8 +411,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
       charactersOrder.children.insert(newItemIndex, movedItem);
 
-      var movedItem2 = charModels.removeAt(oldItemIndex);
-      charModels.insert(newItemIndex, movedItem2);
+      var movedItem2 = characterModelList.removeAt(oldItemIndex);
+      characterModelList.insert(newItemIndex, movedItem2);
     });
   }
 

@@ -31,7 +31,13 @@ dependencies:
   flutter_platform_widgets: ^1.9.5
   web_scraper: ^0.1.4
   drag_and_drop_lists: ^0.3.2
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.1
+
 dev_dependencies:
+  hive_generator: ^1.1.0
+  build_runner: ^1.11.5
   flutter_test:
     sdk: flutter
 
