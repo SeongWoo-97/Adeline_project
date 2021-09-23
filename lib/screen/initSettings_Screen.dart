@@ -40,12 +40,16 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
               : Container(),
           trailingActions: [
-            _currentStep == 1 ? TextButton(child: Text('완료'), onPressed: () {
-              final box = Hive.box<User>('localDB');
-              box.put('user', User(characterList: characterModelList));
-              Navigator.pushAndRemoveUntil(
-                  context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
-            }) : Container()
+            _currentStep == 1
+                ? TextButton(
+                    child: Text('완료'),
+                    onPressed: () {
+                      final box = Hive.box<User>('localDB');
+                      box.put('user', User(characterList: characterModelList));
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+                    })
+                : Container()
           ],
         ),
         body: SafeArea(
@@ -99,19 +103,17 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ],
         ),
         PlatformWidgetBuilder(
-          cupertino: (_, child, __) =>
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CupertinoTextField(
-                  textAlign: TextAlign.center,
-                  controller: textEditingController,
-                ),
-              ),
-          material: (_, child, __) =>
-              TextField(
-                textAlign: TextAlign.center,
-                controller: textEditingController,
-              ),
+          cupertino: (_, child, __) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CupertinoTextField(
+              textAlign: TextAlign.center,
+              controller: textEditingController,
+            ),
+          ),
+          material: (_, child, __) => TextField(
+            textAlign: TextAlign.center,
+            controller: textEditingController,
+          ),
         ),
         PlatformElevatedButton(
           child: Text('캐릭터 정보확인'),
@@ -136,14 +138,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ),
         ),
         Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.5,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.5,
           child: DragAndDropLists(
             children: [charactersOrder],
             onItemReorder: _onItemReorder,
@@ -161,9 +157,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ],
             ),
             listInnerDecoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .canvasColor,
+              color: Theme.of(context).canvasColor,
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             lastItemTargetHeight: 8,
@@ -320,12 +314,10 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         return DragAndDropItem(
           child: Card(
             child: ListTile(
-              title: Text(
-                  characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+              title: Text(characterModelList[index].nickName.toString(),
+                  style: TextStyle(fontSize: 16)),
               subtitle: Text(
-                  '${characterModelList[index].level.toString()
-                      .replaceAll('달성 아이템 레벨', '')
-                      .replaceAll('.00', '')} ${characterModelList[index].job}'),
+                  '${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
               trailing: IconButton(
                   onPressed: () {
                     setState(() {
@@ -352,42 +344,40 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     characterModelList.removeAt(index);
     print('del : ${characterModelList.length}');
     charactersOrder = DragAndDropList(
-      // header: Column(
-      //   children: <Widget>[
-      //     Row(
-      //       children: [
-      //         Padding(
-      //           padding: EdgeInsets.only(left: 8, bottom: 4),
-      //           child: Text(
-      //             '캐릭터 순서 지정',
-      //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
+        // header: Column(
+        //   children: <Widget>[
+        //     Row(
+        //       children: [
+        //         Padding(
+        //           padding: EdgeInsets.only(left: 8, bottom: 4),
+        //           child: Text(
+        //             '캐릭터 순서 지정',
+        //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+        // ),
         children: List.generate(characterModelList.length, (index) {
-          return DragAndDropItem(
-            child: ListTile(
-              title: Text(
-                  characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 14)),
-              subtitle: Text(
-                  '${characterModelList[index].level.toString()
-                      .replaceAll('달성 아이템 레벨', '')
-                      .replaceAll('.00', '')} ${characterModelList[index].job}'),
-              trailing: IconButton(
-                onPressed: () {
-                  print('누름');
-                  setState(() {
-                    delCharInList(index);
-                  });
-                },
-                icon: Icon(Icons.delete_forever),
-              ),
-            ),
-          );
-        }));
+      return DragAndDropItem(
+        child: ListTile(
+          title:
+              Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 14)),
+          subtitle: Text(
+              '${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
+          trailing: IconButton(
+            onPressed: () {
+              print('누름');
+              setState(() {
+                delCharInList(index);
+              });
+            },
+            icon: Icon(Icons.delete_forever),
+          ),
+        ),
+      );
+    }));
   }
 
   // 화면전환
