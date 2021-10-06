@@ -1,6 +1,7 @@
-import 'package:adeline_app/model/user/expenditionModel.dart';
-import 'package:adeline_app/model/user/characterModel/characterModel.dart';
+import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:hive/hive.dart';
+
+import 'characterModel/characterModel.dart';
 
 part 'user.g.dart';
 

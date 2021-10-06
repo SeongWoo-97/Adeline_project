@@ -1,4 +1,5 @@
 import 'package:adeline_app/model/user/characterModel/characterModel.dart';
+import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
 import 'package:adeline_app/screen/contentSettings_screen.dart';
 import 'package:adeline_app/screen/home_screen.dart';
@@ -45,7 +46,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                     child: Text('완료'),
                     onPressed: () {
                       final box = Hive.box<User>('localDB');
-                      box.put('user', User(characterList: characterModelList));
+                      box.put('user', User(characterList: characterModelList,expeditionModel: ExpeditionModel()));
                       Navigator.pushAndRemoveUntil(context,
                           MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
                     })

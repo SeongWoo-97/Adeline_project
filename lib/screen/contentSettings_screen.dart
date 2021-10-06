@@ -1,6 +1,7 @@
 import 'package:adeline_app/constant.dart';
 import 'package:adeline_app/model/user/characterModel/characterModel.dart';
 import 'package:adeline_app/model/user/content/dailyContent.dart';
+import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -312,7 +313,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                   ),
                 ),
 
-                /// 태양의 회랑 및 디멘션 큐브 티켓 갯수 추후 추가예
+                /// 태양의 회랑 및 디멘션 큐브 티켓 갯수 추후 추가예정
                 // Padding(
                 //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                 //   child: Card(
@@ -374,6 +375,8 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
   /// dailyContents 로 병합하기
   Widget dailyContents() {
     dailyCardList = [];
+
+    // 공통변수 - 이름, 아이콘이름,
     for (int i = 0; i < characterModel.dailyContentList.length; i++) {
       Card card = Card(
         elevation: 2,
@@ -400,7 +403,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
             ),
             onTap: () async {
               controller.text = '${characterModel.dailyContentList[i].name}';
-              await showDialog(
+              characterModel.dailyContentList[i] is RestGaugeContent ? print('RestGaugeContent 입니다') : await showDialog(
                   context: context,
                   builder: (_) {
                     return StatefulBuilder(builder: (context, setState) {
@@ -432,7 +435,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                           borderRadius: BorderRadius.circular(10),
                                           border: Border.all(
                                               color:
-                                                  _selected == index ? Colors.grey : Colors.white,
+                                              _selected == index ? Colors.grey : Colors.white,
                                               width: 1.5)),
                                       child: Image.asset(
                                         '${iconList[index].iconName}',
@@ -458,6 +461,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 onPressed: () {
                                   characterModel.dailyContentList[i] =
                                       DailyContent(controller.text, iconName.toString(), true);
+
                                   Navigator.pop(context);
                                 },
                                 child: Text('확인'),

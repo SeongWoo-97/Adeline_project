@@ -12,6 +12,8 @@ class WeeklyContent   {
   bool isChecked = true;
   @HiveField(3)
   bool view;
+  @HiveField(4)
+  bool clearCheck = false;
 
   WeeklyContent(this.name, this.iconName, this.view, {this.isChecked = false});
 }

@@ -1,4 +1,6 @@
+import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
+import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/screen/home_screen.dart';
 import 'package:adeline_app/screen/initSettings_Screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +19,8 @@ void main() async {
   Hive.registerAdapter(CharacterModelAdapter());
   Hive.registerAdapter(DailyContentAdapter());
   Hive.registerAdapter(WeeklyContentAdapter());
+  Hive.registerAdapter(ExpeditionModelAdapter());
+  Hive.registerAdapter(RestGaugeContentAdapter());
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>('localDB');
   // 참 : 메인화면 , 거짓 : 초기설정
