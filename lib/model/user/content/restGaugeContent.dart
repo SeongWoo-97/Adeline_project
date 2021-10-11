@@ -21,5 +21,7 @@ class RestGaugeContent {
   @HiveField(7)
   bool clearCheck = false;
 
+  int saveRestGauge = 0;
+
   RestGaugeContent(this.name, this.iconName, this.maxClearNum, this.isChecked);
 }
