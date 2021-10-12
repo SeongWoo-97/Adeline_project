@@ -30,7 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
     for (int i = 0; i < list.length ; i++){
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
-          DateTime lateRevision = list[i].dailyContentList[i].lateRevision; // 테스트 할때 이부분 수정
+          list[i].dailyContentList[j].saveRestGauge = 0;
+          DateTime lateRevision = list[i].dailyContentList[j].lateRevision; // 테스트 할때 이부분 수정
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
           DateTime now = DateTime.now();
