@@ -21,10 +21,9 @@ class CharacterModel {
 
   @HiveField(4)
   List<dynamic> dailyContentList = [
-    RestGaugeContent('카오스 던전2', 'assets/daily/Chaos.png', 2,true),
+    RestGaugeContent('카오스 던전', 'assets/daily/Chaos.png', 2,true),
     RestGaugeContent('가디언 토벌', 'assets/daily/Guardian.png', 2,true),
     RestGaugeContent('에포나 의뢰', 'assets/daily/Epona.png', 3,true),
-    DailyContent('(구)카오스 던전', 'assets/daily/Chaos.png', false),
   ];
 
   @HiveField(5)

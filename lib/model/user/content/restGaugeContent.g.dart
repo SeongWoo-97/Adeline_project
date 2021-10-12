@@ -25,13 +25,14 @@ class RestGaugeContentAdapter extends TypeAdapter<RestGaugeContent> {
       ..clearNum = fields[2] as int
       ..restGauge = fields[4] as int
       ..lateRevision = fields[5] as DateTime
-      ..clearCheck = fields[7] as bool;
+      ..clearCheck = fields[7] as bool
+      ..saveRestGauge = fields[8] as int;
   }
 
   @override
   void write(BinaryWriter writer, RestGaugeContent obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class RestGaugeContentAdapter extends TypeAdapter<RestGaugeContent> {
       ..writeByte(6)
       ..write(obj.isChecked)
       ..writeByte(7)
-      ..write(obj.clearCheck);
+      ..write(obj.clearCheck)
+      ..writeByte(8)
+      ..write(obj.saveRestGauge);
   }
 
   @override

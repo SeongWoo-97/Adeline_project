@@ -12,6 +12,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:web_scraper/web_scraper.dart';
 
+import '../constant.dart';
+
 class InitSettingsScreen extends StatefulWidget {
   @override
   _InitSettingsScreenState createState() => _InitSettingsScreenState();
@@ -37,50 +39,40 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           /// 초기화면으로 넘어가게 할지 고려
           /// 1. 변수들 초기화
           /// 2. textEditingController 값 초기화
-          leading: _currentStep != 0
-              ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back))
-              : Container(),
+          leading: _currentStep != 0 ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back)) : Container(),
           trailingActions: [
             _currentStep == 1
                 ? TextButton(
                     child: Text('완료'),
                     onPressed: () {
                       final box = Hive.box<User>('localDB');
-                      box.put('user', User(characterList: characterModelList,expeditionModel: ExpeditionModel()));
-                      Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+                      box.put('user', User(characterList: characterModelList, expeditionModel: ExpeditionModel()));
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
                     })
                 : Container()
           ],
         ),
         body: SafeArea(
           child: Stepper(
-            type: StepperType.horizontal,
+            type: StepperType.vertical,
             physics: ScrollPhysics(),
             currentStep: _currentStep,
             onStepTapped: (step) => tapped(step),
             steps: <Step>[
               Step(
-                title: Text('캐릭터 불러오기'),
+                title: Text('닉네임 입력',style: contentStyle),
                 content: stepOne(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
               ),
               Step(
-                title: Text('초기 설정'),
+                title: Text('컨텐츠 설정',style: contentStyle),
                 content: stepTwo(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
               ),
-              // Step(
-              //   title: Text('스케줄 설정'),
-              //   content: stepThree(),
-              //   isActive: _currentStep >= 0,
-              //   state: _currentStep >= 2 ? StepState.complete : StepState.disabled,
-              // ),
             ],
-            controlsBuilder: (BuildContext context,
-                {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
+            controlsBuilder: (BuildContext context, {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
               return Container();
             },
           ),
@@ -96,16 +88,11 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   /// 리팩토링 과정중 stepper 위젯의 결합도가 높다고 판단하여 백업..
   Widget stepOne() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          children: [
-            Text('본인 캐릭터 닉네임을 입력해주시길 바랍니다.'),
-            Text(''),
-          ],
-        ),
         PlatformWidgetBuilder(
           cupertino: (_, child, __) => Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
             child: CupertinoTextField(
               textAlign: TextAlign.center,
               controller: textEditingController,
@@ -116,10 +103,13 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             controller: textEditingController,
           ),
         ),
-        PlatformElevatedButton(
-          child: Text('캐릭터 정보확인'),
+        PlatformIconButton(
+          icon: Icon(
+            Icons.arrow_forward_outlined,
+            size: 30,
+            color: Colors.green,
+          ),
           onPressed: () {
-            // AlertDialog 확인유무 체크후 캐릭터 불러온후 다음단계로 이동
             charInfoCheck(textEditingController.value.text);
           },
         )
@@ -129,15 +119,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
   Widget stepTwo() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-          child: Text(
-            '캐릭터 순서 & 컨텐츠 설정',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-        ),
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.5,
@@ -147,7 +130,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             onListReorder: _onListReorder,
             listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
             itemDecorationWhileDragging: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -158,7 +141,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ],
             ),
             listInnerDecoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
+              color: Colors.white, // background 색
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             lastItemTargetHeight: 8,
@@ -170,7 +153,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             ),
             itemDragHandle: DragHandle(
               child: Padding(
-                padding: EdgeInsets.only(right: 5),
+                padding: EdgeInsets.only(right: 15),
                 child: Icon(
                   Icons.menu,
                   color: Colors.grey,
@@ -179,50 +162,58 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             ),
           ),
         ),
+        PlatformIconButton(
+          icon: Icon(Icons.arrow_forward_outlined, size: 30, color: Colors.green),
+          onPressed: () {},
+        )
       ],
     );
   }
 
-  Widget stepThree() {
-    return Container();
-  }
-
   // 캐릭터 정보확인
   charInfoCheck(String nickName) async {
-    bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/$nickName');
-    if (loadWebPage & !getCharStateCheck(nickName)) {
-      job = webScraper.getElementAttribute(
-          'div > main > div > div.profile-character-info > img', 'alt');
-      level = webScraper.getElementTitle(
-          'div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
+    showPlatformDialog(
+        context: context,
+        builder: (_) => PlatformAlertDialog(
+              title: Center(child: CircularProgressIndicator()),
+              content: Text(
+                '$nickName \n정보 확인중',
+                style: TextStyle(fontSize: 16),
+              ),
+            ));
+    if (await webScraper.loadWebPage('/Profile/Character/$nickName') & !getCharStateCheck(nickName)) {
+      Navigator.pop(context);
+      job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
+      level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
 
       showPlatformDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return PlatformAlertDialog(
-              title: Text('$nickName'),
-              content: Column(
-                children: [
-                  Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
-                ],
-              ),
-              actions: [
-                PlatformDialogAction(
-                  child: PlatformText('맞습니다'),
-                  // 캐릭터 순서 페이지로 이동
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await getCharList();
-                    continued();
-                  },
-                ),
-                PlatformDialogAction(
-                  child: PlatformText('아닙니다'),
-                  onPressed: () => Navigator.pop(context),
-                )
-              ],
-            );
-          });
+        context: context,
+        builder: (_) => PlatformAlertDialog(
+          title: Text('$nickName'),
+          content: Column(
+            children: [
+              Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+            ],
+          ),
+          actions: [
+            PlatformDialogAction(
+              child: PlatformText('맞습니다'),
+              // 캐릭터 순서 페이지로 이동
+              onPressed: () async {
+                Navigator.pop(context);
+                await getCharList();
+                continued();
+              },
+            ),
+            PlatformDialogAction(
+              child: PlatformText('아닙니다'),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+          material: (_, __) => MaterialAlertDialogData(),
+          cupertino: (_, __) => CupertinoAlertDialogData(),
+        ),
+      );
     } else {
       // 인터넷 연결상태 또는 서버 점검 문구
       showPlatformDialog(
@@ -270,10 +261,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
   // 닉네임 존재여부 확인
   bool getCharStateCheck(String nickName) {
-    bool state = webScraper
-        .getElementTitle('div.profile-ingame > div.profile-attention')
-        .toString()
-        .contains('캐릭터 정보가 없습니다.');
+    bool state = webScraper.getElementTitle('div.profile-ingame > div.profile-attention').toString().contains('캐릭터 정보가 없습니다.');
 
     return state ? true : false;
   }
@@ -283,27 +271,29 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     // 계정의 모든캐릭터 (검색한 닉네임 포함), 추후 역순으로 변경
     int id = 0;
     characterModelList.clear();
-    nickNameList =
-        webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
-    // print('characters.length : ${characters.length}');
+
+    nickNameList = webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
+    String b = nickNameList[0];
+    showPlatformDialog(
+        context: context,
+        builder: (_) => PlatformAlertDialog(
+              title: Center(child: CircularProgressIndicator()),
+              content: Text(
+                '전체 캐릭터 \n불러오는 중',
+                style: TextStyle(fontSize: 16),
+              ),
+            ));
+    print(nickNameList);
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
       print('/Profile/Character/${nickNameList[i]}');
       if (loadWebPage) {
         String _nickName = nickNameList[i];
-        var _job = webScraper.getElementAttribute(
-            'div > main > div > div.profile-character-info > img', 'alt');
-        var _level = webScraper.getElementTitle(
-            'div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
-        // print('${_job[0].toString()} ${_level[0].toString()}');
-        // List 에 들어갈 CharacterModel 의 인스턴스가 생성되지않는것 같다
-        // 새로운 인스턴스를 만들어야...하는건가
+        var _job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
+        var _level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
+
         CharacterModel characterModel = CharacterModel(id, _nickName, _level[0], _job[0]);
         characterModelList.add(characterModel);
-        // characterModelList = List.generate(1, (index) {
-        //   print('$_nickName , ${_job[0]}, ${_level[0]}');
-        //   return CharacterModel(_nickName, _job[0], _level[0]);
-        // });
       }
       // else {
       //   // 점검또는 네트워크 또는 기타오류 출력 추가하기
@@ -315,22 +305,18 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         return DragAndDropItem(
           child: Card(
             child: ListTile(
-              title: Text(characterModelList[index].nickName.toString(),
-                  style: TextStyle(fontSize: 16)),
-              subtitle: Text(
-                  '${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
-              trailing: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      delCharInList(index);
-                    });
-                  },
-                  icon: Icon(Icons.delete_forever)),
+              title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
+              subtitle: Text('${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
+              /// 다른 방법 생각중 ...
+              // trailing: IconButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         delCharInList(index);
+              //       });
+              //     },
+              //     icon: Icon(Icons.clear_sharp)),
               onTap: () async {
-                characterModelList[index] = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ContentSettingsScreen(characterModelList[index])));
+                characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
               },
             ),
             elevation: 2,
@@ -338,6 +324,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         );
       }),
     );
+    Navigator.pop(context);
   }
 
   // 캐릭터 삭제
@@ -345,36 +332,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     characterModelList.removeAt(index);
     print('del : ${characterModelList.length}');
     charactersOrder = DragAndDropList(
-        // header: Column(
-        //   children: <Widget>[
-        //     Row(
-        //       children: [
-        //         Padding(
-        //           padding: EdgeInsets.only(left: 8, bottom: 4),
-        //           child: Text(
-        //             '캐릭터 순서 지정',
-        //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
         children: List.generate(characterModelList.length, (index) {
       return DragAndDropItem(
-        child: ListTile(
-          title:
-              Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 14)),
-          subtitle: Text(
-              '${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
-          trailing: IconButton(
-            onPressed: () {
-              print('누름');
-              setState(() {
-                delCharInList(index);
-              });
+        child: Card(
+          child: ListTile(
+            title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+            subtitle: Text(levelText(characterModelList[index].level)),
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  delCharInList(index);
+                });
+              },
+              icon: Icon(Icons.delete_forever),
+            ),
+            onTap: () async {
+              print(characterModelList[index].nickName);
+              characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
             },
-            icon: Icon(Icons.delete_forever),
           ),
         ),
       );
@@ -412,5 +387,10 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       // var movedList = charactersOrder.removeAt(oldListIndex);
       // _contents.insert(newListIndex, movedList);
     });
+  }
+  String levelText(String level) {
+    int start = level.indexOf('.') + 1;
+    int end = level.lastIndexOf('.');
+    return 'Lv.' + level.substring(start, end);
   }
 }

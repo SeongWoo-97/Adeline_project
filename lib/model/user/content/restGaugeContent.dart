@@ -20,6 +20,8 @@ class RestGaugeContent {
   bool isChecked = true; // 컨텐츠 사용여부
   @HiveField(7)
   bool clearCheck = false;
+  @HiveField(8)
+  int saveRestGauge = 0;
 
   RestGaugeContent(this.name, this.iconName, this.maxClearNum, this.isChecked);
 }
