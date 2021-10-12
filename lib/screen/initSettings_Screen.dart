@@ -49,28 +49,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                       box.put('user', User(characterList: characterModelList, expeditionModel: ExpeditionModel()));
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
                     })
-                : TextButton(
-                    child: Text('다음'),
-                    onPressed: () {
-                      charInfoCheck(textEditingController.value.text);
-                    })
+                : Container()
           ],
         ),
         body: SafeArea(
           child: Stepper(
-            type: StepperType.horizontal,
+            type: StepperType.vertical,
             physics: ScrollPhysics(),
             currentStep: _currentStep,
             onStepTapped: (step) => tapped(step),
             steps: <Step>[
               Step(
-                title: Text('캐릭터 불러오기'),
+                title: Text('닉네임 입력',style: contentStyle),
                 content: stepOne(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
               ),
               Step(
-                title: Text('초기 설정'),
+                title: Text('컨텐츠 설정',style: contentStyle),
                 content: stepTwo(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
@@ -92,17 +88,11 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   /// 리팩토링 과정중 stepper 위젯의 결합도가 높다고 판단하여 백업..
   Widget stepOne() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-          child: Text(
-            '캐릭터 닉네임 입력',
-            style: titleStyle.copyWith(fontSize: 22),
-          ),
-        ),
         PlatformWidgetBuilder(
           cupertino: (_, child, __) => Padding(
-            padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
             child: CupertinoTextField(
               textAlign: TextAlign.center,
               controller: textEditingController,
@@ -113,21 +103,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             controller: textEditingController,
           ),
         ),
+        PlatformIconButton(
+          icon: Icon(
+            Icons.arrow_forward_outlined,
+            size: 30,
+            color: Colors.green,
+          ),
+          onPressed: () {
+            charInfoCheck(textEditingController.value.text);
+          },
+        )
       ],
     );
   }
 
   Widget stepTwo() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-          child: Text(
-            '캐릭터 순서 & 컨텐츠 설정',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-        ),
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.5,
@@ -137,7 +130,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             onListReorder: _onListReorder,
             listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
             itemDecorationWhileDragging: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -148,7 +141,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ],
             ),
             listInnerDecoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
+              color: Colors.white, // background 색
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             lastItemTargetHeight: 8,
@@ -160,7 +153,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             ),
             itemDragHandle: DragHandle(
               child: Padding(
-                padding: EdgeInsets.only(right: 5),
+                padding: EdgeInsets.only(right: 15),
                 child: Icon(
                   Icons.menu,
                   color: Colors.grey,
@@ -169,14 +162,27 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             ),
           ),
         ),
+        PlatformIconButton(
+          icon: Icon(Icons.arrow_forward_outlined, size: 30, color: Colors.green),
+          onPressed: () {},
+        )
       ],
     );
   }
 
   // 캐릭터 정보확인
   charInfoCheck(String nickName) async {
-    bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/$nickName');
-    if (loadWebPage & !getCharStateCheck(nickName)) {
+    showPlatformDialog(
+        context: context,
+        builder: (_) => PlatformAlertDialog(
+              title: Center(child: CircularProgressIndicator()),
+              content: Text(
+                '$nickName \n정보 확인중',
+                style: TextStyle(fontSize: 16),
+              ),
+            ));
+    if (await webScraper.loadWebPage('/Profile/Character/$nickName') & !getCharStateCheck(nickName)) {
+      Navigator.pop(context);
       job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
       level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
 
@@ -204,8 +210,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               onPressed: () => Navigator.pop(context),
             )
           ],
-          material: (_,__) => MaterialAlertDialogData(),
-          cupertino: (_,__) => CupertinoAlertDialogData(),
+          material: (_, __) => MaterialAlertDialogData(),
+          cupertino: (_, __) => CupertinoAlertDialogData(),
         ),
       );
     } else {
@@ -265,7 +271,18 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     // 계정의 모든캐릭터 (검색한 닉네임 포함), 추후 역순으로 변경
     int id = 0;
     characterModelList.clear();
+
     nickNameList = webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
+    String b = nickNameList[0];
+    showPlatformDialog(
+        context: context,
+        builder: (_) => PlatformAlertDialog(
+              title: Center(child: CircularProgressIndicator()),
+              content: Text(
+                '전체 캐릭터 \n불러오는 중',
+                style: TextStyle(fontSize: 16),
+              ),
+            ));
     print(nickNameList);
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
@@ -288,15 +305,16 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         return DragAndDropItem(
           child: Card(
             child: ListTile(
-              title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+              title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
               subtitle: Text('${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
-              trailing: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      delCharInList(index);
-                    });
-                  },
-                  icon: Icon(Icons.delete_forever)),
+              /// 다른 방법 생각중 ...
+              // trailing: IconButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         delCharInList(index);
+              //       });
+              //     },
+              //     icon: Icon(Icons.clear_sharp)),
               onTap: () async {
                 characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
               },
@@ -306,6 +324,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         );
       }),
     );
+    Navigator.pop(context);
   }
 
   // 캐릭터 삭제
@@ -313,34 +332,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     characterModelList.removeAt(index);
     print('del : ${characterModelList.length}');
     charactersOrder = DragAndDropList(
-        // header: Column(
-        //   children: <Widget>[
-        //     Row(
-        //       children: [
-        //         Padding(
-        //           padding: EdgeInsets.only(left: 8, bottom: 4),
-        //           child: Text(
-        //             '캐릭터 순서 지정',
-        //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
         children: List.generate(characterModelList.length, (index) {
       return DragAndDropItem(
-        child: ListTile(
-          title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 14)),
-          subtitle: Text('${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
-          trailing: IconButton(
-            onPressed: () {
-              print('누름');
-              setState(() {
-                delCharInList(index);
-              });
+        child: Card(
+          child: ListTile(
+            title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+            subtitle: Text(levelText(characterModelList[index].level)),
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  delCharInList(index);
+                });
+              },
+              icon: Icon(Icons.delete_forever),
+            ),
+            onTap: () async {
+              print(characterModelList[index].nickName);
+              characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
             },
-            icon: Icon(Icons.delete_forever),
           ),
         ),
       );
@@ -378,5 +387,10 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       // var movedList = charactersOrder.removeAt(oldListIndex);
       // _contents.insert(newListIndex, movedList);
     });
+  }
+  String levelText(String level) {
+    int start = level.indexOf('.') + 1;
+    int end = level.lastIndexOf('.');
+    return 'Lv.' + level.substring(start, end);
   }
 }

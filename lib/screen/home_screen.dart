@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 
+import '../constant.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     list = Hive.box<User>('localDB').get('user')!.characterList;
-    for (int i = 0; i < list.length ; i++){
+    for (int i = 0; i < list.length; i++) {
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
           list[i].dailyContentList[j].saveRestGauge = 0;
@@ -95,12 +97,16 @@ class _HomeScreenState extends State<HomeScreen> {
               /// 원정대 컨텐츠 , 카드삭제 고려
               Card(
                 elevation: 2,
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '원정대 컨텐츠',
-                      style: TextStyle(fontSize: 16, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
+                    Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Text(
+                        '원정대 컨텐츠',
+                        style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -113,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     // 비활성화 위젯
-                                    // Image.asset('assets/expedition/ChaosGate.png',width: 40,height: 40,colorBlendMode: BlendMode.color,color: Colors.white,),
+                                    // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
                                     Image.asset('assets/expedition/Island.png', width: 30, height: 30),
                                     Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -207,11 +213,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset('assets/expedition/ChallengeAbyss.png', width: 30, height: 30),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/ChallengeAbyss.png', width: 25, height: 25),
+                                    ),
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Text('도전 어비스')
+                                    Text(
+                                      '도전 어비스',
+                                      style: contentStyle,
+                                    )
                                   ],
                                 ),
                                 Row(
@@ -238,77 +250,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset('assets/expedition/Dungeon.png', width: 30, height: 30),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/Dungeon.png', width: 25, height: 25),
+                                    ),
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Text('혼돈의 사선')
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Image.asset('assets/expedition/Rehearsal.png', width: 30, height: 30),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text('리허설')
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Image.asset('assets/expedition/Dejavu.png', width: 30, height: 30),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text('데자뷰')
+                                    Text(
+                                      '혼돈의 사선',
+                                      style: contentStyle,
+                                    )
                                   ],
                                 ),
                                 Row(
@@ -339,11 +291,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset('assets/expedition/LikeAbility.png', width: 30, height: 30),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/Rehearsal.png', width: 25, height: 25),
+                                    ),
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Text('호감도')
+                                    Text(
+                                      '리허설',
+                                      style: contentStyle,
+                                    )
                                   ],
                                 ),
                                 Row(
@@ -370,18 +328,81 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset('assets/etc/Gold.png', width: 30, height: 30),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/Dejavu.png', width: 25, height: 25),
+                                    ),
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Text('골드 획득량')
+                                    Text(
+                                      '데자뷰',
+                                      style: contentStyle,
+                                    )
                                   ],
                                 ),
                                 Row(
-                                  children: [Text('21500')],
+                                  children: [
+                                    Checkbox(
+                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        value: _isCheck,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            _isCheck = value!;
+                                          });
+                                        })
+                                  ],
                                 )
                               ],
                             ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Card(
+                            elevation: 2,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/LikeAbility.png', width: 25, height: 25),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '호감도',
+                                      style: contentStyle,
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        value: _isCheck,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            _isCheck = value!;
+                                          });
+                                        })
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        // 빈칸
+                        Expanded(
+                          child: Card(
+                            elevation: 2,
+                            child: Container(),
                           ),
                         ),
                       ],
@@ -392,11 +413,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
               /// 캐릭터 ExpansionPanel
               Container(
-                margin: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
                 child: ExpansionPanelList(
-                  animationDuration: Duration(microseconds: 1000),
+                  animationDuration: Duration(microseconds: 1300),
                   elevation: 2,
-                  expandedHeaderPadding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+
+                  expandedHeaderPadding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   children: list.map<ExpansionPanel>((CharacterModel characterModel) {
                     // 여기서 모든 로직이 완성되어야 된다.
                     String level = characterModel.level;
@@ -412,60 +434,65 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                             child: Text(
                               characterModel.nickName.toString(),
-                              style: TextStyle(fontSize: 17),
+                              style: contentStyle,
                             ),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${levelText(level)} ${characterModel.job} '),
-                              Row(children: [
-                                characterModel.dailyContentList[0].isChecked
-                                    ? Row(
-                                        children: [
-                                          Image.asset(
-                                            '${characterModel.dailyContentList[0].iconName}',
-                                            width: 25,
-                                            height: 25,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 5, right: 10),
-                                            child: Text('${characterModel.dailyContentList[0].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                          ),
-                                        ],
-                                      )
-                                    : Container(),
-                                characterModel.dailyContentList[1].isChecked
-                                    ? Row(
-                                        children: [
-                                          Image.asset(
-                                            '${characterModel.dailyContentList[1].iconName}',
-                                            width: 25,
-                                            height: 25,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 5, right: 10),
-                                            child: Text('${characterModel.dailyContentList[1].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                          ),
-                                        ],
-                                      )
-                                    : Container(),
-                                characterModel.dailyContentList[2].isChecked
-                                    ? Row(
-                                        children: [
-                                          Image.asset(
-                                            '${characterModel.dailyContentList[2].iconName}',
-                                            width: 25,
-                                            height: 25,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 5, right: 10),
-                                            child: Text('${characterModel.dailyContentList[2].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                          ),
-                                        ],
-                                      )
-                                    : Container(),
-                              ])
+                              Text(
+                                '${levelText(level)} ${characterModel.job}',
+                                style: contentStyle.copyWith(color: Colors.grey, fontSize: 14),
+                              ),
+                              Row(
+                                children: [
+                                  characterModel.dailyContentList[0].isChecked
+                                      ? Row(
+                                          children: [
+                                            Image.asset(
+                                              '${characterModel.dailyContentList[0].iconName}',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 5, right: 10),
+                                              child: Text('${characterModel.dailyContentList[0].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(),
+                                  characterModel.dailyContentList[1].isChecked
+                                      ? Row(
+                                          children: [
+                                            Image.asset(
+                                              '${characterModel.dailyContentList[1].iconName}',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 5, right: 10),
+                                              child: Text('${characterModel.dailyContentList[1].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(),
+                                  characterModel.dailyContentList[2].isChecked
+                                      ? Row(
+                                          children: [
+                                            Image.asset(
+                                              '${characterModel.dailyContentList[2].iconName}',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 5, right: 10),
+                                              child: Text('${characterModel.dailyContentList[2].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(),
+                                ],
+                              )
                             ],
                           ),
                         );
@@ -480,9 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Text(
                                         '일일 컨텐츠',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
+                                        style: contentStyle,
                                       ),
                                       ListView.builder(
                                         shrinkWrap: true,
@@ -505,7 +530,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   } else if (characterModel.dailyContentList[index].maxClearNum == characterModel.dailyContentList[index].clearNum) {
                                                     print('saveRestGauge : $saveRestGauge');
                                                     characterModel.dailyContentList[index].clearNum = 0;
-                                                    characterModel.dailyContentList[index].restGauge = characterModel.dailyContentList[index].restGauge + characterModel.dailyContentList[index].saveRestGauge;
+                                                    characterModel.dailyContentList[index].restGauge =
+                                                        characterModel.dailyContentList[index].restGauge + characterModel.dailyContentList[index].saveRestGauge;
                                                     characterModel.dailyContentList[index].saveRestGauge = 0;
                                                   }
                                                   box.put('user', User(characterList: list, expeditionModel: ExpeditionModel()));
@@ -532,46 +558,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Text(
                                         '주간 컨텐츠',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
+                                        style: contentStyle,
                                       ),
                                       ListView.builder(
                                         shrinkWrap: true,
                                         itemCount: characterModel.weeklyContentList.length,
                                         itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            child: Card(
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                        child: Image.asset('${characterModel.weeklyContentList[index].iconName}', width: 25, height: 25),
-                                                      ),
-                                                      Text(characterModel.weeklyContentList[index].name),
-                                                    ],
-                                                  ),
-                                                  Checkbox(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: characterModel.weeklyContentList[index].clearCheck,
-                                                    onChanged: (bool? value) {
-                                                      setState(() {
-                                                        characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
-                                                      });
-                                                    },
-                                                  )
-                                                ],
+                                          if (characterModel.weeklyContentList[index].isChecked == true) {
+                                            return InkWell(
+                                              child: Card(
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                          child: Image.asset('${characterModel.weeklyContentList[index].iconName}', width: 25, height: 25),
+                                                        ),
+                                                        Text(
+                                                          characterModel.weeklyContentList[index].name,
+                                                          style: contentStyle,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Checkbox(
+                                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                      value: characterModel.weeklyContentList[index].clearCheck,
+                                                      onChanged: (bool? value) {
+                                                        setState(() {
+                                                          characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
+                                                        });
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            onTap: () {
-                                              setState(() {
-                                                characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
-                                              });
-                                            },
-                                          );
+                                              onTap: () {
+                                                setState(() {
+                                                  characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
+                                                });
+                                              },
+                                            );
+                                          } else {
+                                            return Container();
+                                          }
                                         },
                                       ),
                                     ],
@@ -611,13 +642,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
-                  child: Text(restGaugeContent.name),
+                  child: Text(
+                    restGaugeContent.name,
+                    style: contentStyle,
+                  ),
                 ),
               ],
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              child: Text('${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}'),
+              child: Text(
+                '${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}',
+                style: contentStyle,
+              ),
             )
           ],
         ),
