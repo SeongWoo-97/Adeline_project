@@ -19,10 +19,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<CharacterModel> list;
+  late ExpeditionModel expeditionModel;
   final box = Hive.box<User>('localDB');
-  bool _isCheck = false;
+  bool blankCheckbox = true;
   bool dailyTitleColor = true;
   bool weeklyTitleColor = true;
+  bool disableChaosGate = false;
+  bool disableFieldBoss = false;
+  bool disableGhostShip = false;
   List<Widget> listCard = [];
 
   @override
@@ -33,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
           list[i].dailyContentList[j].saveRestGauge = 0;
-          DateTime lateRevision = list[i].dailyContentList[j].lateRevision; // 테스트 할때 이부분 수정
+          DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
+          print('${list[i].nickName} : ${list[i].dailyContentList[j].lateRevision}');
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
           DateTime now = DateTime.now();
@@ -54,12 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
             if (DateTime.now().hour < 6) {
               print('로직3');
               list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
+              list[i].dailyContentList[j].clearNum = 0;
             }
 
             /// 오전 6시 후 면 전날 남은횟수 * 10 해서 휴식게이지 출력
             else if (DateTime.now().hour >= 6) {
               print('로직4');
               list[i].dailyContentList[j].restGauge = (maxClearNum - clearNum) * 10;
+              list[i].dailyContentList[j].clearNum = 0;
             }
           }
 
@@ -69,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               print('로직5');
               int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays - 1;
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
+              list[i].dailyContentList[j].clearNum = 0;
             } else if (DateTime.now().hour >= 6) {
               print('로직6');
               int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays;
@@ -77,11 +85,61 @@ class _HomeScreenState extends State<HomeScreen> {
               if (list[i].dailyContentList[j].restGauge >= 100) {
                 list[i].dailyContentList[j].restGauge = 100;
               }
+              list[i].dailyContentList[j].clearNum = 0;
             }
           }
         }
       }
     }
+    expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
+    DateTime nowDate = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6); // 현재날짜 오전6시 기준
+    if (nowDate.difference(expeditionModel.recentInitDateTime).inSeconds > 0 && nowDate.weekday == 3) {
+      expeditionModel.islandCheck = false;
+      expeditionModel.chaosGateCheck = false;
+      expeditionModel.fieldBoosCheck = false;
+      expeditionModel.ghostShipCheck = false;
+      expeditionModel.rehearsalCheck = false;
+      expeditionModel.dejavuCheck = false;
+      expeditionModel.challengeAbyssCheck = false;
+      expeditionModel.likeAbilityCheck = false;
+      expeditionModel.chaosLineCheck = false;
+    } else if (nowDate.difference(expeditionModel.recentInitDateTime).inSeconds > 0) {
+      int week = DateTime.now().weekday;
+      switch (week) {
+        case 1:
+          expeditionModel.islandCheck = false;
+          expeditionModel.chaosGateCheck = false;
+          disableFieldBoss = true;
+          break;
+        case 2:
+          expeditionModel.islandCheck = false;
+          expeditionModel.fieldBoosCheck = false;
+          disableChaosGate = true;
+          break;
+        case 4:
+          expeditionModel.islandCheck = false;
+          expeditionModel.chaosGateCheck = false;
+          disableFieldBoss = true;
+          break;
+        case 5:
+          expeditionModel.islandCheck = false;
+          expeditionModel.fieldBoosCheck = false;
+          disableChaosGate = true;
+          break;
+        case 6:
+          expeditionModel.islandCheck = false;
+          expeditionModel.chaosGateCheck = false;
+          disableFieldBoss = true;
+          break;
+        case 7:
+          expeditionModel.islandCheck = false;
+          expeditionModel.chaosGateCheck = false;
+          expeditionModel.fieldBoosCheck = false;
+          break;
+      }
+    }
+    expeditionModel.recentInitDateTime = DateTime.now();
+    box.put('user', User(characterList: list, expeditionModel: expeditionModel));
   }
 
   @override
@@ -95,22 +153,47 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               /// 원정대 컨텐츠 , 카드삭제 고려
-              Card(
-                elevation: 2,
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Text(
-                        '원정대 컨텐츠',
-                        style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
-                      ),
-                    ),
-                    Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Padding(
+                  //   padding: const EdgeInsets.all(5),
+                  //   child: Text(
+                  //     '원정대 컨텐츠',
+                  //    style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        Card(
+                          elevation: 2,
+                          child: InkWell(
+                            child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Image.asset('assets/expedition/LikeAbility.png', width: 30, height: 30),
+                                    Checkbox(
+                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        value: expeditionModel.likeAbilityCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            expeditionModel.likeAbilityCheck = value!;
+                                          });
+                                        })
+                                  ],
+                                )),
+                          ),
+                        ),
                         Card(
                           elevation: 2,
                           child: InkWell(
@@ -123,10 +206,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Image.asset('assets/expedition/Island.png', width: 30, height: 30),
                                     Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
+                                        value: expeditionModel.islandCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            _isCheck = value!;
+                                            expeditionModel.islandCheck = value!;
                                           });
                                         })
                                   ],
@@ -141,17 +230,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     // 비활성화 위젯
-                                    // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
-                                    Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30),
-
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
+                                    disableChaosGate
+                                        ? Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                        : Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30),
+                                    disableChaosGate
+                                        ? Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {},
+                                            value: false,
+                                          )
+                                        : Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            value: expeditionModel.chaosGateCheck,
+                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                            activeColor: Colors.transparent,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                expeditionModel.chaosGateCheck = value!;
+                                              });
+                                            })
                                   ],
                                 )),
                           ),
@@ -164,17 +269,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     // 비활성화 위젯
-                                    // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
-                                    Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30),
-
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
+                                    disableFieldBoss
+                                        ? Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                        : Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30),
+                                    disableFieldBoss
+                                        ? Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {},
+                                            value: false,
+                                          )
+                                        : Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            value: expeditionModel.fieldBoosCheck,
+                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                            activeColor: Colors.transparent,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                expeditionModel.fieldBoosCheck = value!;
+                                              });
+                                            })
                                   ],
                                 )),
                           ),
@@ -187,101 +308,43 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     // 비활성화 위젯
-                                    // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
-                                    Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30),
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
+                                    disableGhostShip
+                                        ? Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                        : Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30),
+                                    disableGhostShip
+                                        ? Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {},
+                                            value: false,
+                                          )
+                                        : Checkbox(
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            value: expeditionModel.ghostShipCheck,
+                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                            activeColor: Colors.transparent,
+                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                expeditionModel.ghostShipCheck = value!;
+                                              });
+                                            })
                                   ],
                                 )),
                           ),
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/ChallengeAbyss.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '도전 어비스',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/Dungeon.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '혼돈의 사선',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            _isCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    child: Row(
                       children: [
                         Expanded(
                           child: Card(
@@ -308,10 +371,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
+                                        value: expeditionModel.rehearsalCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            _isCheck = value!;
+                                            expeditionModel.rehearsalCheck = value!;
                                           });
                                         })
                                   ],
@@ -345,10 +414,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
+                                        value: expeditionModel.dejavuCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            _isCheck = value!;
+                                            expeditionModel.dejavuCheck = value!;
                                           });
                                         })
                                   ],
@@ -359,7 +434,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    Row(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                    child: Row(
                       children: [
                         Expanded(
                           child: Card(
@@ -371,13 +449,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/LikeAbility.png', width: 25, height: 25),
+                                      child: Image.asset('assets/expedition/ChallengeAbyss.png', width: 25, height: 25),
                                     ),
                                     SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      '호감도',
+                                      '도전 어비스',
                                       style: contentStyle,
                                     )
                                   ],
@@ -386,10 +464,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: _isCheck,
+                                        value: expeditionModel.challengeAbyssCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            _isCheck = value!;
+                                            expeditionModel.challengeAbyssCheck = value!;
                                           });
                                         })
                                   ],
@@ -398,17 +482,53 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        // 빈칸
                         Expanded(
                           child: Card(
                             elevation: 2,
-                            child: Container(),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: Image.asset('assets/expedition/Dungeon.png', width: 25, height: 25),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '혼돈의 사선',
+                                      style: contentStyle,
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        value: expeditionModel.chaosLineCheck,
+                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                        activeColor: Colors.transparent,
+                                        side: BorderSide(color: Colors.grey, width: 1.5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            expeditionModel.chaosLineCheck = value!;
+                                          });
+                                        })
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               /// 캐릭터 ExpansionPanel
@@ -417,7 +537,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ExpansionPanelList(
                   animationDuration: Duration(microseconds: 1300),
                   elevation: 2,
-
                   expandedHeaderPadding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   children: list.map<ExpansionPanel>((CharacterModel characterModel) {
                     // 여기서 모든 로직이 완성되어야 된다.
@@ -515,12 +634,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         itemBuilder: (context, index) {
                                           if (characterModel.dailyContentList[index] is RestGaugeContent) {
                                             int saveRestGauge = 0;
+                                            DateTime saveLateRevision = characterModel.dailyContentList[index].lateRevision;
                                             return InkWell(
                                               child: restGaugeContentTile(characterModel.dailyContentList[index]),
                                               onTap: () {
                                                 setState(() {
                                                   if (characterModel.dailyContentList[index].maxClearNum != characterModel.dailyContentList[index].clearNum) {
                                                     characterModel.dailyContentList[index].clearNum += 1;
+                                                    characterModel.dailyContentList[index].lateRevision = DateTime.now();
                                                     if (characterModel.dailyContentList[index].restGauge >= 20) {
                                                       characterModel.dailyContentList[index].restGauge = characterModel.dailyContentList[index].restGauge - 20;
                                                       print(characterModel.dailyContentList[index].restGauge);
@@ -533,8 +654,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     characterModel.dailyContentList[index].restGauge =
                                                         characterModel.dailyContentList[index].restGauge + characterModel.dailyContentList[index].saveRestGauge;
                                                     characterModel.dailyContentList[index].saveRestGauge = 0;
+                                                    characterModel.dailyContentList[index].lateRevision = saveLateRevision;
                                                   }
-                                                  box.put('user', User(characterList: list, expeditionModel: ExpeditionModel()));
+                                                  print('저장?');
+                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                 });
                                               },
                                             );
@@ -542,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             return InkWell(
                                               child: dailyContentTile(characterModel.dailyContentList[index], index),
                                               onTap: () {
-                                                box.put('user', User(characterList: list, expeditionModel: ExpeditionModel()));
+                                                box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                               },
                                             );
                                           }
@@ -585,9 +708,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     Checkbox(
                                                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                       value: characterModel.weeklyContentList[index].clearCheck,
+                                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                      activeColor: Colors.transparent,
+                                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(3),
+                                                      ),
                                                       onChanged: (bool? value) {
                                                         setState(() {
                                                           characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
+                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                                         });
                                                       },
                                                     )
@@ -597,6 +728,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               onTap: () {
                                                 setState(() {
                                                   characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
+                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                 });
                                               },
                                             );
@@ -651,7 +783,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              child: Text(
+              child: restGaugeContent.clearNum == restGaugeContent.maxClearNum ? Icon(Icons.check,color: Color.fromRGBO(119, 210, 112, 1),size: 20,): Text(
                 '${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}',
                 style: contentStyle,
               ),

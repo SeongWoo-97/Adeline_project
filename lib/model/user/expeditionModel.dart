@@ -22,4 +22,8 @@ class ExpeditionModel {
   bool rehearsalCheck = false;
   @HiveField(9)
   bool dejavuCheck = false;
+  @HiveField(10)
+  DateTime recentInitDateTime = DateTime.now();
+  @HiveField(11)
+  bool initCheck = true;
 }
