@@ -38,47 +38,42 @@ class _HomeScreenState extends State<HomeScreen> {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
           list[i].dailyContentList[j].saveRestGauge = 0;
           DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
-          print('${list[i].nickName} : ${list[i].dailyContentList[j].lateRevision}');
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
           DateTime now = DateTime.now();
+          print('${list[i].nickName} (indays: ${DateTime.now().difference(lateRevision).inDays}) : ${list[i].dailyContentList[j].lateRevision}');
 
           /// 현재시간과 최근수정일에 일수 차이가 0 일때
           /// 기존 휴식게이지 출력
           if (list[i].dailyContentList[j].restGauge >= 100) {
-            print('로직1');
+            print('${list[i].nickName} : 로직1');
             list[i].dailyContentList[j].restGauge = 100;
+            break;
           } else if (DateTime.now().difference(lateRevision).inDays == 0) {
-            print('로직2');
+            print('${list[i].nickName} : 로직2');
             list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
-          }
-
-          /// 현재시간과 최근수정일이 1일 차이 일때
-          else if (DateTime.now().difference(lateRevision).inDays <= 1 && DateTime.now().difference(lateRevision).inDays > 0) {
-            /// 오전 6시 전 이면 기존 휴식게이지 출력
+          } else if (DateTime.now().difference(lateRevision).inDays <= 1 && DateTime.now().difference(lateRevision).inDays > 0) {
+            /// 현재시간과 최근수정일이 1일 차이 일때
             if (DateTime.now().hour < 6) {
-              print('로직3');
+              /// 오전 6시 전 이면 기존 휴식게이지 출력
+              print('${list[i].nickName} : 로직3');
               list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
               list[i].dailyContentList[j].clearNum = 0;
-            }
-
-            /// 오전 6시 후 면 전날 남은횟수 * 10 해서 휴식게이지 출력
-            else if (DateTime.now().hour >= 6) {
-              print('로직4');
+            } else if (DateTime.now().hour >= 6) {
+              /// 오전 6시 후 면 전날 남은횟수 * 10 해서 휴식게이지 출력
+              print('${list[i].nickName} : 로직4');
               list[i].dailyContentList[j].restGauge = (maxClearNum - clearNum) * 10;
               list[i].dailyContentList[j].clearNum = 0;
             }
-          }
-
-          /// 현재시간과 최근수정일이 이틀 이상 일때
-          else if (DateTime.now().difference(lateRevision).inDays > 1) {
+          } else if (DateTime.now().difference(lateRevision).inDays > 1) {
+            /// 현재시간과 최근수정일이 이틀 이상 일때
             if (DateTime.now().hour < 6) {
-              print('로직5');
+              print('${list[i].nickName} : 로직5');
               int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays - 1;
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
               list[i].dailyContentList[j].clearNum = 0;
             } else if (DateTime.now().hour >= 6) {
-              print('로직6');
+              print('${list[i].nickName} : 로직6');
               int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays;
               print('a : $a');
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
@@ -149,610 +144,672 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Adeline Project'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              /// 원정대 컨텐츠 , 카드삭제 고려
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.all(5),
-                  //   child: Text(
-                  //     '원정대 컨텐츠',
-                  //    style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
-                  //   ),
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Card(
-                          elevation: 2,
-                          child: InkWell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Image.asset('assets/expedition/LikeAbility.png', width: 30, height: 30),
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.likeAbilityCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.likeAbilityCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )),
-                          ),
+        child: Column(
+          children: [
+            /// 원정대 컨텐츠 , 카드삭제 고려
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Card(
+                        elevation: 2,
+                        child: InkWell(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Image.asset('assets/expedition/LikeAbility.png', width: 30, height: 30),
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.likeAbilityCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.likeAbilityCheck = value!;
+                                        });
+                                      })
+                                ],
+                              )),
                         ),
-                        Card(
-                          elevation: 2,
-                          child: InkWell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    // 비활성화 위젯
-                                    // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
-                                    Image.asset('assets/expedition/Island.png', width: 30, height: 30),
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.islandCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.islandCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )),
-                          ),
+                      ),
+                      Card(
+                        elevation: 2,
+                        child: InkWell(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  // 비활성화 위젯
+                                  // Image.asset('assets/expedition/ChaosGate.png',width: 30,height: 30,colorBlendMode: BlendMode.color,color: Colors.white,),
+                                  Image.asset('assets/expedition/Island.png', width: 30, height: 30),
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.islandCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.islandCheck = value!;
+                                        });
+                                      })
+                                ],
+                              )),
                         ),
-                        Card(
-                          elevation: 2,
-                          child: InkWell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    // 비활성화 위젯
-                                    disableChaosGate
-                                        ? Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
-                                        : Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30),
-                                    disableChaosGate
-                                        ? Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {},
-                                            value: false,
-                                          )
-                                        : Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            value: expeditionModel.chaosGateCheck,
-                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                            activeColor: Colors.transparent,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {
-                                              setState(() {
-                                                expeditionModel.chaosGateCheck = value!;
-                                              });
-                                            })
-                                  ],
-                                )),
-                          ),
+                      ),
+                      Card(
+                        elevation: 2,
+                        child: InkWell(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  // 비활성화 위젯
+                                  disableChaosGate
+                                      ? Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                      : Image.asset('assets/expedition/ChaosGate.png', width: 30, height: 30),
+                                  disableChaosGate
+                                      ? Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {},
+                                          value: false,
+                                        )
+                                      : Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          value: expeditionModel.chaosGateCheck,
+                                          checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                          activeColor: Colors.transparent,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              expeditionModel.chaosGateCheck = value!;
+                                            });
+                                          })
+                                ],
+                              )),
                         ),
-                        Card(
-                          elevation: 2,
-                          child: InkWell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    // 비활성화 위젯
-                                    disableFieldBoss
-                                        ? Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
-                                        : Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30),
-                                    disableFieldBoss
-                                        ? Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {},
-                                            value: false,
-                                          )
-                                        : Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            value: expeditionModel.fieldBoosCheck,
-                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                            activeColor: Colors.transparent,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {
-                                              setState(() {
-                                                expeditionModel.fieldBoosCheck = value!;
-                                              });
-                                            })
-                                  ],
-                                )),
-                          ),
+                      ),
+                      Card(
+                        elevation: 2,
+                        child: InkWell(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  // 비활성화 위젯
+                                  disableFieldBoss
+                                      ? Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                      : Image.asset('assets/expedition/FieldBoss.png', width: 30, height: 30),
+                                  disableFieldBoss
+                                      ? Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {},
+                                          value: false,
+                                        )
+                                      : Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          value: expeditionModel.fieldBoosCheck,
+                                          checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                          activeColor: Colors.transparent,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              expeditionModel.fieldBoosCheck = value!;
+                                            });
+                                          })
+                                ],
+                              )),
                         ),
-                        Card(
-                          elevation: 2,
-                          child: InkWell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    // 비활성화 위젯
-                                    disableGhostShip
-                                        ? Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
-                                        : Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30),
-                                    disableGhostShip
-                                        ? Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {},
-                                            value: false,
-                                          )
-                                        : Checkbox(
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            value: expeditionModel.ghostShipCheck,
-                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                            activeColor: Colors.transparent,
-                                            side: BorderSide(color: Colors.grey, width: 1.5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(3),
-                                            ),
-                                            onChanged: (bool? value) {
-                                              setState(() {
-                                                expeditionModel.ghostShipCheck = value!;
-                                              });
-                                            })
-                                  ],
-                                )),
-                          ),
+                      ),
+                      Card(
+                        elevation: 2,
+                        child: InkWell(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  // 비활성화 위젯
+                                  disableGhostShip
+                                      ? Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30, colorBlendMode: BlendMode.color, color: Colors.white)
+                                      : Image.asset('assets/expedition/GhostShip.png', width: 30, height: 30),
+                                  disableGhostShip
+                                      ? Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {},
+                                          value: false,
+                                        )
+                                      : Checkbox(
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          value: expeditionModel.ghostShipCheck,
+                                          checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                          activeColor: Colors.transparent,
+                                          side: BorderSide(color: Colors.grey, width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              expeditionModel.ghostShipCheck = value!;
+                                            });
+                                          })
+                                ],
+                              )),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/Rehearsal.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '리허설',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.rehearsalCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.rehearsalCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/Dejavu.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '데자뷰',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.dejavuCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.dejavuCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/ChallengeAbyss.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '도전 어비스',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.challengeAbyssCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.challengeAbyssCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Card(
-                            elevation: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/Dungeon.png', width: 25, height: 25),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      '혼돈의 사선',
-                                      style: contentStyle,
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        value: expeditionModel.chaosLineCheck,
-                                        checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                        activeColor: Colors.transparent,
-                                        side: BorderSide(color: Colors.grey, width: 1.5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(3),
-                                        ),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            expeditionModel.chaosLineCheck = value!;
-                                          });
-                                        })
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              /// 캐릭터 ExpansionPanel
-              Container(
-                margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
-                child: ExpansionPanelList(
-                  animationDuration: Duration(microseconds: 1300),
-                  elevation: 2,
-                  expandedHeaderPadding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  children: list.map<ExpansionPanel>((CharacterModel characterModel) {
-                    // 여기서 모든 로직이 완성되어야 된다.
-                    String level = characterModel.level;
-                    bool dailyEmptyCheck = dailyEmptyChecking(characterModel.dailyContentList);
-                    bool weeklyEmptyCheck = weeklyEmptyChecking(characterModel.weeklyContentList);
-
-                    return ExpansionPanel(
-                      isExpanded: characterModel.expanded,
-                      canTapOnHeader: true,
-                      headerBuilder: (BuildContext context, bool isExpanded) {
-                        return ListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                            child: Text(
-                              characterModel.nickName.toString(),
-                              style: contentStyle,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          elevation: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${levelText(level)} ${characterModel.job}',
-                                style: contentStyle.copyWith(color: Colors.grey, fontSize: 14),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Image.asset('assets/expedition/Rehearsal.png', width: 25, height: 25),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '리허설',
+                                    style: contentStyle,
+                                  )
+                                ],
                               ),
                               Row(
                                 children: [
-                                  characterModel.dailyContentList[0].isChecked
-                                      ? Row(
-                                          children: [
-                                            Image.asset(
-                                              '${characterModel.dailyContentList[0].iconName}',
-                                              width: 25,
-                                              height: 25,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 5, right: 10),
-                                              child: Text('${characterModel.dailyContentList[0].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                            ),
-                                          ],
-                                        )
-                                      : Container(),
-                                  characterModel.dailyContentList[1].isChecked
-                                      ? Row(
-                                          children: [
-                                            Image.asset(
-                                              '${characterModel.dailyContentList[1].iconName}',
-                                              width: 25,
-                                              height: 25,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 5, right: 10),
-                                              child: Text('${characterModel.dailyContentList[1].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                            ),
-                                          ],
-                                        )
-                                      : Container(),
-                                  characterModel.dailyContentList[2].isChecked
-                                      ? Row(
-                                          children: [
-                                            Image.asset(
-                                              '${characterModel.dailyContentList[2].iconName}',
-                                              width: 25,
-                                              height: 25,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 5, right: 10),
-                                              child: Text('${characterModel.dailyContentList[2].restGauge}', style: TextStyle(fontSize: 15, color: Colors.black)),
-                                            ),
-                                          ],
-                                        )
-                                      : Container(),
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.rehearsalCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.rehearsalCheck = value!;
+                                        });
+                                      })
                                 ],
                               )
                             ],
                           ),
-                        );
-                      },
-                      body: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          dailyEmptyCheck
-                              ? Container()
-                              : Flexible(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        '일일 컨텐츠',
-                                        style: contentStyle,
-                                      ),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: characterModel.dailyContentList.length,
-                                        itemBuilder: (context, index) {
-                                          if (characterModel.dailyContentList[index] is RestGaugeContent) {
-                                            int saveRestGauge = 0;
-                                            DateTime saveLateRevision = characterModel.dailyContentList[index].lateRevision;
-                                            return InkWell(
-                                              child: restGaugeContentTile(characterModel.dailyContentList[index]),
-                                              onTap: () {
-                                                setState(() {
-                                                  if (characterModel.dailyContentList[index].maxClearNum != characterModel.dailyContentList[index].clearNum) {
-                                                    characterModel.dailyContentList[index].clearNum += 1;
-                                                    characterModel.dailyContentList[index].lateRevision = DateTime.now();
-                                                    if (characterModel.dailyContentList[index].restGauge >= 20) {
-                                                      characterModel.dailyContentList[index].restGauge = characterModel.dailyContentList[index].restGauge - 20;
-                                                      print(characterModel.dailyContentList[index].restGauge);
-                                                      characterModel.dailyContentList[index].saveRestGauge += 20;
-                                                      print('saveRestGauge + : ${characterModel.dailyContentList[index].saveRestGauge}');
-                                                    }
-                                                  } else if (characterModel.dailyContentList[index].maxClearNum == characterModel.dailyContentList[index].clearNum) {
-                                                    print('saveRestGauge : $saveRestGauge');
-                                                    characterModel.dailyContentList[index].clearNum = 0;
-                                                    characterModel.dailyContentList[index].restGauge =
-                                                        characterModel.dailyContentList[index].restGauge + characterModel.dailyContentList[index].saveRestGauge;
-                                                    characterModel.dailyContentList[index].saveRestGauge = 0;
-                                                    characterModel.dailyContentList[index].lateRevision = saveLateRevision;
-                                                  }
-                                                  print('저장?');
-                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                });
-                                              },
-                                            );
-                                          } else {
-                                            return InkWell(
-                                              child: dailyContentTile(characterModel.dailyContentList[index], index),
-                                              onTap: () {
-                                                box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                              },
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Card(
+                          elevation: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Image.asset('assets/expedition/Dejavu.png', width: 25, height: 25),
                                   ),
-                                ),
-                          weeklyEmptyCheck
-                              ? Container()
-                              : Flexible(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        '주간 컨텐츠',
-                                        style: contentStyle,
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '데자뷰',
+                                    style: contentStyle,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.dejavuCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
                                       ),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: characterModel.weeklyContentList.length,
-                                        itemBuilder: (context, index) {
-                                          if (characterModel.weeklyContentList[index].isChecked == true) {
-                                            return InkWell(
-                                              child: Card(
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                          child: Image.asset('${characterModel.weeklyContentList[index].iconName}', width: 25, height: 25),
-                                                        ),
-                                                        Text(
-                                                          characterModel.weeklyContentList[index].name,
-                                                          style: contentStyle,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Checkbox(
-                                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                      value: characterModel.weeklyContentList[index].clearCheck,
-                                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                                      activeColor: Colors.transparent,
-                                                      side: BorderSide(color: Colors.grey, width: 1.5),
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(3),
-                                                      ),
-                                                      onChanged: (bool? value) {
-                                                        setState(() {
-                                                          characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
-                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.dejavuCheck = value!;
+                                        });
+                                      })
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          elevation: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Image.asset('assets/expedition/ChallengeAbyss.png', width: 25, height: 25),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '도전 어비스',
+                                    style: contentStyle,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.challengeAbyssCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.challengeAbyssCheck = value!;
+                                        });
+                                      })
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Card(
+                          elevation: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: Image.asset('assets/expedition/Dungeon.png', width: 25, height: 25),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '혼돈의 사선',
+                                    style: contentStyle,
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      value: expeditionModel.chaosLineCheck,
+                                      checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                      activeColor: Colors.transparent,
+                                      side: BorderSide(color: Colors.grey, width: 1.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          expeditionModel.chaosLineCheck = value!;
+                                        });
+                                      })
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
 
-                                                        });
-                                                      },
-                                                    )
-                                                  ],
+            /// 캐릭터 ExpansionPanel
+            Expanded(
+              child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, i) {
+                  String level = list[i].level;
+                  bool dailyEmptyCheck = dailyEmptyChecking(list[i].dailyContentList);
+                  bool weeklyEmptyCheck = weeklyEmptyChecking(list[i].weeklyContentList);
+                  bool dailyClearCheck = dailyClearChecking(list[i].dailyContentList);
+                  bool weeklyClearCheck = weeklyClearChecking(list[i].weeklyContentList);
+                  print('${list[i].nickName} : $dailyClearCheck, $weeklyClearCheck');
+                  return InkWell(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                      child: ExpansionPanelList(
+                        animationDuration: Duration(microseconds: 1200),
+                        expandedHeaderPadding: EdgeInsets.only(bottom: 0.0),
+                        elevation: 2,
+                        children: [
+                          ExpansionPanel(
+                              headerBuilder: (BuildContext context, bool isExpanded) {
+                                return Container(
+                                    padding: EdgeInsets.only(bottom: 5),
+                                    child: ListTile(
+                                      title: Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                                child: Text(
+                                                  list[i].nickName.toString(),
+                                                  style: contentStyle,
                                                 ),
                                               ),
-                                              onTap: () {
-                                                setState(() {
-                                                  characterModel.weeklyContentList[index].clearCheck = !characterModel.weeklyContentList[index].clearCheck;
-                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                });
-                                              },
-                                            );
-                                          } else {
-                                            return Container();
-                                          }
-                                        },
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text('${levelText(level)} ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
+                                                  Row(
+                                                    children: [
+                                                      list[i].dailyContentList[0].isChecked
+                                                          ? Row(
+                                                              children: [
+                                                                Image.asset(
+                                                                  '${list[i].dailyContentList[0].iconName}',
+                                                                  width: 25,
+                                                                  height: 25,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(left: 5, right: 5),
+                                                                  child: Container(width: 30, child: Text('${list[i].dailyContentList[0].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Container(
+                                                              width: 65,
+                                                              height: 25,
+                                                            ),
+                                                      list[i].dailyContentList[1].isChecked
+                                                          ? Row(
+                                                              children: [
+                                                                Image.asset(
+                                                                  '${list[i].dailyContentList[1].iconName}',
+                                                                  width: 25,
+                                                                  height: 25,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(left: 5, right: 5),
+                                                                  child: Container(width: 30, child: Text('${list[i].dailyContentList[1].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Container(
+                                                              width: 65,
+                                                              height: 25,
+                                                            ),
+                                                      list[i].dailyContentList[2].isChecked
+                                                          ? Row(
+                                                              children: [
+                                                                Image.asset(
+                                                                  '${list[i].dailyContentList[2].iconName}',
+                                                                  width: 25,
+                                                                  height: 25,
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(left: 5),
+                                                                  child: Container(width: 30, child: Text('${list[i].dailyContentList[2].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Container(
+                                                              width: 60,
+                                                              height: 25,
+                                                            ),
+                                                    ],
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 15),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(right: 15),
+                                                  child: clearIcon('일일', Colors.deepOrange, dailyEmptyCheck, dailyClearCheck),
+                                                ),
+                                                clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)
+                                              ],
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
+                                    ));
+                              },
+                              body: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  dailyEmptyCheck
+                                      ? Container()
+                                      : Flexible(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                '일일 컨텐츠',
+                                                style: contentStyle,
+                                              ),
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: list[i].dailyContentList.length,
+                                                itemBuilder: (context, index) {
+                                                  if (list[i].dailyContentList[index] is RestGaugeContent) {
+                                                    int saveRestGauge = 0;
+                                                    DateTime saveLateRevision = list[i].dailyContentList[index].lateRevision;
+                                                    return InkWell(
+                                                      child: restGaugeContentTile(list[i].dailyContentList[index]),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
+                                                            list[i].dailyContentList[index].clearNum += 1;
+                                                            list[i].dailyContentList[index].lateRevision = DateTime.now();
+                                                            if (list[i].dailyContentList[index].restGauge >= 20) {
+                                                              list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
+                                                              // print(list[i].dailyContentList[index].restGauge);
+                                                              list[i].dailyContentList[index].saveRestGauge += 20;
+                                                              // print('saveRestGauge + : ${list[i].dailyContentList[index].saveRestGauge}');
+                                                            }
+                                                          } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
+                                                            // print('saveRestGauge : $saveRestGauge');
+                                                            list[i].dailyContentList[index].clearNum = 0;
+                                                            list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge + list[i].dailyContentList[index].saveRestGauge;
+                                                            list[i].dailyContentList[index].saveRestGauge = 0;
+                                                            list[i].dailyContentList[index].lateRevision = saveLateRevision;
+                                                          }
+                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                        });
+                                                      },
+                                                    );
+                                                  } else {
+                                                    return InkWell(
+                                                      child: Card(
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                  child: Image.asset('${list[i].dailyContentList[index].iconName}', width: 25, height: 25),
+                                                                ),
+                                                                Text(list[i].dailyContentList[index].name),
+                                                              ],
+                                                            ),
+                                                            Checkbox(
+                                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                              value: list[i].dailyContentList[index].clearCheck,
+                                                              checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                              activeColor: Colors.transparent,
+                                                              side: BorderSide(color: Colors.grey, width: 1.5),
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                                                              onChanged: (bool? value) {
+                                                                setState(() {
+                                                                  list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                                });
+                                                              },
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                        });
+                                                      },
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                  weeklyEmptyCheck
+                                      ? Container()
+                                      : Flexible(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                '주간 컨텐츠',
+                                                style: contentStyle,
+                                              ),
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: list[i].weeklyContentList.length,
+                                                itemBuilder: (context, index) {
+                                                  if (list[i].weeklyContentList[index].isChecked == true) {
+                                                    return InkWell(
+                                                      child: Card(
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                  child: Image.asset('${list[i].weeklyContentList[index].iconName}', width: 25, height: 25),
+                                                                ),
+                                                                Text(
+                                                                  list[i].weeklyContentList[index].name,
+                                                                  style: contentStyle,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Checkbox(
+                                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                              value: list[i].weeklyContentList[index].clearCheck,
+                                                              checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                              activeColor: Colors.transparent,
+                                                              side: BorderSide(color: Colors.grey, width: 1.5),
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(3),
+                                                              ),
+                                                              onChanged: (bool? value) {
+                                                                setState(() {
+                                                                  list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                                });
+                                                              },
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      onTap: () {
+                                                        setState(() {
+                                                          list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                        });
+                                                      },
+                                                    );
+                                                  } else {
+                                                    return Container();
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                ],
+                              ),
+                              isExpanded: list[i].expanded,
+                              canTapOnHeader: true),
                         ],
+                        expansionCallback: (int item, bool isExpanded) {
+                          setState(() {
+                            list[i].expanded = !list[i].expanded;
+                          });
+                        },
                       ),
-                    );
-                  }).toList(),
-                  expansionCallback: (int index, bool isExpanded) {
-                    setState(() {
-                      list[index].expanded = !isExpanded;
-                    });
-                  },
-                ),
-              )
-            ],
-          ),
+                    ),
+                    onLongPress: () {
+                      print('${list[i].nickName}');
+                    },
+                  );
+                },
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -783,10 +840,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              child: restGaugeContent.clearNum == restGaugeContent.maxClearNum ? Icon(Icons.check,color: Color.fromRGBO(119, 210, 112, 1),size: 20,): Text(
-                '${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}',
-                style: contentStyle,
-              ),
+              child: restGaugeContent.clearNum == restGaugeContent.maxClearNum
+                  ? Icon(
+                      Icons.check,
+                      color: Color.fromRGBO(119, 210, 112, 1),
+                      size: 20,
+                    )
+                  : Text(
+                      '${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}',
+                      style: contentStyle,
+                    ),
             )
           ],
         ),
@@ -931,5 +994,77 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     return true;
+  }
+
+  bool dailyClearChecking(List<dynamic> list) {
+    for (int i = 0; i < list.length; i++) {
+      if (list[i] is RestGaugeContent && list[i].isChecked == true && list[i].clearNum != list[i].maxClearNum) {
+        return false;
+      } else if (list[i] is DailyContent && list[i].clearCheck == false) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool weeklyClearChecking(List<dynamic> list) {
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].clearCheck == false && list[i].isChecked == true) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // 일일,deepOrange
+  // 주간,indigo
+  Widget clearIcon(String type, Color color, bool empty, bool dailyClear) {
+    if (empty == true) {
+      return Container();
+    } else if (empty == false && dailyClear == true) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            child: Text(
+              '$type',
+              style: contentStyle.copyWith(fontSize: 16, color: color),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            child: Container(
+              width: 25,
+              height: 25,
+              child: Image.asset(
+                'assets/etc/check_circle.png',
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            child: Text(
+              '$type',
+              style: contentStyle.copyWith(fontSize: 16, color: color),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+            child: Container(
+              width: 25,
+              height: 25,
+              child: Image.asset(
+                'assets/etc/warning_circle.png',
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

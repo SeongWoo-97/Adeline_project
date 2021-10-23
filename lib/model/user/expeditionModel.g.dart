@@ -25,13 +25,15 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..chaosLineCheck = fields[6] as bool
       ..likeAbilityCheck = fields[7] as bool
       ..rehearsalCheck = fields[8] as bool
-      ..dejavuCheck = fields[9] as bool;
+      ..dejavuCheck = fields[9] as bool
+      ..recentInitDateTime = fields[10] as DateTime
+      ..initCheck = fields[11] as bool;
   }
 
   @override
   void write(BinaryWriter writer, ExpeditionModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(1)
       ..write(obj.islandCheck)
       ..writeByte(2)
@@ -49,7 +51,11 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..writeByte(8)
       ..write(obj.rehearsalCheck)
       ..writeByte(9)
-      ..write(obj.dejavuCheck);
+      ..write(obj.dejavuCheck)
+      ..writeByte(10)
+      ..write(obj.recentInitDateTime)
+      ..writeByte(11)
+      ..write(obj.initCheck);
   }
 
   @override
