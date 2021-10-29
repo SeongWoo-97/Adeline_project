@@ -175,6 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.likeAbilityCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                         });
                                       })
                                 ],
@@ -203,6 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.islandCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                         });
                                       })
                                 ],
@@ -242,6 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           onChanged: (bool? value) {
                                             setState(() {
                                               expeditionModel.chaosGateCheck = value!;
+                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                             });
                                           })
                                 ],
@@ -281,6 +287,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           onChanged: (bool? value) {
                                             setState(() {
                                               expeditionModel.fieldBoosCheck = value!;
+                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                             });
                                           })
                                 ],
@@ -320,6 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           onChanged: (bool? value) {
                                             setState(() {
                                               expeditionModel.ghostShipCheck = value!;
+                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                             });
                                           })
                                 ],
@@ -368,6 +378,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.rehearsalCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                         });
                                       })
                                 ],
@@ -411,6 +423,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.dejavuCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                         });
                                       })
                                 ],
@@ -461,6 +475,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.challengeAbyssCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+
                                         });
                                       })
                                 ],
@@ -504,6 +520,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (bool? value) {
                                         setState(() {
                                           expeditionModel.chaosLineCheck = value!;
+                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                         });
                                       })
                                 ],
@@ -557,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Text('${levelText(level)} ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
+                                                  Text('Lv.$level ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
                                                   Row(
                                                     children: [
                                                       list[i].dailyContentList[0].isChecked

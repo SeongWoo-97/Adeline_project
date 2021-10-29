@@ -60,13 +60,13 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             onStepTapped: (step) => tapped(step),
             steps: <Step>[
               Step(
-                title: Text('닉네임 입력',style: contentStyle),
+                title: Text('닉네임 입력', style: contentStyle),
                 content: stepOne(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
               ),
               Step(
-                title: Text('컨텐츠 설정',style: contentStyle),
+                title: Text('콘텐츠 설정', style: contentStyle),
                 content: stepTwo(),
                 isActive: _currentStep >= 0,
                 state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
@@ -273,7 +273,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     characterModelList.clear();
 
     nickNameList = webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
-    String b = nickNameList[0];
     showPlatformDialog(
         context: context,
         builder: (_) => PlatformAlertDialog(
@@ -283,16 +282,16 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                 style: TextStyle(fontSize: 16),
               ),
             ));
-    print(nickNameList);
+    // print(nickNameList);
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
-      print('/Profile/Character/${nickNameList[i]}');
+      // print('/Profile/Character/${nickNameList[i]}');
       if (loadWebPage) {
         String _nickName = nickNameList[i];
         var _job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
-        var _level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
+        var _level = levelText(webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item')[0]);
 
-        CharacterModel characterModel = CharacterModel(id, _nickName, _level[0], _job[0]);
+        CharacterModel characterModel = CharacterModel(id, _nickName, _level, _job[0]);
         characterModelList.add(characterModel);
       }
       // else {
@@ -306,7 +305,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           child: Card(
             child: ListTile(
               title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
-              subtitle: Text('${characterModelList[index].level.toString().replaceAll('달성 아이템 레벨', '').replaceAll('.00', '')} ${characterModelList[index].job}'),
+              subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
+
               /// 다른 방법 생각중 ...
               // trailing: IconButton(
               //     onPressed: () {
@@ -330,14 +330,14 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   // 캐릭터 삭제
   delCharInList(int index) {
     characterModelList.removeAt(index);
-    print('del : ${characterModelList.length}');
+    // print('del : ${characterModelList.length}');
     charactersOrder = DragAndDropList(
         children: List.generate(characterModelList.length, (index) {
       return DragAndDropItem(
         child: Card(
           child: ListTile(
             title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
-            subtitle: Text(levelText(characterModelList[index].level)),
+            subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
             trailing: IconButton(
               onPressed: () {
                 setState(() {
@@ -347,7 +347,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               icon: Icon(Icons.delete_forever),
             ),
             onTap: () async {
-              print(characterModelList[index].nickName);
+              // print(characterModelList[index].nickName);
               characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
             },
           ),
@@ -388,9 +388,12 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       // _contents.insert(newListIndex, movedList);
     });
   }
+
   String levelText(String level) {
     int start = level.indexOf('.') + 1;
     int end = level.lastIndexOf('.');
-    return 'Lv.' + level.substring(start, end);
+    print('$level');
+    print('start : $start, end : $end');
+    return level.substring(start, end).replaceAll(new RegExp(r'[^0-9]'), '');
   }
 }
