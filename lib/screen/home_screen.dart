@@ -4,11 +4,14 @@ import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 
 import '../constant.dart';
+import 'addCharacter_Screen.dart';
+import 'contentSettings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool disableChaosGate = false;
   bool disableFieldBoss = false;
   bool disableGhostShip = false;
+  CustomPopupMenuController _customPopupMenuController = CustomPopupMenuController();
   List<Widget> listCard = [];
 
   @override
@@ -142,6 +146,88 @@ class _HomeScreenState extends State<HomeScreen> {
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text('Adeline Project'),
+        trailingActions: [
+          CustomPopupMenu(
+            controller: _customPopupMenuController,
+            pressType: PressType.singleClick,
+            verticalMargin: -10,
+            child: Container(
+              child: Icon(Icons.more_horiz, color: Colors.blue),
+              padding: EdgeInsets.all(0),
+            ),
+            menuBuilder: () => ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                color: Colors.white,
+                child: IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () async {
+                          _customPopupMenuController.hideMenu();
+                          CharacterModel characterModel = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
+                          list.add(characterModel);
+                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                          setState(() {});
+                        },
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text('캐릭터 수동 추가',style: TextStyle(fontSize: 15,color: Colors.black),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _customPopupMenuController.hideMenu,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text('캐릭터 순서 변경',style: TextStyle(fontSize: 15,color: Colors.black),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _customPopupMenuController.hideMenu,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text('원정대 콘텐츠 수정',style: TextStyle(fontSize: 15,color: Colors.black),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          )
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -176,7 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           expeditionModel.likeAbilityCheck = value!;
                                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                         });
                                       })
                                 ],
@@ -206,7 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           expeditionModel.islandCheck = value!;
                                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                         });
                                       })
                                 ],
@@ -247,7 +331,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             setState(() {
                                               expeditionModel.chaosGateCheck = value!;
                                               box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                             });
                                           })
                                 ],
@@ -288,7 +371,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             setState(() {
                                               expeditionModel.fieldBoosCheck = value!;
                                               box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                             });
                                           })
                                 ],
@@ -329,7 +411,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             setState(() {
                                               expeditionModel.ghostShipCheck = value!;
                                               box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                             });
                                           })
                                 ],
@@ -379,7 +460,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           expeditionModel.rehearsalCheck = value!;
                                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                         });
                                       })
                                 ],
@@ -424,7 +504,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           expeditionModel.dejavuCheck = value!;
                                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                         });
                                       })
                                 ],
@@ -476,7 +555,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           expeditionModel.challengeAbyssCheck = value!;
                                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-
                                         });
                                       })
                                 ],
@@ -546,17 +624,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   bool dailyClearCheck = dailyClearChecking(list[i].dailyContentList);
                   bool weeklyClearCheck = weeklyClearChecking(list[i].weeklyContentList);
                   print('${list[i].nickName} : $dailyClearCheck, $weeklyClearCheck');
-                  return InkWell(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
-                      child: ExpansionPanelList(
-                        animationDuration: Duration(microseconds: 1200),
-                        expandedHeaderPadding: EdgeInsets.only(bottom: 0.0),
-                        elevation: 2,
-                        children: [
-                          ExpansionPanel(
-                              headerBuilder: (BuildContext context, bool isExpanded) {
-                                return Container(
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                    child: ExpansionPanelList(
+                      animationDuration: Duration(microseconds: 1200),
+                      expandedHeaderPadding: EdgeInsets.only(bottom: 0.0),
+                      elevation: 2,
+                      children: [
+                        ExpansionPanel(
+                            headerBuilder: (BuildContext context, bool isExpanded) {
+                              return InkWell(
+                                child: Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     child: ListTile(
                                       title: Row(
@@ -575,6 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text('Lv.$level ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
+                                                  SizedBox(height: 3,),
                                                   Row(
                                                     children: [
                                                       list[i].dailyContentList[0].isChecked
@@ -652,176 +731,184 @@ class _HomeScreenState extends State<HomeScreen> {
                                           )
                                         ],
                                       ),
-                                    ));
-                              },
-                              body: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  dailyEmptyCheck
-                                      ? Container()
-                                      : Flexible(
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                '일일 컨텐츠',
-                                                style: contentStyle,
-                                              ),
-                                              ListView.builder(
-                                                shrinkWrap: true,
-                                                itemCount: list[i].dailyContentList.length,
-                                                itemBuilder: (context, index) {
-                                                  if (list[i].dailyContentList[index] is RestGaugeContent) {
-                                                    int saveRestGauge = 0;
-                                                    DateTime saveLateRevision = list[i].dailyContentList[index].lateRevision;
-                                                    return InkWell(
-                                                      child: restGaugeContentTile(list[i].dailyContentList[index]),
-                                                      onTap: () {
-                                                        setState(() {
-                                                          if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
-                                                            list[i].dailyContentList[index].clearNum += 1;
-                                                            list[i].dailyContentList[index].lateRevision = DateTime.now();
-                                                            if (list[i].dailyContentList[index].restGauge >= 20) {
-                                                              list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
-                                                              // print(list[i].dailyContentList[index].restGauge);
-                                                              list[i].dailyContentList[index].saveRestGauge += 20;
-                                                              // print('saveRestGauge + : ${list[i].dailyContentList[index].saveRestGauge}');
-                                                            }
-                                                          } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
-                                                            // print('saveRestGauge : $saveRestGauge');
-                                                            list[i].dailyContentList[index].clearNum = 0;
-                                                            list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge + list[i].dailyContentList[index].saveRestGauge;
-                                                            list[i].dailyContentList[index].saveRestGauge = 0;
-                                                            list[i].dailyContentList[index].lateRevision = saveLateRevision;
+                                    )),
+                                onLongPress: () async {
+                                  list[i] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(list[i])));
+                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                  setState(() {});
+                                },
+                                onTap: (){
+                                  setState(() {
+                                    list[i].expanded = !list[i].expanded;
+                                  });
+                                },
+                              );
+                            },
+                            body: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                dailyEmptyCheck
+                                    ? Container()
+                                    : Flexible(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              '일일 컨텐츠',
+                                              style: contentStyle,
+                                            ),
+                                            ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: list[i].dailyContentList.length,
+                                              itemBuilder: (context, index) {
+                                                if (list[i].dailyContentList[index] is RestGaugeContent) {
+                                                  int saveRestGauge = 0;
+                                                  DateTime saveLateRevision = list[i].dailyContentList[index].lateRevision;
+                                                  return InkWell(
+                                                    child: restGaugeContentTile(list[i].dailyContentList[index]),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
+                                                          list[i].dailyContentList[index].clearNum += 1;
+                                                          list[i].dailyContentList[index].lateRevision = DateTime.now();
+                                                          if (list[i].dailyContentList[index].restGauge >= 20) {
+                                                            list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
+                                                            // print(list[i].dailyContentList[index].restGauge);
+                                                            list[i].dailyContentList[index].saveRestGauge += 20;
+                                                            // print('saveRestGauge + : ${list[i].dailyContentList[index].saveRestGauge}');
                                                           }
-                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                        });
-                                                      },
-                                                    );
-                                                  } else {
-                                                    return InkWell(
-                                                      child: Card(
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Padding(
-                                                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                  child: Image.asset('${list[i].dailyContentList[index].iconName}', width: 25, height: 25),
-                                                                ),
-                                                                Text(list[i].dailyContentList[index].name),
-                                                              ],
-                                                            ),
-                                                            Checkbox(
-                                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                              value: list[i].dailyContentList[index].clearCheck,
-                                                              checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                                              activeColor: Colors.transparent,
-                                                              side: BorderSide(color: Colors.grey, width: 1.5),
-                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-                                                              onChanged: (bool? value) {
-                                                                setState(() {
-                                                                  list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
-                                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                                });
-                                                              },
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        setState(() {
-                                                          list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
-                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                        });
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                  weeklyEmptyCheck
-                                      ? Container()
-                                      : Flexible(
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                '주간 컨텐츠',
-                                                style: contentStyle,
-                                              ),
-                                              ListView.builder(
-                                                shrinkWrap: true,
-                                                itemCount: list[i].weeklyContentList.length,
-                                                itemBuilder: (context, index) {
-                                                  if (list[i].weeklyContentList[index].isChecked == true) {
-                                                    return InkWell(
-                                                      child: Card(
-                                                        child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Padding(
-                                                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                  child: Image.asset('${list[i].weeklyContentList[index].iconName}', width: 25, height: 25),
-                                                                ),
-                                                                Text(
-                                                                  list[i].weeklyContentList[index].name,
-                                                                  style: contentStyle,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Checkbox(
-                                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                              value: list[i].weeklyContentList[index].clearCheck,
-                                                              checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                                              activeColor: Colors.transparent,
-                                                              side: BorderSide(color: Colors.grey, width: 1.5),
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(3),
+                                                        } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
+                                                          // print('saveRestGauge : $saveRestGauge');
+                                                          list[i].dailyContentList[index].clearNum = 0;
+                                                          list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge + list[i].dailyContentList[index].saveRestGauge;
+                                                          list[i].dailyContentList[index].saveRestGauge = 0;
+                                                          list[i].dailyContentList[index].lateRevision = saveLateRevision;
+                                                        }
+                                                        box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                      });
+                                                    },
+                                                  );
+                                                } else {
+                                                  return InkWell(
+                                                    child: Card(
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                child: Image.asset('${list[i].dailyContentList[index].iconName}', width: 25, height: 25),
                                                               ),
-                                                              onChanged: (bool? value) {
-                                                                setState(() {
-                                                                  list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
-                                                                  box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                                });
-                                                              },
-                                                            )
-                                                          ],
-                                                        ),
+                                                              Text(list[i].dailyContentList[index].name),
+                                                            ],
+                                                          ),
+                                                          Checkbox(
+                                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                            value: list[i].dailyContentList[index].clearCheck,
+                                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                            activeColor: Colors.transparent,
+                                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+                                                            onChanged: (bool? value) {
+                                                              setState(() {
+                                                                list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                                box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                              });
+                                                            },
+                                                          )
+                                                        ],
                                                       ),
-                                                      onTap: () {
-                                                        setState(() {
-                                                          list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
-                                                          box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                        });
-                                                      },
-                                                    );
-                                                  } else {
-                                                    return Container();
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
+                                                    ),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                        box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                      });
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ],
                                         ),
-                                ],
-                              ),
-                              isExpanded: list[i].expanded,
-                              canTapOnHeader: true),
-                        ],
-                        expansionCallback: (int item, bool isExpanded) {
-                          setState(() {
-                            list[i].expanded = !list[i].expanded;
-                          });
-                        },
-                      ),
-                    ),
-                    onLongPress: () {
-                      print('${list[i].nickName}');
+                                      ),
+                                weeklyEmptyCheck
+                                    ? Container()
+                                    : Flexible(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              '주간 컨텐츠',
+                                              style: contentStyle,
+                                            ),
+                                            ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: list[i].weeklyContentList.length,
+                                              itemBuilder: (context, index) {
+                                                if (list[i].weeklyContentList[index].isChecked == true) {
+                                                  return InkWell(
+                                                    child: Card(
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                child: Image.asset('${list[i].weeklyContentList[index].iconName}', width: 25, height: 25),
+                                                              ),
+                                                              Text(
+                                                                list[i].weeklyContentList[index].name,
+                                                                style: contentStyle,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Checkbox(
+                                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                            value: list[i].weeklyContentList[index].clearCheck,
+                                                            checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                            activeColor: Colors.transparent,
+                                                            side: BorderSide(color: Colors.grey, width: 1.5),
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(3),
+                                                            ),
+                                                            onChanged: (bool? value) {
+                                                              setState(() {
+                                                                list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                                box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                              });
+                                                            },
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                        box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                                      });
+                                                    },
+                                                  );
+                                                } else {
+                                                  return Container();
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                              ],
+                            ),
+                            isExpanded: list[i].expanded,
+                            canTapOnHeader: true),
+                      ],
+                    // ExpansionTile 확장
+                      expansionCallback: (int item, bool isExpanded) {
+                      setState(() {
+                        list[i].expanded = !list[i].expanded;
+                      });
                     },
+                    ),
                   );
                 },
               ),

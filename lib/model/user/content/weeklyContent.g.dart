@@ -19,15 +19,14 @@ class WeeklyContentAdapter extends TypeAdapter<WeeklyContent> {
     return WeeklyContent(
       fields[0] as String,
       fields[1] as String,
-      fields[3] as bool,
-      isChecked: fields[2] as bool,
-    )..clearCheck = fields[4] as bool;
+      fields[2] as bool,
+    )..clearCheck = fields[3] as bool;
   }
 
   @override
   void write(BinaryWriter writer, WeeklyContent obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,8 +34,6 @@ class WeeklyContentAdapter extends TypeAdapter<WeeklyContent> {
       ..writeByte(2)
       ..write(obj.isChecked)
       ..writeByte(3)
-      ..write(obj.view)
-      ..writeByte(4)
       ..write(obj.clearCheck);
   }
 

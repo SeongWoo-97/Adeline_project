@@ -21,9 +21,8 @@ class CharacterModelAdapter extends TypeAdapter<CharacterModel> {
       fields[1] as String?,
       fields[2] as dynamic,
       fields[3] as dynamic,
-    )
-      ..dailyContentList = (fields[4] as List).cast<dynamic>()
-      ..weeklyContentList = (fields[5] as List).cast<WeeklyContent>();
+      (fields[5] as List).cast<WeeklyContent>(),
+    )..dailyContentList = (fields[4] as List).cast<dynamic>();
   }
 
   @override

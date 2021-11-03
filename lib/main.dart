@@ -24,9 +24,7 @@ void main() async {
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>('localDB');
   // 참 : 메인화면 , 거짓 : 초기설정
-  Hive.box<User>('localDB').get('user') != null
-      ? dbCheck = true
-      : dbCheck = false;
+  Hive.box<User>('localDB').get('user') != null ? dbCheck = true : dbCheck = false;
   runApp(MyApp());
 }
 

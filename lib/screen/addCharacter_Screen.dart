@@ -9,28 +9,36 @@ import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ContentSettingsScreen extends StatefulWidget {
-  final charInfo;
-
-  ContentSettingsScreen(this.charInfo);
-
+class AddCharacterScreen extends StatefulWidget {
   @override
-  _ContentSettingsScreenState createState() => _ContentSettingsScreenState();
+  _AddCharacterScreenState createState() => _AddCharacterScreenState();
 }
 
-class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
+class _AddCharacterScreenState extends State<AddCharacterScreen> {
   int _selected = 0;
   String? iconName = iconList[0].iconName;
   int? chaos;
   int? guardian;
   int? epona;
   String? nickName;
+  String? job;
   int? level;
   bool nickNameError = false;
+  bool jobError = false;
   bool levelError = false;
   bool chaosError = false;
   bool guardianError = false;
   bool eponaError = false;
+  List<WeeklyContent> weeklyContentList = [
+    WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+    WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', false),
+    WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', false),
+    WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', false),
+    WeeklyContent('발탄', 'assets/week/Crops.png', false),
+    WeeklyContent('비아키스', 'assets/week/Crops.png', false),
+    WeeklyContent('쿠크세이튼', 'assets/week/Crops.png', false),
+    WeeklyContent('아브렐슈드', 'assets/week/Crops.png', false),
+  ];
   late CharacterModel characterModel;
   final key = GlobalKey<FormState>();
   final formKey = GlobalKey<FormState>();
@@ -39,49 +47,53 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
   List<Card> weeklyCardList = [];
   TextEditingController controller = TextEditingController();
   TextEditingController nickNameController = TextEditingController();
+  TextEditingController jobController = TextEditingController();
   TextEditingController levelController = TextEditingController();
-  TextEditingController chaosGaugeController = TextEditingController();
-  TextEditingController guardianGaugeController = TextEditingController();
-  TextEditingController eponaGaugeController = TextEditingController();
+  TextEditingController chaosGaugeController = TextEditingController(text: '0');
+  TextEditingController guardianGaugeController = TextEditingController(text: '0');
+  TextEditingController eponaGaugeController = TextEditingController(text: '0');
 
   @override
   void initState() {
     super.initState();
-    characterModel = widget.charInfo;
-    nickNameController = TextEditingController(text: characterModel.nickName);
-    levelController = TextEditingController(text: characterModel.level);
-    chaosGaugeController = TextEditingController(text: characterModel.dailyContentList[0].restGauge.toString());
-    guardianGaugeController = TextEditingController(text: characterModel.dailyContentList[1].restGauge.toString());
-    eponaGaugeController = TextEditingController(text: characterModel.dailyContentList[2].restGauge.toString());
+    characterModel = CharacterModel(0, '', '', '', weeklyContentList);
   }
 
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
         appBar: PlatformAppBar(
-          title: Text('콘텐츠 설정', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
+          title: Text('캐릭터 수동추가', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () async {
-              if (nickNameError == true) {
-                nickNameErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (levelError == true) {
-                levelErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (chaosError == true || guardianError == true || eponaError == true) {
-                gaugeErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (nickNameError == false && levelError == false && chaosError == false && guardianError == false && eponaError == false) {
-                formKey.currentState!.save();
-                formKey2.currentState!.save();
-                Navigator.pop(context, characterModel);
-              }
+              Navigator.pop(context);
             },
           ),
+          trailingActions: [
+            IconButton(
+              icon: Icon(Icons.save_alt_outlined),
+              onPressed: () async {
+                if (nickNameError == true) {
+                  nickNameErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (levelError == true) {
+                  levelErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (chaosError == true || guardianError == true || eponaError == true) {
+                  gaugeErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (nickNameError == false && levelError == false && chaosError == false && guardianError == false && eponaError == false) {
+                  formKey.currentState!.save();
+                  formKey2.currentState!.save();
+                  Navigator.pop(context, characterModel);
+                }
+              },
+            )
+          ],
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -92,71 +104,107 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                   key: formKey,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(3, 5, 3, 5),
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Flexible(
-                          child: PlatformTextFormField(
-                            controller: nickNameController,
-                            textAlign: TextAlign.center,
-                            material: (_, __) => MaterialTextFormFieldData(
-                              decoration: InputDecoration(),
-                            ),
-                            cupertino: (_, __) => CupertinoTextFormFieldData(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
-                                  borderRadius: BorderRadius.circular(7),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: PlatformTextFormField(
+                                controller: nickNameController,
+                                textAlign: TextAlign.center,
+                                material: (_, __) => MaterialTextFormFieldData(
+                                  decoration: InputDecoration(),
                                 ),
-                                maxLength: 12),
-                            hintText: '닉네임',
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.isEmpty || value.length >= 12) {
-                                  nickNameError = true;
-                                } else {
-                                  nickNameError = false;
-                                }
-                              });
-                            },
-                            onSaved: (value) {
-                              characterModel.nickName = value;
-                            },
-                          ),
-                        ),
-                        Flexible(
-                          child: PlatformTextFormField(
-                            controller: levelController,
-                            textAlign: TextAlign.center,
-                            textInputAction: TextInputAction.done,
-                            material: (_, __) => MaterialTextFormFieldData(
-                              decoration: InputDecoration(),
-                            ),
-                            cupertino: (_, __) => CupertinoTextFormFieldData(
-                              textInputAction: TextInputAction.done,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: BoxDecoration(
-                                border: Border.all(color: levelError ? Colors.red : Colors.grey),
-                                borderRadius: BorderRadius.circular(7),
+                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
+                                      borderRadius: BorderRadius.circular(7),
+                                    ),
+                                    maxLength: 12),
+                                hintText: '닉네임',
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty || value.length >= 12) {
+                                      nickNameError = true;
+                                    } else {
+                                      nickNameError = false;
+                                    }
+                                  });
+                                },
+                                onSaved: (value) {
+                                  characterModel.nickName = value;
+                                },
                               ),
-                              maxLength: 12,
-                              keyboardType: TextInputType.number,
                             ),
-                            hintText: '아이템 레벨',
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.isEmpty || value.length >= 5) {
-                                  levelError = true;
-                                } else {
-                                  levelError = false;
-                                }
-                              });
-                            },
-                            onSaved: (value) {
-                              characterModel.level = int.parse(value.toString()).toString();
-                            },
-                          ),
+                          ],
                         ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: PlatformTextFormField(
+                                controller: jobController,
+                                textAlign: TextAlign.center,
+                                material: (_, __) => MaterialTextFormFieldData(
+                                  decoration: InputDecoration(),
+                                ),
+                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: jobError ? Colors.red : Colors.grey),
+                                      borderRadius: BorderRadius.circular(7),
+                                    ),
+                                    maxLength: 12),
+                                hintText: '직업',
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty) {
+                                      jobError = true;
+                                    } else {
+                                      jobError = false;
+                                    }
+                                  });
+                                },
+                                onSaved: (value) {
+                                  characterModel.job = value;
+                                },
+                              ),
+                            ),
+                            Flexible(
+                              child: PlatformTextFormField(
+                                controller: levelController,
+                                textAlign: TextAlign.center,
+                                textInputAction: TextInputAction.done,
+                                material: (_, __) => MaterialTextFormFieldData(
+                                  decoration: InputDecoration(),
+                                ),
+                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                  textInputAction: TextInputAction.done,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: levelError ? Colors.red : Colors.grey),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  maxLength: 12,
+                                  keyboardType: TextInputType.number,
+                                ),
+                                hintText: '레벨',
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty || value.length >= 5) {
+                                      levelError = true;
+                                    } else {
+                                      levelError = false;
+                                    }
+                                  });
+                                },
+                                onSaved: (value) {
+                                  characterModel.level = int.parse(value.toString()).toString();
+                                },
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -164,7 +212,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                 Form(
                   key: formKey2,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(5,0,5,0),
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Row(
                       children: [
                         Flexible(
@@ -478,7 +526,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      characterModel.weeklyContentList.add(WeeklyContent(controller.text.toString(), iconName.toString(), true));
+                                                      characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
                                                       Navigator.pop(context);
                                                     },
                                                     child: Text('확인'),
@@ -645,73 +693,74 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                     characterModel.dailyContentList[i] is RestGaugeContent
                         ? toast('고정 콘텐츠는 수정할 수 없습니다.')
                         : await showDialog(
-                        context: context,
-                        builder: (_) {
-                          return StatefulBuilder(builder: (context, setState) {
-                            return AlertDialog(
-                              title: Form(
-                                key: key,
-                                child: TextFormField(
-                                  controller: controller,
-                                ),
-                              ),
-                              content: Container(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: GridView.builder(
-                                    itemCount: iconList.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 65,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 10,
+                            context: context,
+                            builder: (_) {
+                              return StatefulBuilder(builder: (context, setState) {
+                                return AlertDialog(
+                                  title: Form(
+                                    key: key,
+                                    child: TextFormField(
+                                      controller: controller,
                                     ),
-                                    itemBuilder: (_, index) {
-                                      // list[index] = IconModel(list[index].iconName);
-                                      return Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: InkWell(
-                                          child: Container(
-                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
-                                            child: Image.asset(
-                                              '${iconList[index].iconName}',
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              _selected = index;
-                                              iconName = iconList[index].iconName;
-                                            });
-                                          },
+                                  ),
+                                  content: Container(
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: GridView.builder(
+                                        itemCount: iconList.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 65,
+                                          mainAxisSpacing: 10,
+                                          crossAxisSpacing: 10,
                                         ),
-                                      );
-                                    }),
-                              ),
-                              actions: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        characterModel.dailyContentList[i] = DailyContent(controller.text, iconName.toString(), true);
+                                        itemBuilder: (_, index) {
+                                          // list[index] = IconModel(list[index].iconName);
+                                          return Padding(
+                                            padding: EdgeInsets.all(8),
+                                            child: InkWell(
+                                              child: Container(
+                                                decoration:
+                                                    BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
+                                                child: Image.asset(
+                                                  '${iconList[index].iconName}',
+                                                  width: 100,
+                                                  height: 100,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _selected = index;
+                                                  iconName = iconList[index].iconName;
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            characterModel.dailyContentList[i] = DailyContent(controller.text, iconName.toString(), true);
 
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('확인'),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('취소')),
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('확인'),
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('취소')),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
-                            );
-                          });
-                        });
+                                );
+                              });
+                            });
                     setState(() {});
                   },
                 ),

@@ -1,11 +1,12 @@
 import 'package:adeline_app/model/user/characterModel/characterModel.dart';
+import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
 import 'package:adeline_app/screen/contentSettings_screen.dart';
 import 'package:adeline_app/screen/home_screen.dart';
-import 'package:drag_and_drop_lists/drag_and_drop_item.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:drag_and_drop_lists/drag_handle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -87,6 +88,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   /// 밑의 소스는 보류 (65~102줄)
   /// 리팩토링 과정중 stepper 위젯의 결합도가 높다고 판단하여 백업..
   Widget stepOne() {
+    print('step1');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -118,6 +120,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   }
 
   Widget stepTwo() {
+    print('step2');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -125,7 +128,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.5,
           child: DragAndDropLists(
-            children: [charactersOrder],
+            children: [characterOrder()],
             onItemReorder: _onItemReorder,
             onListReorder: _onListReorder,
             listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
@@ -259,6 +262,36 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     // }
   }
 
+  DragAndDropList characterOrder() {
+    charactersOrder = DragAndDropList(
+      children: List.generate(nickNameList.length, (index) {
+        return DragAndDropItem(
+          child: Card(
+            child: ListTile(
+              title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
+              subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
+
+              /// 다른 방법 생각중 ...
+              // trailing: IconButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         delCharInList(index);
+              //       });
+              //     },
+              //     icon: Icon(Icons.clear_sharp)),
+              onTap: () async {
+                characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
+                setState(() {});
+              },
+            ),
+            elevation: 2,
+          ),
+        );
+      }),
+    );
+    return charactersOrder;
+  }
+
   // 닉네임 존재여부 확인
   bool getCharStateCheck(String nickName) {
     bool state = webScraper.getElementTitle('div.profile-ingame > div.profile-attention').toString().contains('캐릭터 정보가 없습니다.');
@@ -282,48 +315,68 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                 style: TextStyle(fontSize: 16),
               ),
             ));
-    // print(nickNameList);
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
-      // print('/Profile/Character/${nickNameList[i]}');
+
       if (loadWebPage) {
         String _nickName = nickNameList[i];
         var _job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
         var _level = levelText(webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item')[0]);
-
-        CharacterModel characterModel = CharacterModel(id, _nickName, _level, _job[0]);
+        List<WeeklyContent> weeklyContentList = [];
+        int itemLevel = int.parse(_level.toString());
+        if (itemLevel >= 1325 && itemLevel < 1370) {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
+          ];
+        } else if (itemLevel >= 1370 && itemLevel < 1415) {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
+            WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
+          ];
+        } else if (itemLevel >= 1415 && itemLevel < 1430) {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
+            WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
+            WeeklyContent('발탄', 'assets/week/Crops.png', true),
+          ];
+        } else if (itemLevel >= 1430 && itemLevel < 1475) {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
+            WeeklyContent('발탄', 'assets/week/Crops.png', true),
+            WeeklyContent('비아키스', 'assets/week/Crops.png', true),
+          ];
+        } else if (itemLevel >= 1475 && itemLevel < 1490) {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('발탄', 'assets/week/Crops.png', true),
+            WeeklyContent('비아키스', 'assets/week/Crops.png', true),
+            WeeklyContent('쿠크세이튼', 'assets/week/Crops.png', true),
+          ];
+        } else if(itemLevel >= 1490){
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+            WeeklyContent('발탄', 'assets/week/Crops.png', true),
+            WeeklyContent('비아키스', 'assets/week/Crops.png', true),
+            WeeklyContent('쿠크세이튼', 'assets/week/Crops.png', true),
+            WeeklyContent('아브렐슈드', 'assets/week/Crops.png', true),
+          ];
+        } else {
+          weeklyContentList = [
+            WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
+          ];
+        }
+        CharacterModel characterModel = CharacterModel(id, _nickName, _level, _job[0], weeklyContentList);
         characterModelList.add(characterModel);
       }
       // else {
       //   // 점검또는 네트워크 또는 기타오류 출력 추가하기
       // }
     }
-    characterModelList = List.from(characterModelList.reversed);
-    charactersOrder = DragAndDropList(
-      children: List.generate(nickNameList.length, (index) {
-        return DragAndDropItem(
-          child: Card(
-            child: ListTile(
-              title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
-              subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
-
-              /// 다른 방법 생각중 ...
-              // trailing: IconButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         delCharInList(index);
-              //       });
-              //     },
-              //     icon: Icon(Icons.clear_sharp)),
-              onTap: () async {
-                characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
-              },
-            ),
-            elevation: 2,
-          ),
-        );
-      }),
-    );
+    characterModelList = List.from(characterModelList.reversed); // 캐릭터 순서 reversed
     Navigator.pop(context);
   }
 

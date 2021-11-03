@@ -28,6 +28,7 @@ class CharacterModel {
 
   @HiveField(5)
   List<WeeklyContent> weeklyContentList = [
+    WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
     WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', false),
     WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', false),
     WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', false),
@@ -38,5 +39,5 @@ class CharacterModel {
   ];
   bool expanded = false;
 
-  CharacterModel(this.id, this.nickName, this.level, this.job,{this.expanded = false});
+  CharacterModel(this.id, this.nickName, this.level, this.job,this.weeklyContentList,{this.expanded = false});
 }
