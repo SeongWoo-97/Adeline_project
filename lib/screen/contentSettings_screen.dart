@@ -798,7 +798,8 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                         : await showDialog(
                         context: context,
                         builder: (_) {
-                          return StatefulBuilder(builder: (context, setState) {
+                          return StatefulBuilder(
+                              builder: (context, setState) {
                             return AlertDialog(
                               title: Form(
                                 key: key,

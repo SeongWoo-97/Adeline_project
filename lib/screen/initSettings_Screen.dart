@@ -218,7 +218,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         ),
       );
     } else {
-      // 인터넷 연결상태 또는 서버 점검 문구
+      Navigator.pop(context);
       showPlatformDialog(
           context: context,
           builder: (BuildContext context) {
@@ -226,7 +226,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               title: Text('오류'),
               content: Column(
                 children: [
-                  Text('로스트아크 서버 점검 또는 네트워크 연결이 원활하지 않아 데이터를 불러올 수가 없습니다.'),
+                  Text('로스트아크 서버 점검 또는 존재하지 않는 닉네임입니다.'),
                 ],
               ),
               actions: [
@@ -261,30 +261,87 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     //       });
     // }
   }
+  // 닉네임 존재여부 확인
+  bool getCharStateCheck(String nickName) {
+    bool state = webScraper.getElementTitle('div.profile-ingame > div.profile-attention').toString().contains('캐릭터 정보가 없습니다.');
+    // state 참 - 캐릭터가 존재하지 않음
+    // state 거짓 - 캐릭터가 존재함
+    return state ? true : false;
+  }
 
   DragAndDropList characterOrder() {
     charactersOrder = DragAndDropList(
       children: List.generate(nickNameList.length, (index) {
         return DragAndDropItem(
           child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(7),
+              side: BorderSide(color: Colors.grey, width: 0.8),
+            ),
             child: ListTile(
-              title: Text(characterModelList[index].nickName.toString(), style: contentStyle),
-              subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
-
-              /// 다른 방법 생각중 ...
-              // trailing: IconButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         delCharInList(index);
-              //       });
-              //     },
-              //     icon: Icon(Icons.clear_sharp)),
+              title: Row(
+                children: [
+                  InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: Image.asset(
+                        'assets/etc/Minus.png',
+                        width: 25,
+                        height: 25,
+                        color: Colors.red,
+                      ),
+                    ),
+                    onTap: () {
+                      showPlatformDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return PlatformAlertDialog(
+                            content: Text(
+                              '${characterModelList[index].nickName} 캐릭터를 \n삭제하시겠습니까?',
+                              style: contentStyle.copyWith(fontSize: 15),
+                            ),
+                            actions: [
+                              PlatformDialogAction(
+                                child: PlatformText('삭제'),
+                                // 캐릭터 순서 페이지로 이동
+                                onPressed: () {
+                                  nickNameList.removeAt(index);
+                                  characterModelList.removeAt(index);
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              PlatformDialogAction(
+                                child: PlatformText('취소'),
+                                // 캐릭터 순서 페이지로 이동
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(characterModelList[index].nickName.toString(), style: contentStyle.copyWith(fontSize: 16)),
+                      Text(
+                        'Lv.${characterModelList[index].level} ${characterModelList[index].job}',
+                        style: contentStyle.copyWith(fontSize: 14, color: Colors.black54),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               onTap: () async {
                 characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
                 setState(() {});
               },
             ),
-            elevation: 2,
           ),
         );
       }),
@@ -292,58 +349,68 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     return charactersOrder;
   }
 
-  // 닉네임 존재여부 확인
-  bool getCharStateCheck(String nickName) {
-    bool state = webScraper.getElementTitle('div.profile-ingame > div.profile-attention').toString().contains('캐릭터 정보가 없습니다.');
 
-    return state ? true : false;
-  }
+
+
+  ValueNotifier<String> getCharacterNickName = ValueNotifier<String>('');
+  ValueNotifier<int> getCharacterNum = ValueNotifier<int>(0);
 
   // 캐릭터 List 가져오기
   getCharList() async {
-    // 계정의 모든캐릭터 (검색한 닉네임 포함), 추후 역순으로 변경
     int id = 0;
     characterModelList.clear();
-
     nickNameList = webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
+    getCharacterNickName.value = nickNameList[0];
+    getCharacterNum.value = 0;
     showPlatformDialog(
         context: context,
         builder: (_) => PlatformAlertDialog(
-              title: Center(child: CircularProgressIndicator()),
-              content: Text(
-                '전체 캐릭터 \n불러오는 중',
-                style: TextStyle(fontSize: 16),
+              title: ValueListenableBuilder(
+                valueListenable: getCharacterNum,
+                builder: (BuildContext context, int num, Widget? child) {
+                  return Text('${num + 1}/${nickNameList.length}');
+                },
+              ),
+              content: ValueListenableBuilder(
+                valueListenable: getCharacterNickName,
+                builder: (BuildContext context, String nickName, Widget? child) {
+                  return Text('$nickName \n캐릭터 불러오는중');
+                },
               ),
             ));
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
-
       if (loadWebPage) {
         String _nickName = nickNameList[i];
+        getCharacterNickName.value = nickNameList[i];
+        getCharacterNum.value = i;
         var _job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
         var _level = levelText(webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item')[0]);
         List<WeeklyContent> weeklyContentList = [];
         int itemLevel = int.parse(_level.toString());
         if (itemLevel >= 1325 && itemLevel < 1370) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
           ];
         } else if (itemLevel >= 1370 && itemLevel < 1415) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
           ];
         } else if (itemLevel >= 1415 && itemLevel < 1430) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
-            WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
           ];
         } else if (itemLevel >= 1430 && itemLevel < 1475) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
@@ -351,13 +418,15 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ];
         } else if (itemLevel >= 1475 && itemLevel < 1490) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
             WeeklyContent('비아키스', 'assets/week/Crops.png', true),
             WeeklyContent('쿠크세이튼', 'assets/week/Crops.png', true),
           ];
-        } else if(itemLevel >= 1490){
+        } else if (itemLevel >= 1490) {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
             WeeklyContent('비아키스', 'assets/week/Crops.png', true),
@@ -380,34 +449,34 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     Navigator.pop(context);
   }
 
-  // 캐릭터 삭제
-  delCharInList(int index) {
-    characterModelList.removeAt(index);
-    // print('del : ${characterModelList.length}');
-    charactersOrder = DragAndDropList(
-        children: List.generate(characterModelList.length, (index) {
-      return DragAndDropItem(
-        child: Card(
-          child: ListTile(
-            title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
-            subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  delCharInList(index);
-                });
-              },
-              icon: Icon(Icons.delete_forever),
-            ),
-            onTap: () async {
-              // print(characterModelList[index].nickName);
-              characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
-            },
-          ),
-        ),
-      );
-    }));
-  }
+  /// 캐릭터 삭제
+  // delCharInList(int index) {
+  //   characterModelList.removeAt(index);
+  //   // print('del : ${characterModelList.length}');
+  //   charactersOrder = DragAndDropList(
+  //       children: List.generate(characterModelList.length, (index) {
+  //     return DragAndDropItem(
+  //       child: Card(
+  //         child: ListTile(
+  //           title: Text(characterModelList[index].nickName.toString(), style: TextStyle(fontSize: 16)),
+  //           subtitle: Text('Lv.${characterModelList[index].level} ${characterModelList[index].job}'),
+  //           trailing: IconButton(
+  //             onPressed: () {
+  //               setState(() {
+  //                 delCharInList(index);
+  //               });
+  //             },
+  //             icon: Icon(Icons.delete_forever),
+  //           ),
+  //           onTap: () async {
+  //             // print(characterModelList[index].nickName);
+  //             characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
+  //           },
+  //         ),
+  //       ),
+  //     );
+  //   }));
+  // }
 
   // 화면전환
   tapped(int step) {

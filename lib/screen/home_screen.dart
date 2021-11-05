@@ -723,7 +723,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(right: 15),
-                                                  child: clearIcon('일일', Colors.deepOrange, dailyEmptyCheck, dailyClearCheck),
+                                                  child: clearIcon('일일', Colors.red, dailyEmptyCheck, dailyClearCheck),
                                                 ),
                                                 clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)
                                               ],
@@ -1163,7 +1163,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 25,
               height: 25,
               child: Image.asset(
-                'assets/etc/warning_circle.png',
+                'assets/etc/warning2_circle.png',
               ),
             ),
           ),
