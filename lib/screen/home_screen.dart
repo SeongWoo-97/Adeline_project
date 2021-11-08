@@ -5,6 +5,7 @@ import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
@@ -22,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<CharacterModel> list;
+  late List<CharacterModel> changeList;
   late ExpeditionModel expeditionModel;
   final box = Hive.box<User>('localDB');
   bool blankCheckbox = true;
@@ -32,11 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool disableGhostShip = false;
   CustomPopupMenuController _customPopupMenuController = CustomPopupMenuController();
   List<Widget> listCard = [];
+  late DragAndDropList charactersOrder = DragAndDropList(children: []);
 
   @override
   void initState() {
     super.initState();
     list = Hive.box<User>('localDB').get('user')!.characterList;
+    changeList = list;
     for (int i = 0; i < list.length; i++) {
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
@@ -165,6 +169,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       GestureDetector(
                         behavior: HitTestBehavior.translucent,
+                        onTap: _customPopupMenuController.hideMenu,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text(
+                                    '원정대 콘텐츠 수정',
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
                           CharacterModel characterModel = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
@@ -179,7 +203,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Expanded(
                                 child: Container(
-                                  child: Text('캐릭터 수동 추가',style: TextStyle(fontSize: 15,color: Colors.black),),
+                                  child: Text(
+                                    '캐릭터 수동 추가',
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                  ),
                                 ),
                               )
                             ],
@@ -188,7 +215,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       GestureDetector(
                         behavior: HitTestBehavior.translucent,
-                        onTap: _customPopupMenuController.hideMenu,
                         child: Container(
                           height: 40,
                           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -196,36 +222,173 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Expanded(
                                 child: Container(
-                                  child: Text('캐릭터 순서 변경',style: TextStyle(fontSize: 15,color: Colors.black),),
+                                  child: Text(
+                                    '캐릭터 순서 및 삭제',
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                  ),
                                 ),
                               )
                             ],
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: _customPopupMenuController.hideMenu,
-                        child: Container(
-                          height: 40,
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  child: Text('원정대 콘텐츠 수정',style: TextStyle(fontSize: 15,color: Colors.black),),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                        onTap: () async {
+                          _customPopupMenuController.hideMenu();
+                          await showDialog(
+                              context: context,
+                              builder: (_) {
+                                return StatefulBuilder(
+                                  builder: (context, setState) {
+                                    _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+                                      setState(() {
+                                        var movedItem = charactersOrder.children.removeAt(oldItemIndex);
+
+                                        charactersOrder.children.insert(newItemIndex, movedItem);
+
+                                        var movedItem2 = changeList.removeAt(oldItemIndex);
+                                        changeList.insert(newItemIndex, movedItem2);
+                                      });
+                                    }
+                                    return AlertDialog(
+                                      content: Container(
+                                        width: MediaQuery.of(context).size.width * 0.7,
+                                        height: MediaQuery.of(context).size.height * 0.55,
+                                        child: DragAndDropLists(
+                                          children: [DragAndDropList(
+                                              children: List.generate(changeList.length, (index) {
+                                                return DragAndDropItem(
+                                                  child: Card(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(7),
+                                                      side: BorderSide(color: Colors.grey, width: 0.8),
+                                                    ),
+                                                    child: ListTile(
+                                                      title: Row(
+                                                        children: [
+                                                          InkWell(
+                                                            child: Padding(
+                                                              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                                              child: Image.asset(
+                                                                'assets/etc/Minus.png',
+                                                                width: 25,
+                                                                height: 25,
+                                                                color: Colors.red,
+                                                              ),
+                                                            ),
+                                                            onTap: () {
+                                                              showPlatformDialog(
+                                                                context: context,
+                                                                builder: (BuildContext context) {
+                                                                  return PlatformAlertDialog(
+                                                                    content: Text(
+                                                                      '${changeList[index].nickName} 캐릭터를 \n삭제하시겠습니까?',
+                                                                      style: contentStyle.copyWith(fontSize: 15),
+                                                                    ),
+                                                                    actions: [
+                                                                      PlatformDialogAction(
+                                                                        child: PlatformText('저장'),
+                                                                        // 캐릭터 순서 페이지로 이동
+                                                                        onPressed: () {
+                                                                          changeList.removeAt(index);
+                                                                          setState((){});
+                                                                          Navigator.pop(context);
+                                                                        },
+                                                                      ),
+                                                                      PlatformDialogAction(
+                                                                        child: PlatformText('취소'),
+                                                                        // 캐릭터 순서 페이지로 이동
+                                                                        onPressed: () {
+                                                                          Navigator.pop(context);
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(changeList[index].nickName.toString(), style: contentStyle.copyWith(fontSize: 16)),
+                                                              Text(
+                                                                'Lv.${changeList[index].level} ${changeList[index].job}',
+                                                                style: contentStyle.copyWith(fontSize: 14, color: Colors.black54),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                                      onTap: () async {
+                                                        setState(() {});
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
+                                              }))],
+                                          onItemReorder: _onItemReorder,
+                                          onListReorder: _onListReorder,
+                                          listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                                          itemDecorationWhileDragging: BoxDecoration(
+                                            color: Colors.transparent,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(0.5),
+                                                spreadRadius: 2,
+                                                blurRadius: 3,
+                                                offset: Offset(0, 0), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          listInnerDecoration: BoxDecoration(
+                                            color: Colors.white, // background 색
+                                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                          ),
+                                          lastItemTargetHeight: 8,
+                                          addLastItemTargetHeightToTop: true,
+                                          lastListTargetSize: 40,
+                                          listDragHandle: DragHandle(
+                                            verticalAlignment: DragHandleVerticalAlignment.top,
+                                            child: Container(),
+                                          ),
+                                          itemDragHandle: DragHandle(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(right: 15),
+                                              child: Icon(
+                                                Icons.menu,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              list = changeList;
+                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('저장')),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('취소'))
+                                      ],
+                                    );
+                                  },
+                                );
+                              });
+                          setState(() {
+                          });
+                        },
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-
           )
         ],
       ),
@@ -623,7 +786,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   bool weeklyEmptyCheck = weeklyEmptyChecking(list[i].weeklyContentList);
                   bool dailyClearCheck = dailyClearChecking(list[i].dailyContentList);
                   bool weeklyClearCheck = weeklyClearChecking(list[i].weeklyContentList);
-                  print('${list[i].nickName} : $dailyClearCheck, $weeklyClearCheck');
+                  // print('${list[i].nickName} : $dailyClearCheck, $weeklyClearCheck');
                   return Container(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
                     child: ExpansionPanelList(
@@ -653,7 +816,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text('Lv.$level ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
-                                                  SizedBox(height: 3,),
+                                                  SizedBox(
+                                                    height: 3,
+                                                  ),
                                                   Row(
                                                     children: [
                                                       list[i].dailyContentList[0].isChecked
@@ -737,7 +902,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                   setState(() {});
                                 },
-                                onTap: (){
+                                onTap: () {
                                   setState(() {
                                     list[i].expanded = !list[i].expanded;
                                   });
@@ -902,12 +1067,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             isExpanded: list[i].expanded,
                             canTapOnHeader: true),
                       ],
-                    // ExpansionTile 확장
+                      // ExpansionTile 확장
                       expansionCallback: (int item, bool isExpanded) {
-                      setState(() {
-                        list[i].expanded = !list[i].expanded;
-                      });
-                    },
+                        setState(() {
+                          list[i].expanded = !list[i].expanded;
+                        });
+                      },
                     ),
                   );
                 },
@@ -1170,5 +1335,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       );
     }
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      // var movedList = charactersOrder.removeAt(oldListIndex);
+      // _contents.insert(newListIndex, movedList);
+    });
   }
 }
