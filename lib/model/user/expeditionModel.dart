@@ -25,5 +25,5 @@ class ExpeditionModel {
   @HiveField(10)
   DateTime recentInitDateTime = DateTime.now();
   @HiveField(11)
-  bool initCheck = true;
+  bool initCheck = false;
 }
