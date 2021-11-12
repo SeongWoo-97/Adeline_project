@@ -610,7 +610,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                               color: Colors.red,
                             ),
                             onTap: () {
-                              toast('고정 콘텐츠는 삭제할 수 없습니다.');
+                              toast('해당 콘텐츠는 삭제할 수 없습니다.');
                             },
                           ),
                         ),

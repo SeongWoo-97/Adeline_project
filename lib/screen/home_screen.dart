@@ -107,93 +107,33 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     // 휴식게이지 로직 //
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
-    DateTime nowDate = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6); // 현재날짜 오전6시 기준
-
-    // print("==============로직1==============");
-    print('기준시간 : $nowDate');
-    print('최근초기화시간 : ${expeditionModel.recentInitDateTime}');
-    print('${nowDate.difference(expeditionModel.recentInitDateTime).inSeconds}');
-    // print('week : ${nowDate.weekday}');
-    print('시간 : ${DateTime.now().hour}');
-    print('initCheck1 : ${expeditionModel.initCheck}');
-    // print("==============로직1==============");
-    if (nowDate.difference(expeditionModel.recentInitDateTime).inSeconds > 0 && DateTime.now().hour >= 6) {
+    DateTime nowDate = DateTime.now(); // 현재날짜 오전6시 기준
+    // 일일콘텐츠 초기화 로직 //
+    if (expeditionModel.recentInitDateTime.day != nowDate.day && nowDate.hour >= 6) {
+      expeditionModel.recentInitDateTime = DateTime.now(); // 최근초기화시간 최신화
+      for (int i = 0; i < list.length; i++) {
+        for (int j = 0; j < list[i].dailyContentList.length; j++) {
+          if (list[i].dailyContentList[j] is DailyContent) {
+            list[i].dailyContentList[j].clearCheck = false;
+          }
+        }
+      }
+    }
+    // 주간콘텐츠 초기화 로직 //
+    if (expeditionModel.recentInitDateTime.weekday == 3 && nowDate.hour >= 6) {
       if (expeditionModel.initCheck == false) {
-        int week = nowDate.weekday;
         expeditionModel.initCheck = true;
-        expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-        switch (week) {
-          case 1: //월
-            print('월');
-            expeditionModel.islandCheck = false;
-            expeditionModel.chaosGateCheck = false;
-            disableFieldBoss = true;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 2: //화
-            print('화');
-            expeditionModel.islandCheck = false;
-            expeditionModel.fieldBoosCheck = false;
-            disableChaosGate = true;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 3: //수
-            print('수');
-            expeditionModel.islandCheck = false;
-            expeditionModel.chaosGateCheck = false;
-            expeditionModel.fieldBoosCheck = false;
-            expeditionModel.ghostShipCheck = false;
-            expeditionModel.rehearsalCheck = false;
-            expeditionModel.dejavuCheck = false;
-            expeditionModel.challengeAbyssCheck = false;
-            expeditionModel.likeAbilityCheck = false;
-            expeditionModel.chaosLineCheck = false;
-            for (int i = 0; i < list.length; i++) {
-              for (int j = 0; j < list[i].weeklyContentList.length; j++) {
-                list[i].weeklyContentList[j].clearCheck = false;
-              }
-            }
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 4: //목
-            print('목');
-            expeditionModel.islandCheck = false;
-            expeditionModel.chaosGateCheck = false;
-            disableFieldBoss = true;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 5: //금
-            print('금');
-            expeditionModel.islandCheck = false;
-            expeditionModel.fieldBoosCheck = false;
-            disableChaosGate = true;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 6: //토
-            print('토');
-            expeditionModel.islandCheck = false;
-            expeditionModel.chaosGateCheck = false;
-            disableFieldBoss = true;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
-          case 7: //일
-            print('일');
-            expeditionModel.islandCheck = false;
-            expeditionModel.chaosGateCheck = false;
-            expeditionModel.fieldBoosCheck = false;
-            expeditionModel.recentInitDateTime = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second);
-            break;
+        for (int i = 0; i < list.length; i++) {
+          for (int j = 0; j < list[i].weeklyContentList.length; j++) {
+            list[i].weeklyContentList[j].clearCheck = false;
+          }
         }
       }
     } else {
       expeditionModel.initCheck = false;
     }
-    // else if (nowDate.difference(expeditionModel.recentInitDateTime).inSeconds < 0 && expeditionModel.initCheck == true) {
-    //   print('이미 초기화 : ${nowDate.difference(expeditionModel.recentInitDateTime).inSeconds}');
-    //   expeditionModel.initCheck = false;
-    // }
+    // 저장
     box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-    print('initCheck2 : ${expeditionModel.initCheck}');
   }
 
   @override
@@ -238,8 +178,34 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         onTap: () {
                           _customPopupMenuController.hideMenu();
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
-                          box.delete('user');
+                          showPlatformDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return PlatformAlertDialog(
+                                content: Text(
+                                  '캐릭터마다 설정했던 모든 정보가 사라집니다. 초기화하시겠습니까?',
+                                  style: contentStyle.copyWith(fontSize: 14),
+                                ),
+                                actions: [
+                                  PlatformDialogAction(
+                                    child: PlatformText('초기화'),
+                                    // 캐릭터 순서 페이지로 이동
+                                    onPressed: () {
+                                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
+                                      box.delete('user');
+                                    },
+                                  ),
+                                  PlatformDialogAction(
+                                    child: PlatformText('취소'),
+                                    // 캐릭터 순서 페이지로 이동
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
                       GestureDetector(
@@ -288,6 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
+
                           list = await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
                           setState(() => {});
                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
@@ -310,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(15),
                 side: BorderSide(color: Colors.grey, width: 0.8),
               ),
-              margin: EdgeInsets.fromLTRB(5,10,5,5),
+              margin: EdgeInsets.fromLTRB(5, 10, 5, 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -499,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   //   ),
                   // ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10,5,0,5),
+                    padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
                     child: Text(
                       '원정대 콘텐츠',
                       style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
@@ -722,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(15),
                   side: BorderSide(color: Colors.grey, width: 0.8),
                 ),
-                margin: EdgeInsets.fromLTRB(5,5,5,5),
+                margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
                 child: ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (context, i) {
@@ -1044,19 +1011,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              child: restGaugeContent.clearNum == restGaugeContent.maxClearNum
-                  ? Icon(
+            restGaugeContent.clearNum == restGaugeContent.maxClearNum
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Icon(
                       Icons.check,
                       color: Color.fromRGBO(119, 210, 112, 1),
                       size: 20,
-                    )
-                  : Text(
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(right: 5),
+                    child: Text(
                       '${restGaugeContent.clearNum} / ${restGaugeContent.maxClearNum}',
                       style: contentStyle,
                     ),
-            )
+                  )
           ],
         ),
       );
