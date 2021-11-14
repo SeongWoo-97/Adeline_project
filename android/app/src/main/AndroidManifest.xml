@@ -3,6 +3,9 @@
    <application
         android:label="adeline_app"
         android:icon="@mipmap/ic_launcher">
+       <meta-data
+           android:name="com.google.android.gms.ads.APPLICATION_ID"
+           android:value="ca-app-pub-2659418845004468~2355914105"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

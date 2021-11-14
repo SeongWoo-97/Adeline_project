@@ -7,6 +7,8 @@ TextStyle titleStyle = TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
 
 TextStyle contentStyle = TextStyle(fontFamily: 'SpoqaHanSansNeo');
 
+TextStyle androidContentStyle = TextStyle(fontFamily: 'NotoSansKR');
+
 List<IconModel> iconList = [
   IconModel('assets/daily/Chaos.png'),
   IconModel('assets/daily/Guardian.png'),

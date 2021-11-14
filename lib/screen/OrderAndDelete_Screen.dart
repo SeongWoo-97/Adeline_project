@@ -34,48 +34,68 @@ class _OrderAndDeleteScreenState extends State<OrderAndDeleteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('캐릭터 순서 및 삭제'),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context, list);
-            },
-            icon: Icon(Icons.arrow_back_ios_outlined)),
-      ),
-      body: DragAndDropLists(
-        children: [characterOrder()],
-        onItemReorder: _onItemReorder,
-        onListReorder: _onListReorder,
-        listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-        itemDecorationWhileDragging: BoxDecoration(
-          color: Colors.transparent,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 3,
-              offset: Offset(0, 0), // changes position of shadow
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
+        title: Text('캐릭터 순서 및 삭제', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
+        material: (_, __) => MaterialAppBarData(
+          backgroundColor: Colors.white,
+          elevation: .5,
+          title: Text(
+            '콘텐츠 설정',
+            style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          centerTitle: true,
+        ),
+        leading: PlatformIconButton(
+          material: (_, __) => MaterialIconButtonData(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.blue,
             ),
-          ],
+            onPressed: () => Navigator.pop(context, list),
+          ),
+          cupertino: (_, __) => CupertinoIconButtonData(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () => Navigator.pop(context, list),
+          ),
         ),
-        listInnerDecoration: BoxDecoration(
-          color: Colors.white, // background 색
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        ),
-        lastItemTargetHeight: 8,
-        addLastItemTargetHeightToTop: true,
-        lastListTargetSize: 40,
-        listDragHandle: DragHandle(
-          verticalAlignment: DragHandleVerticalAlignment.top,
-          child: Container(),
-        ),
-        itemDragHandle: DragHandle(
-          child: Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(
-              Icons.menu,
-              color: Colors.grey,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 5,right: 5),
+        child: DragAndDropLists(
+          children: [characterOrder()],
+          onItemReorder: _onItemReorder,
+          onListReorder: _onListReorder,
+          listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+          itemDecorationWhileDragging: BoxDecoration(
+            color: Colors.transparent,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 3,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+            ],
+          ),
+          listInnerDecoration: BoxDecoration(
+            color: Colors.transparent, // background 색
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+          lastItemTargetHeight: 8,
+          addLastItemTargetHeightToTop: true,
+          lastListTargetSize: 40,
+          listDragHandle: DragHandle(
+            verticalAlignment: DragHandleVerticalAlignment.top,
+            child: Container(),
+          ),
+          itemDragHandle: DragHandle(
+            child: Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Icon(
+                Icons.menu,
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
@@ -116,18 +136,18 @@ class _OrderAndDeleteScreenState extends State<OrderAndDeleteScreen> {
                             ),
                             actions: [
                               PlatformDialogAction(
+                                child: PlatformText('취소'),
+                                // 캐릭터 순서 페이지로 이동
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              PlatformDialogAction(
                                 child: PlatformText('삭제'),
                                 // 캐릭터 순서 페이지로 이동
                                 onPressed: () {
                                   list.removeAt(index);
                                   setState(() {});
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              PlatformDialogAction(
-                                child: PlatformText('취소'),
-                                // 캐릭터 순서 페이지로 이동
-                                onPressed: () {
                                   Navigator.pop(context);
                                 },
                               ),

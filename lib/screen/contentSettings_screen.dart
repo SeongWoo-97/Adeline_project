@@ -60,27 +60,71 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
     return PlatformScaffold(
         appBar: PlatformAppBar(
           title: Text('콘텐츠 설정', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () async {
-              if (nickNameError == true) {
-                nickNameErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (levelError == true) {
-                levelErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (chaosError == true || guardianError == true || eponaError == true) {
-                gaugeErrorToast();
-                await Future.delayed(Duration(seconds: 1, milliseconds: 500));
-              }
-              if (nickNameError == false && levelError == false && chaosError == false && guardianError == false && eponaError == false) {
-                formKey.currentState!.save();
-                formKey2.currentState!.save();
-                Navigator.pop(context, characterModel);
-              }
-            },
+          leading: PlatformIconButton(
+            material: (_, __) => MaterialIconButtonData(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.blue,
+              ),
+              onPressed: () async {
+                if (nickNameError == true) {
+                  nickNameErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (levelError == true) {
+                  levelErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (chaosError == true || guardianError == true || eponaError == true) {
+                  gaugeErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (nickNameError == false &&
+                    levelError == false &&
+                    chaosError == false &&
+                    guardianError == false &&
+                    eponaError == false) {
+                  formKey.currentState!.save();
+                  formKey2.currentState!.save();
+                  Navigator.pop(context, characterModel);
+                }
+              },
+            ),
+            cupertino: (_, __) => CupertinoIconButtonData(
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () async {
+                if (nickNameError == true) {
+                  nickNameErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (levelError == true) {
+                  levelErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (chaosError == true || guardianError == true || eponaError == true) {
+                  gaugeErrorToast();
+                  await Future.delayed(Duration(seconds: 1, milliseconds: 500));
+                }
+                if (nickNameError == false &&
+                    levelError == false &&
+                    chaosError == false &&
+                    guardianError == false &&
+                    eponaError == false) {
+                  formKey.currentState!.save();
+                  formKey2.currentState!.save();
+                  Navigator.pop(context, characterModel);
+                }
+              },
+            ),
+          ),
+          material: (_, __) => MaterialAppBarData(
+            backgroundColor: Colors.white,
+            elevation: .5,
+            title: Text(
+              '콘텐츠 설정',
+              style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            centerTitle: true,
           ),
         ),
         body: SafeArea(
@@ -96,65 +140,145 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Flexible(
-                          child: PlatformTextFormField(
-                            controller: nickNameController,
-                            textAlign: TextAlign.center,
-                            material: (_, __) => MaterialTextFormFieldData(
-                              decoration: InputDecoration(),
+                          child: PlatformWidgetBuilder(
+                            cupertino: (_, child, __) => Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                              child: PlatformTextFormField(
+                                textAlign: TextAlign.center,
+                                controller: nickNameController,
+                                // iOS 수정필요
+                                // decoration: BoxDecoration(
+                                //   border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
+                                //   borderRadius: BorderRadius.circular(7),
+                                // ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty || value.length >= 12) {
+                                      nickNameError = true;
+                                    } else {
+                                      nickNameError = false;
+                                    }
+                                  });
+                                },
+                                onSaved: (value) {
+                                  characterModel.nickName = value;
+                                },
+                              ),
                             ),
-                            cupertino: (_, __) => CupertinoTextFormFieldData(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
-                                  borderRadius: BorderRadius.circular(7),
+                            material: (_, child, __) => ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: 35,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 5, left: 5),
+                                child: TextFormField(
+                                  textAlign: TextAlign.center,
+                                  controller: nickNameController,
+                                  decoration: InputDecoration(
+                                    hintText: '닉네임',
+                                    contentPadding: EdgeInsets.zero,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value.isEmpty || value.length >= 12) {
+                                        nickNameError = true;
+                                      } else {
+                                        nickNameError = false;
+                                      }
+                                    });
+                                  },
+                                  onSaved: (value) {
+                                    characterModel.nickName = value;
+                                  },
                                 ),
-                                maxLength: 12),
-                            hintText: '닉네임',
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.isEmpty || value.length >= 12) {
-                                  nickNameError = true;
-                                } else {
-                                  nickNameError = false;
-                                }
-                              });
-                            },
-                            onSaved: (value) {
-                              characterModel.nickName = value;
-                            },
+                              ),
+                            ),
                           ),
                         ),
                         Flexible(
-                          child: PlatformTextFormField(
-                            controller: levelController,
-                            textAlign: TextAlign.center,
-                            textInputAction: TextInputAction.done,
-                            material: (_, __) => MaterialTextFormFieldData(
-                              decoration: InputDecoration(),
-                            ),
-                            cupertino: (_, __) => CupertinoTextFormFieldData(
-                              textInputAction: TextInputAction.done,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: BoxDecoration(
-                                border: Border.all(color: levelError ? Colors.red : Colors.grey),
-                                borderRadius: BorderRadius.circular(7),
+                          child: PlatformWidgetBuilder(
+                            cupertino: (_, child, __) => Padding(
+                              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                              child: PlatformTextFormField(
+                                controller: levelController,
+                                textAlign: TextAlign.center,
+                                textInputAction: TextInputAction.done,
+                                material: (_, __) => MaterialTextFormFieldData(
+                                  decoration: InputDecoration(),
+                                ),
+                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                  textInputAction: TextInputAction.done,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: levelError ? Colors.red : Colors.grey),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  maxLength: 12,
+                                  keyboardType: TextInputType.number,
+                                ),
+                                hintText: '아이템 레벨',
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.isEmpty || value.length >= 5) {
+                                      levelError = true;
+                                    } else {
+                                      levelError = false;
+                                    }
+                                  });
+                                },
+                                onSaved: (value) {
+                                  characterModel.level = int.parse(value.toString()).toString();
+                                },
                               ),
-                              maxLength: 12,
-                              keyboardType: TextInputType.number,
                             ),
-                            hintText: '아이템 레벨',
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.isEmpty || value.length >= 5) {
-                                  levelError = true;
-                                } else {
-                                  levelError = false;
-                                }
-                              });
-                            },
-                            onSaved: (value) {
-                              characterModel.level = int.parse(value.toString()).toString();
-                            },
+                            material: (_, child, __) => ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: 35,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 5, left: 5),
+                                child: TextFormField(
+                                  textAlign: TextAlign.center,
+                                  controller: levelController,
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.done,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: InputDecoration(
+                                    hintText: '아이템 레벨',
+                                    contentPadding: EdgeInsets.zero,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: levelError ? Colors.red : Colors.grey, width: 0.5),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: levelError ? Colors.red : Colors.grey, width: 0.5),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value.isEmpty || value.length >= 5) {
+                                        levelError = true;
+                                      } else {
+                                        levelError = false;
+                                      }
+                                    });
+                                  },
+                                  onSaved: (value) {
+                                    characterModel.level = int.parse(value.toString()).toString();
+                                  },
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -164,7 +288,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                 Form(
                   key: formKey2,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(5,0,5,0),
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Row(
                       children: [
                         Flexible(
@@ -178,32 +302,74 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformTextFormField(
-                                      controller: chaosGaugeController,
-                                      textAlign: TextAlign.center,
-                                      material: (_, __) => MaterialTextFormFieldData(
-                                        decoration: InputDecoration(),
+                                    child: PlatformWidgetBuilder(
+                                      cupertino: (_,child,__) => PlatformTextFormField(
+                                        controller: chaosGaugeController,
+                                        textAlign: TextAlign.center,
+                                        cupertino: (_, __) => CupertinoTextFormFieldData(
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: chaosError ? Colors.red : Colors.grey),
+                                            borderRadius: BorderRadius.circular(7),
+                                          ),
+                                        ),
+                                        onSaved: (value) {
+                                          characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value.length == 0 ||
+                                                int.parse(value.toString()) % 10 != 0 ||
+                                                int.parse(value.toString()) < 0 ||
+                                                int.parse(value.toString()) > 100) {
+                                              chaosError = true;
+                                            } else {
+                                              chaosError = false;
+                                            }
+                                          });
+                                        },
                                       ),
-                                      cupertino: (_, __) => CupertinoTextFormFieldData(
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: chaosError ? Colors.red : Colors.grey),
-                                          borderRadius: BorderRadius.circular(7),
+                                      material: (_,child,__) => ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: 45,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
+                                          child: TextFormField(
+                                            controller: chaosGaugeController,
+                                            textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                            decoration: InputDecoration(
+                                              contentPadding: EdgeInsets.zero,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                            ),
+                                            onSaved: (value) {
+                                              characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
+                                            },
+                                            onChanged: (value) {
+                                              setState(() {
+                                                if (value.length == 0 ||
+                                                    int.parse(value.toString()) % 10 != 0 ||
+                                                    int.parse(value.toString()) < 0 ||
+                                                    int.parse(value.toString()) > 100) {
+                                                  chaosError = true;
+                                                } else {
+                                                  chaosError = false;
+                                                }
+                                              });
+                                            },
+                                          ),
                                         ),
                                       ),
-                                      onSaved: (value) {
-                                        characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
-                                            chaosError = true;
-                                          } else {
-                                            chaosError = false;
-                                          }
-                                        });
-                                      },
                                     ),
                                   ),
                                 )
@@ -222,32 +388,74 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformTextFormField(
-                                      controller: guardianGaugeController,
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.number,
-                                      material: (_, __) => MaterialTextFormFieldData(
-                                        decoration: InputDecoration(),
-                                      ),
-                                      cupertino: (_, __) => CupertinoTextFormFieldData(
+                                    child: PlatformWidgetBuilder(
+                                      cupertino: (_,child,__) => PlatformTextFormField(
+                                        controller: guardianGaugeController,
+                                        textAlign: TextAlign.center,
+                                        cupertino: (_, __) => CupertinoTextFormFieldData(
                                           keyboardType: TextInputType.number,
                                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                           decoration: BoxDecoration(
                                             border: Border.all(color: guardianError ? Colors.red : Colors.grey),
                                             borderRadius: BorderRadius.circular(7),
-                                          )),
-                                      onSaved: (value) {
-                                        characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
-                                            guardianError = true;
-                                          } else {
-                                            guardianError = false;
-                                          }
-                                        });
-                                      },
+                                          ),
+                                        ),
+                                        onSaved: (value) {
+                                          characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value.length == 0 ||
+                                                int.parse(value.toString()) % 10 != 0 ||
+                                                int.parse(value.toString()) < 0 ||
+                                                int.parse(value.toString()) > 100) {
+                                              guardianError = true;
+                                            } else {
+                                              guardianError = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      material: (_,child,__) => ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: 45,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
+                                          child: TextFormField(
+                                            controller: guardianGaugeController,
+                                            textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                            decoration: InputDecoration(
+                                              contentPadding: EdgeInsets.zero,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                            ),
+                                            onSaved: (value) {
+                                              characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
+                                            },
+                                            onChanged: (value) {
+                                              setState(() {
+                                                if (value.length == 0 ||
+                                                    int.parse(value.toString()) % 10 != 0 ||
+                                                    int.parse(value.toString()) < 0 ||
+                                                    int.parse(value.toString()) > 100) {
+                                                  guardianError = true;
+                                                } else {
+                                                  guardianError = false;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -266,32 +474,74 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformTextFormField(
-                                      controller: eponaGaugeController,
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                      material: (_, __) => MaterialTextFormFieldData(
-                                        decoration: InputDecoration(),
-                                      ),
-                                      cupertino: (_, __) => CupertinoTextFormFieldData(
+                                    child: PlatformWidgetBuilder(
+                                      cupertino: (_,child,__) => PlatformTextFormField(
+                                        controller: eponaGaugeController,
+                                        textAlign: TextAlign.center,
+                                        cupertino: (_, __) => CupertinoTextFormFieldData(
                                           keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                           decoration: BoxDecoration(
                                             border: Border.all(color: eponaError ? Colors.red : Colors.grey),
                                             borderRadius: BorderRadius.circular(7),
-                                          )),
-                                      onSaved: (value) {
-                                        characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
-                                      },
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
-                                            eponaError = true;
-                                          } else {
-                                            eponaError = false;
-                                          }
-                                        });
-                                      },
+                                          ),
+                                        ),
+                                        onSaved: (value) {
+                                          characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
+                                        },
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value.length == 0 ||
+                                                int.parse(value.toString()) % 10 != 0 ||
+                                                int.parse(value.toString()) < 0 ||
+                                                int.parse(value.toString()) > 100) {
+                                              eponaError = true;
+                                            } else {
+                                              eponaError = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      material: (_,child,__) => ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: 45,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
+                                          child: TextFormField(
+                                            controller: eponaGaugeController,
+                                            textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                            decoration: InputDecoration(
+                                              contentPadding: EdgeInsets.zero,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                borderRadius: BorderRadius.circular(5),
+                                              ),
+                                            ),
+                                            onSaved: (value) {
+                                              characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
+                                            },
+                                            onChanged: (value) {
+                                              setState(() {
+                                                if (value.length == 0 ||
+                                                    int.parse(value.toString()) % 10 != 0 ||
+                                                    int.parse(value.toString()) < 0 ||
+                                                    int.parse(value.toString()) > 100) {
+                                                  eponaError = true;
+                                                } else {
+                                                  eponaError = false;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -321,7 +571,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add),
+                                icon: Icon(Icons.add,color: Colors.blue,),
                                 iconSize: 30,
                                 onPressed: () async {
                                   controller.clear();
@@ -355,7 +605,9 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                         child: Container(
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(10),
-                                                            border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
+                                                            border: Border.all(
+                                                                color: _selected == index ? Colors.grey : Colors.white,
+                                                                width: 1.5),
                                                           ),
                                                           child: Image.asset(
                                                             '${iconList[index].iconName}',
@@ -379,7 +631,8 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                      characterModel.dailyContentList.add(
+                                                          DailyContent(controller.text.toString(), iconName.toString(), true));
                                                       Navigator.pop(context);
                                                     },
                                                     child: Text('확인'),
@@ -422,7 +675,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add),
+                                icon: Icon(Icons.add,color: Colors.blue,),
                                 iconSize: 30,
                                 onPressed: () async {
                                   controller.clear();
@@ -455,7 +708,10 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                       child: InkWell(
                                                         child: Container(
                                                           decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(10), border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
+                                                              borderRadius: BorderRadius.circular(10),
+                                                              border: Border.all(
+                                                                  color: _selected == index ? Colors.grey : Colors.white,
+                                                                  width: 1.5)),
                                                           child: Image.asset(
                                                             '${iconList[index].iconName}',
                                                             width: 100,
@@ -478,7 +734,8 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      characterModel.weeklyContentList.add(WeeklyContent(controller.text.toString(), iconName.toString(), true));
+                                                      characterModel.weeklyContentList.add(
+                                                          WeeklyContent(controller.text.toString(), iconName.toString(), true));
                                                       Navigator.pop(context);
                                                     },
                                                     child: Text('확인'),
@@ -635,9 +892,21 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                         ),
                       ],
                     ),
-                    material: (_, __) => Text(
-                      characterModel.dailyContentList[i].name,
-                      style: contentStyle.copyWith(fontSize: 14),
+                    material: (_, __) => Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                          child: Image.asset(
+                            characterModel.dailyContentList[i].iconName,
+                            width: 25,
+                            height: 25,
+                          ),
+                        ),
+                        Text(
+                          characterModel.dailyContentList[i].name,
+                          style: contentStyle.copyWith(fontSize: 14),
+                        ),
+                      ],
                     ),
                   ),
                   onTap: () async {
@@ -645,73 +914,77 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                     characterModel.dailyContentList[i] is RestGaugeContent
                         ? toast('고정 콘텐츠는 수정할 수 없습니다.')
                         : await showDialog(
-                        context: context,
-                        builder: (_) {
-                          return StatefulBuilder(builder: (context, setState) {
-                            return AlertDialog(
-                              title: Form(
-                                key: key,
-                                child: TextFormField(
-                                  controller: controller,
-                                ),
-                              ),
-                              content: Container(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: GridView.builder(
-                                    itemCount: iconList.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 65,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 10,
+                            context: context,
+                            builder: (_) {
+                              return StatefulBuilder(builder: (context, setState) {
+                                return AlertDialog(
+                                  title: Form(
+                                    key: key,
+                                    child: TextFormField(
+                                      controller: controller,
                                     ),
-                                    itemBuilder: (_, index) {
-                                      // list[index] = IconModel(list[index].iconName);
-                                      return Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: InkWell(
-                                          child: Container(
-                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
-                                            child: Image.asset(
-                                              '${iconList[index].iconName}',
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              _selected = index;
-                                              iconName = iconList[index].iconName;
-                                            });
-                                          },
+                                  ),
+                                  content: Container(
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: GridView.builder(
+                                        itemCount: iconList.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 65,
+                                          mainAxisSpacing: 10,
+                                          crossAxisSpacing: 10,
                                         ),
-                                      );
-                                    }),
-                              ),
-                              actions: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        characterModel.dailyContentList[i] = DailyContent(controller.text, iconName.toString(), true);
+                                        itemBuilder: (_, index) {
+                                          // list[index] = IconModel(list[index].iconName);
+                                          return Padding(
+                                            padding: EdgeInsets.all(8),
+                                            child: InkWell(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(
+                                                        color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
+                                                child: Image.asset(
+                                                  '${iconList[index].iconName}',
+                                                  width: 100,
+                                                  height: 100,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _selected = index;
+                                                  iconName = iconList[index].iconName;
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            characterModel.dailyContentList[i] =
+                                                DailyContent(controller.text, iconName.toString(), true);
 
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('확인'),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('취소')),
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('확인'),
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('취소')),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
-                            );
-                          });
-                        });
+                                );
+                              });
+                            });
                     setState(() {});
                   },
                 ),
@@ -786,9 +1059,21 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                         ),
                       ],
                     ),
-                    material: (_, __) => Text(
-                      characterModel.weeklyContentList[i].name,
-                      style: contentStyle.copyWith(fontSize: 14),
+                    material: (_, __) => Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                          child: Image.asset(
+                            characterModel.weeklyContentList[i].iconName,
+                            width: 25,
+                            height: 25,
+                          ),
+                        ),
+                        Text(
+                          characterModel.weeklyContentList[i].name,
+                          style: contentStyle.copyWith(fontSize: 14),
+                        ),
+                      ],
                     ),
                   ),
                   onTap: () async {
@@ -796,73 +1081,76 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                     characterModel.weeklyContentList[i] is RestGaugeContent
                         ? toast('고정 콘텐츠는 수정할 수 없습니다.')
                         : await showDialog(
-                        context: context,
-                        builder: (_) {
-                          return StatefulBuilder(
-                              builder: (context, setState) {
-                            return AlertDialog(
-                              title: Form(
-                                key: key,
-                                child: TextFormField(
-                                  controller: controller,
-                                ),
-                              ),
-                              content: Container(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: GridView.builder(
-                                    itemCount: iconList.length,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 65,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 10,
+                            context: context,
+                            builder: (_) {
+                              return StatefulBuilder(builder: (context, setState) {
+                                return AlertDialog(
+                                  title: Form(
+                                    key: key,
+                                    child: TextFormField(
+                                      controller: controller,
                                     ),
-                                    itemBuilder: (_, index) {
-                                      // list[index] = IconModel(list[index].iconName);
-                                      return Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: InkWell(
-                                          child: Container(
-                                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(7), border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
-                                            child: Image.asset(
-                                              '${iconList[index].iconName}',
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            setState(() {
-                                              _selected = index;
-                                              iconName = iconList[index].iconName;
-                                            });
-                                          },
+                                  ),
+                                  content: Container(
+                                    width: MediaQuery.of(context).size.width * 0.7,
+                                    child: GridView.builder(
+                                        itemCount: iconList.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 65,
+                                          mainAxisSpacing: 10,
+                                          crossAxisSpacing: 10,
                                         ),
-                                      );
-                                    }),
-                              ),
-                              actions: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        characterModel.weeklyContentList[i] = WeeklyContent(controller.text, iconName.toString(), true);
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('확인'),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('취소')),
+                                        itemBuilder: (_, index) {
+                                          // list[index] = IconModel(list[index].iconName);
+                                          return Padding(
+                                            padding: EdgeInsets.all(8),
+                                            child: InkWell(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(7),
+                                                    border: Border.all(
+                                                        color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
+                                                child: Image.asset(
+                                                  '${iconList[index].iconName}',
+                                                  width: 100,
+                                                  height: 100,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  _selected = index;
+                                                  iconName = iconList[index].iconName;
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            characterModel.weeklyContentList[i] =
+                                                WeeklyContent(controller.text, iconName.toString(), true);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('확인'),
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('취소')),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
-                            );
-                          });
-                        });
+                                );
+                              });
+                            });
                     setState(() {});
                   },
                 ),

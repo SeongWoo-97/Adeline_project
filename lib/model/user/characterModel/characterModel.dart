@@ -1,6 +1,7 @@
 import 'package:adeline_app/model/user/content/dailyContent.dart';
 import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 
 part 'characterModel.g.dart';
@@ -38,6 +39,12 @@ class CharacterModel {
     WeeklyContent('아브렐슈드', 'assets/week/Crops.png', false),
   ];
   bool expanded = false;
+  BannerAd bannerAd = BannerAd(
+    adUnitId: 'ca-app-pub-2659418845004468/1781199037',
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
 
   CharacterModel(this.id, this.nickName, this.level, this.job,this.weeklyContentList,{this.expanded = false});
 }

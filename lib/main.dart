@@ -6,6 +6,7 @@ import 'package:adeline_app/screen/initSettings_Screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'model/user/characterModel/characterModel.dart';
@@ -15,6 +16,8 @@ import 'model/user/user.dart';
 bool dbCheck = false;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   await Hive.initFlutter();
   Hive.registerAdapter(CharacterModelAdapter());
   Hive.registerAdapter(DailyContentAdapter());

@@ -36,10 +36,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     return PlatformScaffold(
         appBar: PlatformAppBar(
           title: Text('초기설정'),
-
-          /// 초기화면으로 넘어가게 할지 고려
-          /// 1. 변수들 초기화
-          /// 2. textEditingController 값 초기화
           leading: _currentStep != 0 ? IconButton(onPressed: () => cancel(), icon: Icon(Icons.arrow_back)) : Container(),
           trailingActions: [
             _currentStep == 1
@@ -52,30 +48,41 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                     })
                 : Container()
           ],
+          material: (_, __) => MaterialAppBarData(
+            backgroundColor: Colors.white,
+            elevation: .5,
+            title: Text(
+              '초기설정',
+              style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            centerTitle: true,
+          ),
         ),
         body: SafeArea(
-          child: Stepper(
-            type: StepperType.vertical,
-            physics: ScrollPhysics(),
-            currentStep: _currentStep,
-            onStepTapped: (step) => tapped(step),
-            steps: <Step>[
-              Step(
-                title: Text('닉네임 입력', style: contentStyle),
-                content: stepOne(),
-                isActive: _currentStep >= 0,
-                state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
-              ),
-              Step(
-                title: Text('콘텐츠 설정', style: contentStyle),
-                content: stepTwo(),
-                isActive: _currentStep >= 0,
-                state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
-              ),
-            ],
-            controlsBuilder: (BuildContext context, {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
-              return Container();
-            },
+          child: Container(
+            child: Stepper(
+              type: StepperType.vertical,
+              physics: ScrollPhysics(),
+              currentStep: _currentStep,
+              onStepTapped: (step) => tapped(step),
+              steps: <Step>[
+                Step(
+                  title: Text('닉네임 입력', style: contentStyle),
+                  content: stepOne(),
+                  isActive: _currentStep >= 0,
+                  state: _currentStep >= 0 ? StepState.complete : StepState.disabled,
+                ),
+                Step(
+                  title: Text('콘텐츠 설정', style: contentStyle),
+                  content: stepTwo(),
+                  isActive: _currentStep >= 0,
+                  state: _currentStep >= 1 ? StepState.complete : StepState.disabled,
+                ),
+              ],
+              controlsBuilder: (BuildContext context, {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
+                return Container();
+              },
+            ),
           ),
         ));
   }
@@ -88,7 +95,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   /// 밑의 소스는 보류 (65~102줄)
   /// 리팩토링 과정중 stepper 위젯의 결합도가 높다고 판단하여 백업..
   Widget stepOne() {
-    print('step1');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -100,90 +106,113 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               controller: textEditingController,
             ),
           ),
-          material: (_, child, __) => TextField(
-            textAlign: TextAlign.center,
-            controller: textEditingController,
+          material: (_, child, __) => ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 35,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 25, left: 25),
+              child: TextField(
+                textAlign: TextAlign.center,
+                controller: textEditingController,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                      borderRadius: BorderRadius.circular(5),
+                    )),
+              ),
+            ),
           ),
         ),
-        PlatformIconButton(
-          icon: Icon(
-            Icons.arrow_forward_outlined,
-            size: 30,
-            color: Colors.green,
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: PlatformIconButton(
+            icon: Icon(
+              Icons.arrow_forward,
+              size: 30,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              charInfoCheck(textEditingController.value.text);
+            },
           ),
-          onPressed: () {
-            charInfoCheck(textEditingController.value.text);
-          },
         )
       ],
     );
   }
 
   Widget stepTwo() {
-    print('step2');
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: DragAndDropLists(
-            children: [characterOrder()],
-            onItemReorder: _onItemReorder,
-            onListReorder: _onListReorder,
-            listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-            itemDecorationWhileDragging: BoxDecoration(
-              color: Colors.transparent,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 3,
-                  offset: Offset(0, 0), // changes position of shadow
-                ),
-              ],
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: DragAndDropLists(
+        children: [characterOrder()],
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        listPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+        itemDecorationWhileDragging: BoxDecoration(
+          color: Colors.transparent,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, 0), // changes position of shadow
             ),
-            listInnerDecoration: BoxDecoration(
-              color: Colors.white, // background 색
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            ),
-            lastItemTargetHeight: 8,
-            addLastItemTargetHeightToTop: true,
-            lastListTargetSize: 40,
-            listDragHandle: DragHandle(
-              verticalAlignment: DragHandleVerticalAlignment.top,
-              child: Container(),
-            ),
-            itemDragHandle: DragHandle(
-              child: Padding(
-                padding: EdgeInsets.only(right: 15),
-                child: Icon(
-                  Icons.menu,
-                  color: Colors.grey,
-                ),
-              ),
+          ],
+        ),
+        listInnerDecoration: BoxDecoration(
+          color: Colors.transparent, // background 색
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        lastItemTargetHeight: 8,
+        addLastItemTargetHeightToTop: true,
+        lastListTargetSize: 40,
+        listDragHandle: DragHandle(
+          verticalAlignment: DragHandleVerticalAlignment.top,
+          child: Container(),
+        ),
+        itemDragHandle: DragHandle(
+          child: Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Icon(
+              Icons.menu,
+              color: Colors.grey,
             ),
           ),
         ),
-        PlatformIconButton(
-          icon: Icon(Icons.arrow_forward_outlined, size: 30, color: Colors.green),
-          onPressed: () {},
-        )
-      ],
+      ),
     );
   }
 
   // 캐릭터 정보확인
   charInfoCheck(String nickName) async {
     showPlatformDialog(
-        context: context,
-        builder: (_) => PlatformAlertDialog(
-              title: Center(child: CircularProgressIndicator()),
-              content: Text(
-                '$nickName \n정보 확인중',
-                style: TextStyle(fontSize: 16),
-              ),
-            ));
+      context: context,
+      builder: (_) => PlatformAlertDialog(
+        material: (_, __) => MaterialAlertDialogData(
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                child: Text(
+                  '$nickName 정보 확인 중',
+                  style: contentStyle.copyWith(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              )
+            ],
+          ),
+        ),
+        cupertino: (_, __) => CupertinoAlertDialogData(), // 기존소스 보고 수정하기
+      ),
+    );
     if (await webScraper.loadWebPage('/Profile/Character/$nickName') & !getCharStateCheck(nickName)) {
       Navigator.pop(context);
       job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
@@ -192,29 +221,33 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       showPlatformDialog(
         context: context,
         builder: (_) => PlatformAlertDialog(
-          title: Text('$nickName'),
-          content: Column(
-            children: [
-              Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
-            ],
+          material: (_, __) => MaterialAlertDialogData(
+            title: Text('$nickName', style: contentStyle),
+            content: Text('Lv.${levelText(level[0].toString())} ${job[0]} ', style: contentStyle.copyWith(color: Colors.grey)),
+          ),
+          cupertino: (_, __) => CupertinoAlertDialogData(
+            title: Text('$nickName'),
+            content: Column(
+              children: [
+                Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+              ],
+            ),
           ),
           actions: [
             PlatformDialogAction(
-              child: PlatformText('맞습니다'),
+              child: PlatformText('아닙니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            PlatformDialogAction(
               // 캐릭터 순서 페이지로 이동
+              child: PlatformText('맞습니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
               onPressed: () async {
                 Navigator.pop(context);
                 await getCharList();
                 continued();
               },
             ),
-            PlatformDialogAction(
-              child: PlatformText('아닙니다'),
-              onPressed: () => Navigator.pop(context),
-            )
           ],
-          material: (_, __) => MaterialAlertDialogData(),
-          cupertino: (_, __) => CupertinoAlertDialogData(),
         ),
       );
     } else {
@@ -261,6 +294,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     //       });
     // }
   }
+
   // 닉네임 존재여부 확인
   bool getCharStateCheck(String nickName) {
     bool state = webScraper.getElementTitle('div.profile-ingame > div.profile-attention').toString().contains('캐릭터 정보가 없습니다.');
@@ -338,7 +372,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               ),
               contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               onTap: () async {
-                characterModelList[index] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
+                characterModelList[index] = await Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(characterModelList[index])));
                 setState(() {});
               },
             ),
@@ -348,9 +383,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     );
     return charactersOrder;
   }
-
-
-
 
   ValueNotifier<String> getCharacterNickName = ValueNotifier<String>('');
   ValueNotifier<int> getCharacterNum = ValueNotifier<int>(0);
@@ -363,21 +395,23 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     getCharacterNickName.value = nickNameList[0];
     getCharacterNum.value = 0;
     showPlatformDialog(
-        context: context,
-        builder: (_) => PlatformAlertDialog(
-              title: ValueListenableBuilder(
-                valueListenable: getCharacterNum,
-                builder: (BuildContext context, int num, Widget? child) {
-                  return Text('${num + 1}/${nickNameList.length}');
-                },
-              ),
-              content: ValueListenableBuilder(
-                valueListenable: getCharacterNickName,
-                builder: (BuildContext context, String nickName, Widget? child) {
-                  return Text('$nickName \n캐릭터 불러오는중');
-                },
-              ),
-            ));
+      context: context,
+      builder: (_) => PlatformAlertDialog(
+        title: ValueListenableBuilder(
+          valueListenable: getCharacterNum,
+          builder: (BuildContext context, int num, Widget? child) {
+            return Text('${num + 1}/${nickNameList.length}');
+          },
+        ),
+        content: ValueListenableBuilder(
+          valueListenable: getCharacterNickName,
+          builder: (BuildContext context, String nickName, Widget? child) {
+            return Text('$nickName \n캐릭터 불러오는 중');
+          },
+        ),
+      ),
+      barrierDismissible: false,
+    );
     for (int i = 0; i < nickNameList.length; i++) {
       bool loadWebPage = await webScraper.loadWebPage('/Profile/Character/${nickNameList[i]}');
       if (loadWebPage) {
@@ -385,7 +419,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         getCharacterNickName.value = nickNameList[i];
         getCharacterNum.value = i;
         var _job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
-        var _level = levelText(webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item')[0]);
+        var _level = levelText(
+            webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item')[0]);
         List<WeeklyContent> weeklyContentList = [];
         int itemLevel = int.parse(_level.toString());
         if (itemLevel >= 1325 && itemLevel < 1370) {
