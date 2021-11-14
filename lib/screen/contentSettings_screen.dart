@@ -289,265 +289,427 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                   key: formKey2,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
-                          child: Card(
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
-                                  child: Image.asset('assets/daily/Chaos.png', width: 30, height: 30),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformWidgetBuilder(
-                                      cupertino: (_,child,__) => PlatformTextFormField(
-                                        controller: chaosGaugeController,
-                                        textAlign: TextAlign.center,
-                                        cupertino: (_, __) => CupertinoTextFormFieldData(
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: chaosError ? Colors.red : Colors.grey),
-                                            borderRadius: BorderRadius.circular(7),
-                                          ),
-                                        ),
-                                        onSaved: (value) {
-                                          characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
-                                        },
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value.length == 0 ||
-                                                int.parse(value.toString()) % 10 != 0 ||
-                                                int.parse(value.toString()) < 0 ||
-                                                int.parse(value.toString()) > 100) {
-                                              chaosError = true;
-                                            } else {
-                                              chaosError = false;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      material: (_,child,__) => ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight: 45,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
-                                          child: TextFormField(
-                                            controller: chaosGaugeController,
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                            decoration: InputDecoration(
-                                              contentPadding: EdgeInsets.zero,
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
-                                              ),
-                                            ),
-                                            onSaved: (value) {
-                                              characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
-                                            },
-                                            onChanged: (value) {
-                                              setState(() {
-                                                if (value.length == 0 ||
-                                                    int.parse(value.toString()) % 10 != 0 ||
-                                                    int.parse(value.toString()) < 0 ||
-                                                    int.parse(value.toString()) > 100) {
-                                                  chaosError = true;
-                                                } else {
-                                                  chaosError = false;
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5,bottom: 5),
+                          child: Text(
+                            '휴식게이지',
+                            style: TextStyle(fontSize: 18, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
                           ),
                         ),
-                        Flexible(
-                          child: Card(
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
-                                  child: Image.asset('assets/daily/Guardian.png', width: 30, height: 30),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformWidgetBuilder(
-                                      cupertino: (_,child,__) => PlatformTextFormField(
-                                        controller: guardianGaugeController,
-                                        textAlign: TextAlign.center,
-                                        cupertino: (_, __) => CupertinoTextFormFieldData(
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: guardianError ? Colors.red : Colors.grey),
-                                            borderRadius: BorderRadius.circular(7),
-                                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
+                                          child: Image.asset('assets/daily/Chaos.png', width: 30, height: 30),
                                         ),
-                                        onSaved: (value) {
-                                          characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
-                                        },
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value.length == 0 ||
-                                                int.parse(value.toString()) % 10 != 0 ||
-                                                int.parse(value.toString()) < 0 ||
-                                                int.parse(value.toString()) > 100) {
-                                              guardianError = true;
-                                            } else {
-                                              guardianError = false;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      material: (_,child,__) => ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight: 45,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
-                                          child: TextFormField(
-                                            controller: guardianGaugeController,
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                            decoration: InputDecoration(
-                                              contentPadding: EdgeInsets.zero,
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                            child: PlatformWidgetBuilder(
+                                              cupertino: (_, child, __) => PlatformTextFormField(
+                                                controller: chaosGaugeController,
+                                                textAlign: TextAlign.center,
+                                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: chaosError ? Colors.red : Colors.grey),
+                                                    borderRadius: BorderRadius.circular(7),
+                                                  ),
+                                                ),
+                                                onSaved: (value) {
+                                                  characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
+                                                },
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    if (value.length == 0 ||
+                                                        int.parse(value.toString()) % 10 != 0 ||
+                                                        int.parse(value.toString()) < 0 ||
+                                                        int.parse(value.toString()) > 100) {
+                                                      chaosError = true;
+                                                    } else {
+                                                      chaosError = false;
+                                                    }
+                                                  });
+                                                },
                                               ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
-                                              ),
-                                            ),
-                                            onSaved: (value) {
-                                              characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
-                                            },
-                                            onChanged: (value) {
-                                              setState(() {
-                                                if (value.length == 0 ||
-                                                    int.parse(value.toString()) % 10 != 0 ||
-                                                    int.parse(value.toString()) < 0 ||
-                                                    int.parse(value.toString()) > 100) {
-                                                  guardianError = true;
-                                                } else {
-                                                  guardianError = false;
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: Card(
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
-                                  child: Image.asset('assets/daily/Epona.png', width: 30, height: 30),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    child: PlatformWidgetBuilder(
-                                      cupertino: (_,child,__) => PlatformTextFormField(
-                                        controller: eponaGaugeController,
-                                        textAlign: TextAlign.center,
-                                        cupertino: (_, __) => CupertinoTextFormFieldData(
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: eponaError ? Colors.red : Colors.grey),
-                                            borderRadius: BorderRadius.circular(7),
-                                          ),
-                                        ),
-                                        onSaved: (value) {
-                                          characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
-                                        },
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value.length == 0 ||
-                                                int.parse(value.toString()) % 10 != 0 ||
-                                                int.parse(value.toString()) < 0 ||
-                                                int.parse(value.toString()) > 100) {
-                                              eponaError = true;
-                                            } else {
-                                              eponaError = false;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      material: (_,child,__) => ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight: 45,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(5,7,5,7),
-                                          child: TextFormField(
-                                            controller: eponaGaugeController,
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                            decoration: InputDecoration(
-                                              contentPadding: EdgeInsets.zero,
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.circular(5),
+                                              material: (_, child, __) => ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                  maxHeight: 45,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(5, 7, 5, 7),
+                                                  child: TextFormField(
+                                                    controller: chaosGaugeController,
+                                                    textAlign: TextAlign.center,
+                                                    keyboardType: TextInputType.number,
+                                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                    ),
+                                                    onSaved: (value) {
+                                                      characterModel.dailyContentList[0].restGauge = int.parse(value.toString());
+                                                    },
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        if (value.length == 0 ||
+                                                            int.parse(value.toString()) % 10 != 0 ||
+                                                            int.parse(value.toString()) < 0 ||
+                                                            int.parse(value.toString()) > 100) {
+                                                          chaosError = true;
+                                                        } else {
+                                                          chaosError = false;
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            onSaved: (value) {
-                                              characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
-                                            },
-                                            onChanged: (value) {
-                                              setState(() {
-                                                if (value.length == 0 ||
-                                                    int.parse(value.toString()) % 10 != 0 ||
-                                                    int.parse(value.toString()) < 0 ||
-                                                    int.parse(value.toString()) > 100) {
-                                                  eponaError = true;
-                                                } else {
-                                                  eponaError = false;
-                                                }
-                                              });
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Text('클리어 횟수',style: contentStyle,),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_minus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[0].clearNum > 0) {
+                                                characterModel.dailyContentList[0].clearNum -= 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최소 클리어 횟수는 0입니다.');
+                                              }
                                             },
                                           ),
-                                        ),
+                                          Text(
+                                            '${characterModel.dailyContentList[0].clearNum}',
+                                            style: contentStyle.copyWith(fontSize: 18),
+                                          ),
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_plus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[0].clearNum <
+                                                  characterModel.dailyContentList[0].maxClearNum) {
+                                                characterModel.dailyContentList[0].clearNum += 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최대 클리어 횟수를 초과할 수 없습니다.');
+                                              }
+                                            },
+                                          )
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                )
-                              ],
+                                    )
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                            Flexible(
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
+                                          child: Image.asset('assets/daily/Guardian.png', width: 30, height: 30),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                            child: PlatformWidgetBuilder(
+                                              cupertino: (_, child, __) => PlatformTextFormField(
+                                                controller: guardianGaugeController,
+                                                textAlign: TextAlign.center,
+                                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: guardianError ? Colors.red : Colors.grey),
+                                                    borderRadius: BorderRadius.circular(7),
+                                                  ),
+                                                ),
+                                                onSaved: (value) {
+                                                  characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
+                                                },
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    if (value.length == 0 ||
+                                                        int.parse(value.toString()) % 10 != 0 ||
+                                                        int.parse(value.toString()) < 0 ||
+                                                        int.parse(value.toString()) > 100) {
+                                                      guardianError = true;
+                                                    } else {
+                                                      guardianError = false;
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                              material: (_, child, __) => ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                  maxHeight: 45,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(5, 7, 5, 7),
+                                                  child: TextFormField(
+                                                    controller: guardianGaugeController,
+                                                    textAlign: TextAlign.center,
+                                                    keyboardType: TextInputType.number,
+                                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                        BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                        BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                    ),
+                                                    onSaved: (value) {
+                                                      characterModel.dailyContentList[1].restGauge = int.parse(value.toString());
+                                                    },
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        if (value.length == 0 ||
+                                                            int.parse(value.toString()) % 10 != 0 ||
+                                                            int.parse(value.toString()) < 0 ||
+                                                            int.parse(value.toString()) > 100) {
+                                                          guardianError = true;
+                                                        } else {
+                                                          guardianError = false;
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Text('클리어 횟수',style: contentStyle,),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_minus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[1].clearNum > 0) {
+                                                characterModel.dailyContentList[1].clearNum -= 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최소 클리어 횟수는 0입니다.');
+                                              }
+                                            },
+                                          ),
+                                          Text(
+                                            '${characterModel.dailyContentList[1].clearNum}',
+                                            style: contentStyle.copyWith(fontSize: 18),
+                                          ),
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_plus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[1].clearNum <
+                                                  characterModel.dailyContentList[1].maxClearNum) {
+                                                characterModel.dailyContentList[1].clearNum += 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최대 클리어 횟수를 초과할 수 없습니다.');
+                                              }
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(10, 0, 5, 0),
+                                          child: Image.asset('assets/daily/Epona.png', width: 30, height: 30),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                            child: PlatformWidgetBuilder(
+                                              cupertino: (_, child, __) => PlatformTextFormField(
+                                                controller: eponaGaugeController,
+                                                textAlign: TextAlign.center,
+                                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: eponaError ? Colors.red : Colors.grey),
+                                                    borderRadius: BorderRadius.circular(7),
+                                                  ),
+                                                ),
+                                                onSaved: (value) {
+                                                  characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
+                                                },
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    if (value.length == 0 ||
+                                                        int.parse(value.toString()) % 10 != 0 ||
+                                                        int.parse(value.toString()) < 0 ||
+                                                        int.parse(value.toString()) > 100) {
+                                                      eponaError = true;
+                                                    } else {
+                                                      eponaError = false;
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                              material: (_, child, __) => ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                  maxHeight: 45,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(5, 7, 5, 7),
+                                                  child: TextFormField(
+                                                    controller: eponaGaugeController,
+                                                    textAlign: TextAlign.center,
+                                                    keyboardType: TextInputType.number,
+                                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                    decoration: InputDecoration(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      enabledBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                    ),
+                                                    onSaved: (value) {
+                                                      characterModel.dailyContentList[2].restGauge = int.parse(value.toString());
+                                                    },
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        if (value.length == 0 ||
+                                                            int.parse(value.toString()) % 10 != 0 ||
+                                                            int.parse(value.toString()) < 0 ||
+                                                            int.parse(value.toString()) > 100) {
+                                                          eponaError = true;
+                                                        } else {
+                                                          eponaError = false;
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Text('클리어 횟수',style: contentStyle,),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_minus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[2].clearNum > 0) {
+                                                characterModel.dailyContentList[2].clearNum -= 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최소 클리어 횟수는 0입니다.');
+                                              }
+                                            },
+                                          ),
+                                          Text(
+                                            '${characterModel.dailyContentList[2].clearNum}',
+                                            style: contentStyle.copyWith(fontSize: 18),
+                                          ),
+                                          InkWell(
+                                            child: Image.asset(
+                                              'assets/etc/math_plus.png',
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                            onTap: () {
+                                              if (characterModel.dailyContentList[2].clearNum <
+                                                  characterModel.dailyContentList[2].maxClearNum) {
+                                                characterModel.dailyContentList[2].clearNum += 1;
+                                                setState(() {});
+                                              } else {
+                                                toast('최대 클리어 횟수를 초과할 수 없습니다.');
+                                              }
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -564,14 +726,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(left: 3),
+                                padding: const EdgeInsets.only(left: 5),
                                 child: Text(
                                   '일일 콘텐츠',
                                   style: TextStyle(fontSize: 18, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add,color: Colors.blue,),
+                                icon: Icon(
+                                  Icons.add,
+                                  color: Colors.blue,
+                                ),
                                 iconSize: 30,
                                 onPressed: () async {
                                   controller.clear();
@@ -675,7 +840,10 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add,color: Colors.blue,),
+                                icon: Icon(
+                                  Icons.add,
+                                  color: Colors.blue,
+                                ),
                                 iconSize: 30,
                                 onPressed: () async {
                                   controller.clear();

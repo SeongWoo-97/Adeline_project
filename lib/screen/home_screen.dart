@@ -5,11 +5,11 @@ import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
 import 'package:adeline_app/screen/initSettings_Screen.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 
@@ -40,16 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> listCard = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
-  AudioPlayer audioPlayer = AudioPlayer();
-  AudioCache audioCache = AudioCache();
+
 
   @override
   void initState() {
     super.initState();
-    audioCache = AudioCache(
-      prefix: 'assets/sound/',
-      fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.LOOP),
-    );
     list = Hive.box<User>('localDB').get('user')!.characterList;
     changeList = list;
     // 휴식게이지 로직 //
@@ -288,6 +283,29 @@ class _HomeScreenState extends State<HomeScreen> {
                               await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
                           setState(() => {});
                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                        },
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text(
+                                    '콘텐츠 수정하기',
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          _customPopupMenuController.hideMenu();
+                          toast('수정하고 싶은 캐릭터의 이름을 1초간 터치해 주세요.');
                         },
                       ),
                     ],
@@ -1079,5 +1097,16 @@ class _HomeScreenState extends State<HomeScreen> {
       // var movedList = charactersOrder.removeAt(oldListIndex);
       // _contents.insert(newListIndex, movedList);
     });
+  }
+  void toast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      gravity: ToastGravity.CENTER,
+      fontSize: 16,
+      toastLength: Toast.LENGTH_SHORT,
+      textColor: Colors.white,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.grey,
+    );
   }
 }
