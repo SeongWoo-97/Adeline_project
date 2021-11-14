@@ -41,7 +41,7 @@ class _OrderAndDeleteScreenState extends State<OrderAndDeleteScreen> {
           backgroundColor: Colors.white,
           elevation: .5,
           title: Text(
-            '콘텐츠 설정',
+            '캐릭터 순서 및 삭제',
             style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
           ),
           centerTitle: true,

@@ -593,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text('Lv.$level ${list[i].job}',
-                                                        style: contentStyle.copyWith(color: Colors.grey, fontSize: 14)),
+                                                        style: contentStyle.copyWith(color: Colors.grey, fontSize: 13)),
                                                     SizedBox(
                                                       height: 3,
                                                     ),

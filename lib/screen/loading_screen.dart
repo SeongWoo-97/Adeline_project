@@ -2,7 +2,6 @@ import 'package:adeline_app/constant.dart';
 import 'package:adeline_app/screen/initSettings_Screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'home_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override

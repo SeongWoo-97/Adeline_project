@@ -21,7 +21,7 @@ class InitSettingsScreen extends StatefulWidget {
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
-  TextEditingController textEditingController = TextEditingController(text: '성우웅');
+  TextEditingController textEditingController = TextEditingController();
   final webScraper = WebScraper('https://lostark.game.onstove.com');
   int _currentStep = 0;
   var job, level;
@@ -138,6 +138,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
               color: Colors.blue,
             ),
             onPressed: () {
+              FocusScope.of(context).unfocus();
               charInfoCheck(textEditingController.value.text);
             },
           ),
@@ -336,19 +337,19 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                             ),
                             actions: [
                               PlatformDialogAction(
+                                child: PlatformText('취소'),
+                                // 캐릭터 순서 페이지로 이동
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              PlatformDialogAction(
                                 child: PlatformText('삭제'),
                                 // 캐릭터 순서 페이지로 이동
                                 onPressed: () {
                                   nickNameList.removeAt(index);
                                   characterModelList.removeAt(index);
                                   setState(() {});
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              PlatformDialogAction(
-                                child: PlatformText('취소'),
-                                // 캐릭터 순서 페이지로 이동
-                                onPressed: () {
                                   Navigator.pop(context);
                                 },
                               ),
