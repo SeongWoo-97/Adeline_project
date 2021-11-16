@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
             DefaultWidgetsLocalizations.delegate,
             DefaultCupertinoLocalizations.delegate,
           ],
-          title: 'Flutter Platform Widgets',
+          title: 'Adeline',
           home: dbCheck ? HomeScreen() : InitSettingsScreen(),
           material: (_, __) => MaterialAppData(
             theme: materialTheme,

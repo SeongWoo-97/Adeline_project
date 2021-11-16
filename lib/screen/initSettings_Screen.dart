@@ -40,23 +40,24 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           trailingActions: [
             _currentStep == 1
                 ? TextButton(
-                    child: Text('완료'),
-                    onPressed: () {
-                      final box = Hive.box<User>('localDB');
-                      box.put('user', User(characterList: characterModelList, expeditionModel: ExpeditionModel()));
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
-                    })
+                child: Text('완료'),
+                onPressed: () {
+                  final box = Hive.box<User>('localDB');
+                  box.put('user', User(characterList: characterModelList, expeditionModel: ExpeditionModel()));
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+                })
                 : Container()
           ],
-          material: (_, __) => MaterialAppBarData(
-            backgroundColor: Colors.white,
-            elevation: .5,
-            title: Text(
-              '초기설정',
-              style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            centerTitle: true,
-          ),
+          material: (_, __) =>
+              MaterialAppBarData(
+                backgroundColor: Colors.white,
+                elevation: .5,
+                title: Text(
+                  '초기설정',
+                  style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                centerTitle: true,
+              ),
         ),
         body: SafeArea(
           child: Container(
@@ -99,35 +100,37 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         PlatformWidgetBuilder(
-          cupertino: (_, child, __) => Padding(
-            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-            child: CupertinoTextField(
-              textAlign: TextAlign.center,
-              controller: textEditingController,
-            ),
-          ),
-          material: (_, child, __) => ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 35,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 25, left: 25),
-              child: TextField(
-                textAlign: TextAlign.center,
-                controller: textEditingController,
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.zero,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
-                      borderRadius: BorderRadius.circular(5),
-                    )),
+          cupertino: (_, child, __) =>
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: CupertinoTextField(
+                  textAlign: TextAlign.center,
+                  controller: textEditingController,
+                ),
               ),
-            ),
-          ),
+          material: (_, child, __) =>
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 35,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 25, left: 25),
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.zero,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                          borderRadius: BorderRadius.circular(5),
+                        )),
+                  ),
+                ),
+              ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 10),
@@ -149,7 +152,10 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
   Widget stepTwo() {
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
       child: DragAndDropLists(
         children: [characterOrder()],
         onItemReorder: _onItemReorder,
@@ -194,63 +200,95 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   charInfoCheck(String nickName) async {
     showPlatformDialog(
       context: context,
-      builder: (_) => PlatformAlertDialog(
-        material: (_, __) => MaterialAlertDialogData(
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CircularProgressIndicator(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                child: Text(
-                  '$nickName 정보 확인 중',
-                  style: contentStyle.copyWith(fontSize: 16, fontWeight: FontWeight.normal),
+      builder: (_) =>
+          PlatformAlertDialog(
+            material: (_, __) =>
+                MaterialAlertDialogData(
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircularProgressIndicator(),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                        child: Text(
+                          '$nickName 정보 확인 중',
+                          style: contentStyle.copyWith(fontSize: 16, fontWeight: FontWeight.normal),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
+            cupertino: (_, __) => CupertinoAlertDialogData(), // 기존소스 보고 수정하기
           ),
-        ),
-        cupertino: (_, __) => CupertinoAlertDialogData(), // 기존소스 보고 수정하기
-      ),
     );
-    if (await webScraper.loadWebPage('/Profile/Character/$nickName') & !getCharStateCheck(nickName)) {
+    if (await webScraper.loadWebPage('/Profile/Character/$nickName') & !getCharStateCheck(nickName) & textEditingController.text
+        .isNotEmpty) {
       Navigator.pop(context);
       job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
       level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
 
       showPlatformDialog(
         context: context,
-        builder: (_) => PlatformAlertDialog(
-          material: (_, __) => MaterialAlertDialogData(
-            title: Text('$nickName', style: contentStyle),
-            content: Text('Lv.${levelText(level[0].toString())} ${job[0]} ', style: contentStyle.copyWith(color: Colors.grey)),
-          ),
-          cupertino: (_, __) => CupertinoAlertDialogData(
-            title: Text('$nickName'),
-            content: Column(
-              children: [
-                Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+        builder: (_) =>
+            PlatformAlertDialog(
+              material: (_, __) =>
+                  MaterialAlertDialogData(
+                    title: Text('$nickName', style: contentStyle),
+                    content: Text(
+                        'Lv.${levelText(level[0].toString())} ${job[0]} ', style: contentStyle.copyWith(color: Colors.grey)),
+                  ),
+              cupertino: (_, __) =>
+                  CupertinoAlertDialogData(
+                    title: Text('$nickName'),
+                    content: Column(
+                      children: [
+                        Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+                      ],
+                    ),
+                  ),
+              actions: [
+                PlatformDialogAction(
+                  child: PlatformText('아닙니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                PlatformDialogAction(
+                  // 캐릭터 순서 페이지로 이동
+                  child: PlatformText('맞습니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await getCharList();
+                    continued();
+                  },
+                ),
               ],
             ),
-          ),
-          actions: [
-            PlatformDialogAction(
-              child: PlatformText('아닙니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
-              onPressed: () => Navigator.pop(context),
-            ),
-            PlatformDialogAction(
-              // 캐릭터 순서 페이지로 이동
-              child: PlatformText('맞습니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
-              onPressed: () async {
-                Navigator.pop(context);
-                await getCharList();
-                continued();
-              },
-            ),
-          ],
-        ),
       );
+    } else if (textEditingController.text.isEmpty) {
+      showPlatformDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return PlatformAlertDialog(
+              title: Text('오류'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('닉네임을 입력해 주시길 바랍니다.'),
+                ],
+              ),
+              actions: [
+                PlatformDialogAction(
+                  child: PlatformText('확인'),
+                  // 캐릭터 순서 페이지로 이동
+                  onPressed: () {
+                    Navigator.pop(context); // 오류창 닫기
+                    Navigator.pop(context); // 정보확인중 창 닫기
+                  },
+                ),
+              ],
+            );
+          });
     } else {
       Navigator.pop(context);
       showPlatformDialog(
@@ -259,13 +297,14 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
             return PlatformAlertDialog(
               title: Text('오류'),
               content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('로스트아크 서버 점검 또는 존재하지 않는 닉네임입니다.'),
                 ],
               ),
               actions: [
                 PlatformDialogAction(
-                  child: PlatformText('이전'),
+                  child: PlatformText('확인'),
                   // 캐릭터 순서 페이지로 이동
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -397,20 +436,21 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
     getCharacterNum.value = 0;
     showPlatformDialog(
       context: context,
-      builder: (_) => PlatformAlertDialog(
-        title: ValueListenableBuilder(
-          valueListenable: getCharacterNum,
-          builder: (BuildContext context, int num, Widget? child) {
-            return Text('${num + 1}/${nickNameList.length}');
-          },
-        ),
-        content: ValueListenableBuilder(
-          valueListenable: getCharacterNickName,
-          builder: (BuildContext context, String nickName, Widget? child) {
-            return Text('$nickName \n캐릭터 불러오는 중');
-          },
-        ),
-      ),
+      builder: (_) =>
+          PlatformAlertDialog(
+            title: ValueListenableBuilder(
+              valueListenable: getCharacterNum,
+              builder: (BuildContext context, int num, Widget? child) {
+                return Text('${num + 1}/${nickNameList.length}');
+              },
+            ),
+            content: ValueListenableBuilder(
+              valueListenable: getCharacterNickName,
+              builder: (BuildContext context, String nickName, Widget? child) {
+                return Text('$nickName \n캐릭터 불러오는 중');
+              },
+            ),
+          ),
       barrierDismissible: false,
     );
     for (int i = 0; i < nickNameList.length; i++) {

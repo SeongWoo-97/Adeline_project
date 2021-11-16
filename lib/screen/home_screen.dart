@@ -12,6 +12,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constant.dart';
 import 'OrderAndDelete_Screen.dart';
@@ -151,12 +152,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text('Adeline Project', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
+        title: Text('LostArk Adeline', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
         material: (_, __) => MaterialAppBarData(
           backgroundColor: Colors.white,
           elevation: .5,
           title: Text(
-            'Adeline Project',
+            'HOME',
             style: contentStyle.copyWith(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -306,6 +307,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           _customPopupMenuController.hideMenu();
                           toast('수정하고 싶은 캐릭터의 이름을 1초간 터치해 주세요.');
+                        },
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: Text(
+                                    '버그 제보하기',
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        onTap: () async {
+                          _customPopupMenuController.hideMenu();
+                          _launchURL();
                         },
                       ),
                     ],
@@ -701,7 +725,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     itemCount: list[i].dailyContentList.length,
                                                     itemBuilder: (context, index) {
                                                       if (list[i].dailyContentList[index] is RestGaugeContent) {
-                                                        int saveRestGauge = 0;
+                                                        // int saveRestGauge = 0;
                                                         DateTime saveLateRevision = list[i].dailyContentList[index].lateRevision;
                                                         return InkWell(
                                                           child: restGaugeContentTile(list[i].dailyContentList[index]),
@@ -1108,5 +1132,13 @@ class _HomeScreenState extends State<HomeScreen> {
       timeInSecForIosWeb: 1,
       backgroundColor: Colors.grey,
     );
+  }
+  _launchURL() async {
+    const url = 'https://open.kakao.com/o/sTNAkmKd';
+    if (await canLaunch(url)) {
+      await launch(url,forceWebView: false, forceSafariVC: false);
+    } else {
+      toast('알 수 없는 오류로 브라우저가 실행되지 않습니다.');
+    }
   }
 }
