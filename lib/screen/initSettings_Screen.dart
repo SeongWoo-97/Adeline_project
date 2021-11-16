@@ -24,7 +24,8 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   TextEditingController textEditingController = TextEditingController();
   final webScraper = WebScraper('https://lostark.game.onstove.com');
   int _currentStep = 0;
-  var job, level;
+  late List<String?> job;
+  late List<String?> level;
   bool loading = false;
   List<String> nickNameList = [];
   List<CharacterModel> characterModelList = [];
@@ -228,42 +229,66 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
       job = webScraper.getElementAttribute('div > main > div > div.profile-character-info > img', 'alt');
       level = webScraper.getElementTitle('div.profile-ingame > div.profile-info > div.level-info2 > div.level-info2__item');
 
-      showPlatformDialog(
-        context: context,
-        builder: (_) =>
-            PlatformAlertDialog(
-              material: (_, __) =>
-                  MaterialAlertDialogData(
-                    title: Text('$nickName', style: contentStyle),
-                    content: Text(
-                        'Lv.${levelText(level[0].toString())} ${job[0]} ', style: contentStyle.copyWith(color: Colors.grey)),
-                  ),
-              cupertino: (_, __) =>
-                  CupertinoAlertDialogData(
-                    title: Text('$nickName'),
-                    content: Column(
-                      children: [
-                        Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
-                      ],
+      if(job.isNotEmpty && level.isNotEmpty) {
+        showPlatformDialog(
+          context: context,
+          builder: (_) =>
+              PlatformAlertDialog(
+                material: (_, __) =>
+                    MaterialAlertDialogData(
+                      title: Text('$nickName', style: contentStyle),
+                      content: Text(
+                          'Lv.${levelText(level[0].toString())} ${job[0]} ', style: contentStyle.copyWith(color: Colors.grey)),
                     ),
+                cupertino: (_, __) =>
+                    CupertinoAlertDialogData(
+                      title: Text('$nickName'),
+                      content: Column(
+                        children: [
+                          Text('${job[0]} ${level[0].toString().replaceAll('달성 아이템 레벨', '')} '),
+                        ],
+                      ),
+                    ),
+                actions: [
+                  PlatformDialogAction(
+                    child: PlatformText('아닙니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
+                    onPressed: () => Navigator.pop(context),
                   ),
-              actions: [
-                PlatformDialogAction(
-                  child: PlatformText('아닙니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
-                  onPressed: () => Navigator.pop(context),
+                  PlatformDialogAction(
+                    // 캐릭터 순서 페이지로 이동
+                    child: PlatformText('맞습니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await getCharList();
+                      continued();
+                    },
+                  ),
+                ],
+              ),
+        );
+      } else {
+        showPlatformDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return PlatformAlertDialog(
+                title: Text('서버점검'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('로스트아크 서버 점검중 입니다.'),
+                  ],
                 ),
-                PlatformDialogAction(
-                  // 캐릭터 순서 페이지로 이동
-                  child: PlatformText('맞습니다', style: contentStyle.copyWith(fontWeight: FontWeight.normal)),
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await getCharList();
-                    continued();
-                  },
-                ),
-              ],
-            ),
-      );
+                actions: [
+                  PlatformDialogAction(
+                    child: PlatformText('확인'),
+                    // 캐릭터 순서 페이지로 이동
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              );
+            });
+      }
     } else if (textEditingController.text.isEmpty) {
       showPlatformDialog(
           context: context,

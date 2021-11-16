@@ -42,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -239,7 +238,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (characterModel != null) {
                             list.add(characterModel);
                             box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                            setState(() {});
+                            Navigator.pushAndRemoveUntil(
+                                context, MaterialPageRoute(builder: (context) => HomeScreen()), (route) => false);
                           }
                         },
                         child: Container(
@@ -1122,6 +1122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // _contents.insert(newListIndex, movedList);
     });
   }
+
   void toast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
@@ -1133,10 +1134,11 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.grey,
     );
   }
+
   _launchURL() async {
     const url = 'https://open.kakao.com/o/sTNAkmKd';
     if (await canLaunch(url)) {
-      await launch(url,forceWebView: false, forceSafariVC: false);
+      await launch(url, forceWebView: false, forceSafariVC: false);
     } else {
       toast('알 수 없는 오류로 브라우저가 실행되지 않습니다.');
     }
