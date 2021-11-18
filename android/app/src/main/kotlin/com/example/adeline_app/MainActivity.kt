@@ -1,4 +1,4 @@
-package com.example.adeline_app
+package com.lostark.adeline_app
 
 import io.flutter.embedding.android.FlutterActivity
 

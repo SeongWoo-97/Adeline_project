@@ -53,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
           // list[i].dailyContentList[j].saveRestGauge = 0;
-          DateTime now = DateTime.now();
+          // DateTime now = DateTime.now();
+          DateTime now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour);
           DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
@@ -65,10 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (now.difference(lateRevision).inDays == 0) {
             /// 기존 휴식게이지 출력
             if (now.hour < 6) {
-              // print('${list[i].nickName} : inDays == 0, 오전6시 전');
+              print('${list[i].nickName} : inDays == 0, 오전6시 전');
               list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
-            } else if (now.hour >= 6) {
-              // print('${list[i].nickName} : inDays == 0, 오전6시 후');
+            } else if (now.hour >= 6 && lateRevision.hour < 6) {
+              print('${list[i].nickName} : inDays == 0, 오전6시 후');
               list[i].dailyContentList[j].restGauge = (maxClearNum - clearNum) * 10;
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
@@ -757,7 +758,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             });
                                                           },
                                                         );
-                                                      } else {
+                                                      } else if(list[i].dailyContentList[index].isChecked == true) {
                                                         return InkWell(
                                                           child: Card(
                                                             child: Row(
@@ -807,6 +808,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             });
                                                           },
                                                         );
+                                                      } else {
+                                                        return Container();
                                                       }
                                                     },
                                                   ),
