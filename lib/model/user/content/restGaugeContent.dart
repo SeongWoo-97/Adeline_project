@@ -22,6 +22,8 @@ class RestGaugeContent {
   bool clearCheck = false;
   @HiveField(8)
   int saveRestGauge = 0;
+  @HiveField(9)
+  DateTime? saveLateRevision;
 
   RestGaugeContent(this.name, this.iconName, this.maxClearNum, this.isChecked);
 }

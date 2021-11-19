@@ -48,13 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
     list = Hive.box<User>('localDB').get('user')!.characterList;
     changeList = list;
     // 휴식게이지 로직 //
+    DateTime now = DateTime.now();
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
-          // list[i].dailyContentList[j].saveRestGauge = 0;
-          // DateTime now = DateTime.now();
-          DateTime now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour);
           DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
@@ -114,12 +112,13 @@ class _HomeScreenState extends State<HomeScreen> {
               list[i].dailyContentList[j].saveRestGauge = 0;
             }
           }
+          list[i].dailyContentList[j].saveLateRevision = list[i].dailyContentList[j].lateRevision;
         }
       }
     }
     // 휴식게이지 로직 //
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
-    DateTime nowDate = DateTime.now(); // 현재날짜 오전6시 기준
+    DateTime nowDate = now; // 현재날짜 오전6시 기준
     // 일일콘텐츠 초기화 로직 //
     if (expeditionModel.recentInitDateTime.day != nowDate.day && nowDate.hour >= 6) {
       expeditionModel.recentInitDateTime = DateTime.now(); // 최근초기화시간 최신화
@@ -726,8 +725,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     itemCount: list[i].dailyContentList.length,
                                                     itemBuilder: (context, index) {
                                                       if (list[i].dailyContentList[index] is RestGaugeContent) {
-                                                        // int saveRestGauge = 0;
-                                                        DateTime saveLateRevision = list[i].dailyContentList[index].lateRevision;
                                                         return InkWell(
                                                           child: restGaugeContentTile(list[i].dailyContentList[index]),
                                                           onTap: () {
@@ -739,19 +736,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 if (list[i].dailyContentList[index].restGauge >= 20) {
                                                                   list[i].dailyContentList[index].restGauge =
                                                                       list[i].dailyContentList[index].restGauge - 20;
-                                                                  // print(list[i].dailyContentList[index].restGauge);
                                                                   list[i].dailyContentList[index].saveRestGauge += 20;
-                                                                  // print('saveRestGauge + : ${list[i].dailyContentList[index].saveRestGauge}');
                                                                 }
                                                               } else if (list[i].dailyContentList[index].maxClearNum ==
                                                                   list[i].dailyContentList[index].clearNum) {
-                                                                // print('saveRestGauge : $saveRestGauge');
                                                                 list[i].dailyContentList[index].clearNum = 0;
                                                                 list[i].dailyContentList[index].restGauge =
                                                                     list[i].dailyContentList[index].restGauge +
                                                                         list[i].dailyContentList[index].saveRestGauge;
                                                                 list[i].dailyContentList[index].saveRestGauge = 0;
-                                                                list[i].dailyContentList[index].lateRevision = saveLateRevision;
+                                                                list[i].dailyContentList[index].lateRevision = list[i].dailyContentList[index].saveLateRevision;
                                                               }
                                                               box.put('user',
                                                                   User(characterList: list, expeditionModel: expeditionModel));
