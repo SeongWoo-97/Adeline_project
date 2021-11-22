@@ -37,6 +37,7 @@ dependencies:
   drag_and_drop_lists: ^0.3.2+2
   custom_pop_up_menu: ^1.2.2
   url_launcher: ^6.0.12
+  persistent_bottom_nav_bar: ^4.0.2
   google_mobile_ads: ^1.0.0
 
 dev_dependencies:

@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text('LostArk Adeline', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
+        title: Text('Home', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
         material: (_, __) => MaterialAppBarData(
           backgroundColor: Colors.white,
           elevation: .5,
