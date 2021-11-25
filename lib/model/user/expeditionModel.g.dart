@@ -27,7 +27,7 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..rehearsalCheck = fields[8] as bool
       ..dejavuCheck = fields[9] as bool
       ..recentInitDateTime = fields[10] as DateTime
-      ..initCheck = fields[11] as bool;
+      ..nextWednesday = fields[11] as DateTime;
   }
 
   @override
@@ -55,7 +55,7 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..writeByte(10)
       ..write(obj.recentInitDateTime)
       ..writeByte(11)
-      ..write(obj.initCheck);
+      ..write(obj.nextWednesday);
   }
 
   @override

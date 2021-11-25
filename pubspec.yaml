@@ -38,7 +38,13 @@ dependencies:
   custom_pop_up_menu: ^1.2.2
   url_launcher: ^6.0.12
   persistent_bottom_nav_bar: ^4.0.2
+  photo_view: ^0.13.0
+  flutter_typeahead: ^3.2.3
+  dropdown_plus: ^0.0.9
   google_mobile_ads: ^1.0.0
+  dropdown_below: ^1.0.1
+  dropdown_selection: ^2.0.1
+  dropdown_search: ^2.0.1
 
 dev_dependencies:
   hive_generator: ^1.1.0
@@ -56,6 +62,7 @@ flutter:
     - assets/week/
     - assets/etc/
     - assets/expedition/
+    - assets/map/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

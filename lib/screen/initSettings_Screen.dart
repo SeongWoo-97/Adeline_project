@@ -2,6 +2,7 @@ import 'package:adeline_app/model/user/characterModel/characterModel.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
+import 'package:adeline_app/screen/MainMenu.dart';
 import 'package:adeline_app/screen/contentSettings_screen.dart';
 import 'package:adeline_app/screen/home_screen.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
@@ -30,7 +31,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   List<String> nickNameList = [];
   List<CharacterModel> characterModelList = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
-
+  ExpeditionModel expeditionModel = ExpeditionModel();
   /// 공백제거, 특수문자 금지 또는 검색시 반환값을 보고 결과 여부 출력
   @override
   Widget build(BuildContext context) {
@@ -44,8 +45,18 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                 child: Text('완료'),
                 onPressed: () {
                   final box = Hive.box<User>('localDB');
-                  box.put('user', User(characterList: characterModelList, expeditionModel: ExpeditionModel()));
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+                  DateTime now = DateTime.now();
+                  DateTime nowDate = DateTime.utc(now.year, now.month, now.day, 6); // 오전6시를 고정시키기 위한 변수
+                  if (expeditionModel.nextWednesday.weekday == 3) {
+                    expeditionModel.nextWednesday = nowDate.add(Duration(days: 7));
+                  } else {
+                    while(expeditionModel.nextWednesday.weekday != 3){
+                      nowDate = nowDate.add(Duration(days: 1));
+                      expeditionModel.nextWednesday = nowDate;
+                    }
+                  }
+                  box.put('user', User(characterList: characterModelList, expeditionModel: expeditionModel));
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MainMenu()), (route) => false);
                 })
                 : Container()
           ],

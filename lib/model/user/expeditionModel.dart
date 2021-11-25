@@ -25,5 +25,5 @@ class ExpeditionModel {
   @HiveField(10)
   DateTime recentInitDateTime = DateTime.now();
   @HiveField(11)
-  bool initCheck = false;
+  DateTime nextWednesday = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
 }

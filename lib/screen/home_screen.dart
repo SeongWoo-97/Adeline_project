@@ -46,9 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     list = Hive.box<User>('localDB').get('user')!.characterList;
+    expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
     changeList = list;
     // 휴식게이지 로직 //
-    DateTime now = DateTime.now();
+    // DateTime now = DateTime.now();
+    DateTime now = DateTime.utc(DateTime.now().year,11,25,7);
+
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
@@ -91,18 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
             /// 현재시간과 최근수정일이 이틀 이상 일때
             if (now.hour < 6) {
               // print('${list[i].nickName} : inDays > 1, 오전6시 전');
-              int a = DateTime.utc(now.year, now.month, now.day)
-                      .difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1))
-                      .inDays -
-                  1;
+              int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays - 1;
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
             } else if (now.hour >= 6) {
               // print('${list[i].nickName} : inDays > 1, 오전6시 후');
-              int a = DateTime.utc(now.year, now.month, now.day)
-                  .difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1))
-                  .inDays;
+              int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays;
               // print('a : $a');
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
               if (list[i].dailyContentList[j].restGauge >= 100) {
@@ -116,12 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
-    // 휴식게이지 로직 //
-    expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
-    DateTime nowDate = now; // 현재날짜 오전6시 기준
+    /////////// 휴식게이지 로직 ///////////
     // 일일콘텐츠 초기화 로직 //
-    if (expeditionModel.recentInitDateTime.day != nowDate.day && nowDate.hour >= 6) {
-      expeditionModel.recentInitDateTime = DateTime.now(); // 최근초기화시간 최신화
+    if (expeditionModel.recentInitDateTime.day != now.day && now.hour >= 6) {
+      expeditionModel.recentInitDateTime = now; // 최근초기화시간 최신화
       for (int i = 0; i < list.length; i++) {
         for (int j = 0; j < list[i].dailyContentList.length; j++) {
           if (list[i].dailyContentList[j] is DailyContent) {
@@ -131,18 +127,34 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     // 주간콘텐츠 초기화 로직 //
-    if (expeditionModel.recentInitDateTime.weekday == 3 && nowDate.hour >= 6) {
-      if (expeditionModel.initCheck == false) {
-        expeditionModel.initCheck = true;
-        for (int i = 0; i < list.length; i++) {
-          for (int j = 0; j < list[i].weeklyContentList.length; j++) {
-            list[i].weeklyContentList[j].clearCheck = false;
-          }
+    DateTime nowDate = DateTime.utc(now.year, now.month, now.day, 6); // 오전6시를 고정시키기 위한 변수
+
+
+    print(now.difference(expeditionModel.nextWednesday).inSeconds);
+    if (now.difference(expeditionModel.nextWednesday).inSeconds > 0 && now.hour >= 6) {
+
+      if (expeditionModel.nextWednesday.weekday == 3) {
+        expeditionModel.nextWednesday = nowDate.add(Duration(days: 7));
+      } else {
+        while(expeditionModel.nextWednesday.weekday != 3){
+          nowDate = nowDate.add(Duration(days: 1));
+          expeditionModel.nextWednesday = nowDate;
         }
       }
-    } else {
-      expeditionModel.initCheck = false;
+
+      for (int i = 0; i < list.length; i++) {
+        for (int j = 0; j < list[i].weeklyContentList.length; j++) {
+          list[i].weeklyContentList[j].clearCheck = false;
+        }
+      }
+      expeditionModel.ghostShipCheck = false;
+      expeditionModel.rehearsalCheck = false;
+      expeditionModel.dejavuCheck = false;
+      expeditionModel.challengeAbyssCheck = false;
+
+
     }
+    print('nextWednesday : ${expeditionModel.nextWednesday}');
     // 저장
     box.put('user', User(characterList: list, expeditionModel: expeditionModel));
   }
@@ -218,8 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: PlatformText('초기화'),
                                     // 캐릭터 순서 페이지로 이동
                                     onPressed: () {
-                                      Navigator.pushAndRemoveUntil(context,
-                                          MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
+                                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
                                       box.delete('user');
                                     },
                                   ),
@@ -233,13 +244,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         behavior: HitTestBehavior.translucent,
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
-                          CharacterModel? characterModel =
-                              await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
+                          CharacterModel? characterModel = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
                           if (characterModel != null) {
                             list.add(characterModel);
                             box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                            Navigator.pushAndRemoveUntil(
-                                context, MaterialPageRoute(builder: (context) => HomeScreen()), (route) => false);
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomeScreen()), (route) => false);
                           }
                         },
                         child: Container(
@@ -280,8 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
 
-                          list =
-                              await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
+                          list = await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
                           setState(() => {});
                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                         },
@@ -616,8 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text('Lv.$level ${list[i].job}',
-                                                        style: contentStyle.copyWith(color: Colors.grey, fontSize: 13)),
+                                                    Text('Lv.$level ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 13)),
                                                     SizedBox(
                                                       height: 3,
                                                     ),
@@ -633,10 +640,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   ),
                                                                   Padding(
                                                                     padding: const EdgeInsets.only(left: 5, right: 5),
-                                                                    child: Container(
-                                                                        width: 30,
-                                                                        child: Text('${list[i].dailyContentList[0].restGauge}',
-                                                                            style: contentStyle.copyWith(fontSize: 14))),
+                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[0].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
                                                                   ),
                                                                 ],
                                                               )
@@ -651,10 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   ),
                                                                   Padding(
                                                                     padding: const EdgeInsets.only(left: 5, right: 5),
-                                                                    child: Container(
-                                                                        width: 30,
-                                                                        child: Text('${list[i].dailyContentList[1].restGauge}',
-                                                                            style: contentStyle.copyWith(fontSize: 14))),
+                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[1].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
                                                                   ),
                                                                 ],
                                                               )
@@ -669,10 +670,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   ),
                                                                   Padding(
                                                                     padding: const EdgeInsets.only(left: 5),
-                                                                    child: Container(
-                                                                        width: 30,
-                                                                        child: Text('${list[i].dailyContentList[2].restGauge}',
-                                                                            style: contentStyle.copyWith(fontSize: 14))),
+                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[2].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
                                                                   ),
                                                                 ],
                                                               )
@@ -685,17 +683,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [
-                                                clearIcon('일일', Colors.red, dailyEmptyCheck, dailyClearCheck),
-                                                clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)
-                                              ],
+                                              children: [clearIcon('일일', Colors.red, dailyEmptyCheck, dailyClearCheck), clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)],
                                             )
                                           ],
                                         ),
                                       )),
                                   onLongPress: () async {
-                                    list[i] = await Navigator.push(
-                                        context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(list[i])));
+                                    list[i] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(list[i])));
                                     box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                     setState(() {});
                                   },
@@ -729,30 +723,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           child: restGaugeContentTile(list[i].dailyContentList[index]),
                                                           onTap: () {
                                                             setState(() {
-                                                              if (list[i].dailyContentList[index].maxClearNum !=
-                                                                  list[i].dailyContentList[index].clearNum) {
+                                                              if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
                                                                 list[i].dailyContentList[index].clearNum += 1;
                                                                 list[i].dailyContentList[index].lateRevision = DateTime.now();
                                                                 if (list[i].dailyContentList[index].restGauge >= 20) {
-                                                                  list[i].dailyContentList[index].restGauge =
-                                                                      list[i].dailyContentList[index].restGauge - 20;
+                                                                  list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
                                                                   list[i].dailyContentList[index].saveRestGauge += 20;
                                                                 }
-                                                              } else if (list[i].dailyContentList[index].maxClearNum ==
-                                                                  list[i].dailyContentList[index].clearNum) {
+                                                              } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
                                                                 list[i].dailyContentList[index].clearNum = 0;
-                                                                list[i].dailyContentList[index].restGauge =
-                                                                    list[i].dailyContentList[index].restGauge +
-                                                                        list[i].dailyContentList[index].saveRestGauge;
+                                                                list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge + list[i].dailyContentList[index].saveRestGauge;
                                                                 list[i].dailyContentList[index].saveRestGauge = 0;
                                                                 list[i].dailyContentList[index].lateRevision = list[i].dailyContentList[index].saveLateRevision;
                                                               }
-                                                              box.put('user',
-                                                                  User(characterList: list, expeditionModel: expeditionModel));
+                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                             });
                                                           },
                                                         );
-                                                      } else if(list[i].dailyContentList[index].isChecked == true) {
+                                                      } else if (list[i].dailyContentList[index].isChecked == true) {
                                                         return InkWell(
                                                           child: Card(
                                                             child: Row(
@@ -762,10 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   children: [
                                                                     Padding(
                                                                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                      child: Image.asset(
-                                                                          '${list[i].dailyContentList[index].iconName}',
-                                                                          width: 25,
-                                                                          height: 25),
+                                                                      child: Image.asset('${list[i].dailyContentList[index].iconName}', width: 25, height: 25),
                                                                     ),
                                                                     Text(list[i].dailyContentList[index].name),
                                                                   ],
@@ -776,17 +761,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   checkColor: Color.fromRGBO(119, 210, 112, 1),
                                                                   activeColor: Colors.transparent,
                                                                   side: BorderSide(color: Colors.grey, width: 1.5),
-                                                                  shape: RoundedRectangleBorder(
-                                                                      borderRadius: BorderRadius.circular(3)),
+                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
                                                                   onChanged: (bool? value) {
                                                                     setState(() {
-                                                                      list[i].dailyContentList[index].clearCheck =
-                                                                          !list[i].dailyContentList[index].clearCheck;
-                                                                      box.put(
-                                                                          'user',
-                                                                          User(
-                                                                              characterList: list,
-                                                                              expeditionModel: expeditionModel));
+                                                                      list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                                      box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                                     });
                                                                   },
                                                                 )
@@ -795,10 +774,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ),
                                                           onTap: () {
                                                             setState(() {
-                                                              list[i].dailyContentList[index].clearCheck =
-                                                                  !list[i].dailyContentList[index].clearCheck;
-                                                              box.put('user',
-                                                                  User(characterList: list, expeditionModel: expeditionModel));
+                                                              list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
+                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                             });
                                                           },
                                                         );
@@ -833,10 +810,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   children: [
                                                                     Padding(
                                                                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                      child: Image.asset(
-                                                                          '${list[i].weeklyContentList[index].iconName}',
-                                                                          width: 25,
-                                                                          height: 25),
+                                                                      child: Image.asset('${list[i].weeklyContentList[index].iconName}', width: 25, height: 25),
                                                                     ),
                                                                     Text(
                                                                       list[i].weeklyContentList[index].name,
@@ -855,13 +829,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   ),
                                                                   onChanged: (bool? value) {
                                                                     setState(() {
-                                                                      list[i].weeklyContentList[index].clearCheck =
-                                                                          !list[i].weeklyContentList[index].clearCheck;
-                                                                      box.put(
-                                                                          'user',
-                                                                          User(
-                                                                              characterList: list,
-                                                                              expeditionModel: expeditionModel));
+                                                                      list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                                      box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                                     });
                                                                   },
                                                                 )
@@ -870,10 +839,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ),
                                                           onTap: () {
                                                             setState(() {
-                                                              list[i].weeklyContentList[index].clearCheck =
-                                                                  !list[i].weeklyContentList[index].clearCheck;
-                                                              box.put('user',
-                                                                  User(characterList: list, expeditionModel: expeditionModel));
+                                                              list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
+                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                             });
                                                           },
                                                         );

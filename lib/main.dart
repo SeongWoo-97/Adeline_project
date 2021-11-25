@@ -2,7 +2,6 @@ import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/screen/MainMenu.dart';
-import 'package:adeline_app/screen/home_screen.dart';
 import 'package:adeline_app/screen/initSettings_Screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
