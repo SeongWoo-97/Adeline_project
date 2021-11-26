@@ -19,11 +19,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
   final TextEditingController _typeAheadController = TextEditingController();
   SuggestionsBoxController _suggestionsBoxController = SuggestionsBoxController();
   CupertinoSuggestionsBoxController _cupertinoSuggestionsBoxController = CupertinoSuggestionsBoxController();
-  late List<DropdownMenuItem> _dropdownTestItems;
   List<String> regions = [];
   String selectedItem = '';
   late int selectedContinent;
-  late int selectedRegion;
+  late int? selectedRegion = 1;
+  Map<String, int> map = {};
 
   @override
   void initState() {
@@ -33,26 +33,6 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  RelativeRect a(popupButtonObject, overlay) {
-    final decorationBox = _findBorderBox(popupButtonObject);
-
-    double translateOffset = 0;
-    if (decorationBox != null) {
-      translateOffset = decorationBox.size.height - popupButtonObject.size.height;
-    }
-
-    final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
-    return RelativeRect.fromSize(
-      Rect.fromPoints(
-        popupButtonObject
-            .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
-            .translate(0, translateOffset),
-        popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
-      ),
-      Size(overlay.size.width, overlay.size.height),
-    );
   }
 
   @override
@@ -98,7 +78,9 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             },
                             onSuggestionSelected: (String suggestion) {
                               _typeAheadController.text = suggestion;
-                              // 사진변경 코드 추가
+                              setState(() {
+                                selectedRegion = merchantMap[suggestion];
+                              });
                             },
                             // suggestionsBoxDecoration: CupertinoSuggestionsBoxDecoration(
                             //   constraints: BoxConstraints(maxHeight: 100),
@@ -131,16 +113,13 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             mode: Mode.MENU,
                             selectedItem: '',
                             showSelectedItems: true,
-                            items: List.generate(secretMaps.length, (index) => secretMaps[index].continentName.toString()),
+                            items: merchantMap.keys.toList(),
                             onChanged: (value) {
-                              for (int i = 0; i < secretMaps.length; i++) {
-                                if (secretMaps[i].continentName.toString() == value) {
-                                  setState(() {
-                                    regions = secretMaps[i].areaNames!;
-                                    selectedContinent = i;
-                                  });
-                                }
-                              }
+                              setState(() {
+                                map.clear();
+                                map.addAll(merchantMapOfMap[value]!);
+                              });
+                              // print(map);
                             },
                             positionCallback: (popupButtonObject, overlay) {
                               final decorationBox = _findBorderBox(popupButtonObject);
@@ -153,11 +132,8 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                               return RelativeRect.fromSize(
                                 Rect.fromPoints(
-                                  popupButtonObject
-                                      .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
-                                      .translate(0, translateOffset),
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
-                                      ancestor: overlay),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
                                 ),
                                 Size(overlay.size.width, overlay.size.height),
                               );
@@ -177,9 +153,13 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             ),
                             mode: Mode.MENU,
                             showSelectedItems: true,
-                            items: regions,
+                            items: map.keys.toList(),
                             selectedItem: selectedItem,
-                            onChanged: print,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedRegion = map[value];
+                              });
+                            },
                             positionCallback: (popupButtonObject, overlay) {
                               final decorationBox = _findBorderBox(popupButtonObject);
 
@@ -191,11 +171,8 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                               return RelativeRect.fromSize(
                                 Rect.fromPoints(
-                                  popupButtonObject
-                                      .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
-                                      .translate(0, translateOffset),
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
-                                      ancestor: overlay),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
                                 ),
                                 Size(overlay.size.width, overlay.size.height),
                               );
@@ -215,7 +192,7 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                       child: PhotoView.customChild(
                         backgroundDecoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(15)),
                         child: Image.asset(
-                          "assets/map/test1.png",
+                          "assets/map/$selectedRegion.png",
                         ),
                         initialScale: 1.0,
                       ),
@@ -245,10 +222,9 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           textFieldConfiguration: TextFieldConfiguration(
                               controller: _typeAheadController,
                               decoration: InputDecoration(
-                                // border: InputDecorator(decoration: Dec,),
-                                label: Text('Search'),
-                                icon: Icon(Icons.search)
-                              )),
+                                  // border: InputDecorator(decoration: Dec,),
+                                  label: Text('Search'),
+                                  icon: Icon(Icons.search))),
                           suggestionsCallback: (String pattern) {
                             return StateService.getSuggestions(pattern);
                           },
@@ -290,7 +266,6 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               if (secretMaps[i].continentName.toString() == value) {
                                 setState(() {
                                   regions = secretMaps[i].areaNames!;
-                                  selectedContinent = i;
                                 });
                               }
                             }
@@ -306,11 +281,8 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                             return RelativeRect.fromSize(
                               Rect.fromPoints(
-                                popupButtonObject
-                                    .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
-                                    .translate(0, translateOffset),
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
-                                    ancestor: overlay),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
                               ),
                               Size(overlay.size.width, overlay.size.height),
                             );
@@ -332,7 +304,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           showSelectedItems: true,
                           items: regions,
                           selectedItem: selectedItem,
-                          onChanged: print,
+                          onChanged: (value) {
+                            setState(() {
+                              print('g');
+                            });
+                          },
                           positionCallback: (popupButtonObject, overlay) {
                             final decorationBox = _findBorderBox(popupButtonObject);
 
@@ -344,11 +320,8 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                             return RelativeRect.fromSize(
                               Rect.fromPoints(
-                                popupButtonObject
-                                    .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
-                                    .translate(0, translateOffset),
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
-                                    ancestor: overlay),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
                               ),
                               Size(overlay.size.width, overlay.size.height),
                             );
@@ -402,33 +375,65 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
 
 class StateService {
   static final List<String> states = [
+    '로그힐',
+    '안게모스 산 기슭',
+    '국경지대',
+    '살란드 구릉지',
+    '오즈혼 구릉지',
+    '자고라스 산',
+    '레이크바',
+    '메드리닉 수도원',
+    '빌브린 숲',
+    '격전의 평야',
+    '디오리카 평원',
+    '해무리 언덕',
+    '배꽃나무 자생지',
     '흑장미 교회당',
-    '황혼의 연무',
+    '라니아 단구',
+    '보레아 영지',
+    '크로커니스 해변',
+    '바다향기 숲',
+    '달콤한 숲',
+    '성큼바위 숲',
+    '침묵하는 거인의 숲',
     '델파이 현',
-    'Beirut',
-    'Damascus',
-    'San Fransisco',
-    'Rome',
-    'Los Angeles',
-    'Madrid',
-    'Bali',
-    'Barcelona',
-    'Paris',
-    'Bucharest',
-    'New York City',
-    'Philadelphia',
-    'Sydney',
-    '1',
-    '2',
-    '3',
-    'Bal1i',
-    'Barcelo2na',
-    'Pa3ris',
-    'Buc4harest',
-    'Ba5li',
-    'Barc67elona',
-    'Pari8s',
-    'Bucha3rest',
+    '등나무 언덕',
+    '소리의 숲',
+    '거울 계곡',
+    '황혼의 연무',
+    '메마른 통로',
+    '갈라진 땅',
+    '네벨호른',
+    '바람결 구릉지',
+    '토트리치',
+    '리제 폭포',
+    '크로나 항구',
+    '파르나 숲',
+    '페스나르 고원',
+    '베르닐 삼림',
+    '발란카르 산맥',
+    '얼어붙은 바다',
+    '칼날바람 언덕',
+    '서리감옥 고원',
+    '머무른 시간의 호수',
+    '얼음나비 절벽',
+    '은빛물결 호수',
+    '유리연꽃 호수',
+    '바람향기 언덕',
+    '파괴된 제나일',
+    '엘조윈의 그늘',
+    '시작의 땅',
+    '미완의 정원',
+    '검은모루 작업장',
+    '무쇠망치 작업장',
+    '기약의 땅',
+    '칼라자 마을',
+    '얕은 바닷길',
+    '별모래 해변',
+    '티카티카 군락지',
+    '비밀의 숲',
+    '칸다리아 영지',
+    '벨리온 유적지',
   ];
 
   static List<String> getSuggestions(String query) {

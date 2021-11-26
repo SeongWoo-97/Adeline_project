@@ -142,15 +142,18 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                         Flexible(
                           child: PlatformWidgetBuilder(
                             cupertino: (_, child, __) => Padding(
-                              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                               child: PlatformTextFormField(
                                 textAlign: TextAlign.center,
                                 controller: nickNameController,
-                                // iOS 수정필요
-                                // decoration: BoxDecoration(
-                                //   border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
-                                //   borderRadius: BorderRadius.circular(7),
-                                // ),
+                                cupertino: (_, __) => CupertinoTextFormFieldData(
+                                  textInputAction: TextInputAction.done,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: levelError ? Colors.red : Colors.grey),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  maxLength: 12,
+                                ),
                                 onChanged: (value) {
                                   setState(() {
                                     if (value.isEmpty || value.length >= 12) {
@@ -206,7 +209,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                         Flexible(
                           child: PlatformWidgetBuilder(
                             cupertino: (_, child, __) => Padding(
-                              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                               child: PlatformTextFormField(
                                 controller: levelController,
                                 textAlign: TextAlign.center,

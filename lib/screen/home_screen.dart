@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     changeList = list;
     // 휴식게이지 로직 //
     // DateTime now = DateTime.now();
-    DateTime now = DateTime.utc(DateTime.now().year,11,25,7);
+    DateTime now = DateTime.utc(2021,11,27,7);
 
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
@@ -116,6 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     /////////// 휴식게이지 로직 ///////////
     // 일일콘텐츠 초기화 로직 //
+    print('recentInitDateTime : ${expeditionModel.recentInitDateTime.day}');
+    print('${expeditionModel.recentInitDateTime.day != now.day && now.hour >= 6}');
     if (expeditionModel.recentInitDateTime.day != now.day && now.hour >= 6) {
       expeditionModel.recentInitDateTime = now; // 최근초기화시간 최신화
       for (int i = 0; i < list.length; i++) {
@@ -157,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print('nextWednesday : ${expeditionModel.nextWednesday}');
     // 저장
     box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+    print('저장완료');
   }
 
   @override

@@ -22,7 +22,7 @@ class InitSettingsScreen extends StatefulWidget {
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController textEditingController = TextEditingController(text: '도기');
   final webScraper = WebScraper('https://lostark.game.onstove.com');
   int _currentStep = 0;
   late List<String?> job;
@@ -626,8 +626,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   String levelText(String level) {
     int start = level.indexOf('.') + 1;
     int end = level.lastIndexOf('.');
-    print('$level');
-    print('start : $start, end : $end');
     return level.substring(start, end).replaceAll(new RegExp(r'[^0-9]'), '');
   }
 }
