@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter/rendering.dart';
 
@@ -24,10 +25,16 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
   late int selectedContinent;
   late int? selectedRegion = 1;
   Map<String, int> map = {};
-
+  BannerAd bannerAd = BannerAd(
+    adUnitId: 'ca-app-pub-2659418845004468/1781199037',
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   @override
   void initState() {
     super.initState();
+    bannerAd.load();
   }
 
   @override
@@ -113,7 +120,7 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             mode: Mode.MENU,
                             selectedItem: '',
                             showSelectedItems: true,
-                            items: merchantMap.keys.toList(),
+                            items: merchantMapOfMap.keys.toList(),
                             onChanged: (value) {
                               setState(() {
                                 map.clear();
@@ -132,8 +139,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                               return RelativeRect.fromSize(
                                 Rect.fromPoints(
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
+                                  popupButtonObject
+                                      .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
+                                      .translate(0, translateOffset),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
+                                      ancestor: overlay),
                                 ),
                                 Size(overlay.size.width, overlay.size.height),
                               );
@@ -171,8 +181,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                               return RelativeRect.fromSize(
                                 Rect.fromPoints(
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
-                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
+                                  popupButtonObject
+                                      .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
+                                      .translate(0, translateOffset),
+                                  popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
+                                      ancestor: overlay),
                                 ),
                                 Size(overlay.size.width, overlay.size.height),
                               );
@@ -195,6 +208,17 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           "assets/map/$selectedRegion.png",
                         ),
                         initialScale: 1.0,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: StatefulBuilder(
+                      builder: (context, setState) => Container(
+                        child: AdWidget(ad: bannerAd),
+                        width: bannerAd.size.width.toDouble(),
+                        height: 60.0,
+                        alignment: Alignment.center,
                       ),
                     ),
                   ),
@@ -221,22 +245,21 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           getImmediateSuggestions: true,
                           textFieldConfiguration: TextFieldConfiguration(
                               controller: _typeAheadController,
-                              decoration: InputDecoration(
-                                  // border: InputDecorator(decoration: Dec,),
-                                  label: Text('Search'),
-                                  icon: Icon(Icons.search))),
+                              decoration: InputDecoration(label: Text('Search'), icon: Icon(Icons.search))),
                           suggestionsCallback: (String pattern) {
                             return StateService.getSuggestions(pattern);
                           },
                           onSuggestionSelected: (String suggestion) {
                             _typeAheadController.text = suggestion;
-                            // 사진변경 코드 추가
+                            setState(() {
+                              selectedRegion = merchantMap[suggestion];
+                            });
                           },
                           suggestionsBoxController: _suggestionsBoxController,
                           itemBuilder: (BuildContext context, String suggestion) {
                             return Padding(
                               padding: EdgeInsets.all(4.0),
-                              child: Text(suggestion),
+                              child: ListTile(title: Text(suggestion)),
                             );
                           },
                           minCharsForSuggestions: 1,
@@ -262,13 +285,10 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           showSelectedItems: true,
                           items: List.generate(secretMaps.length, (index) => secretMaps[index].continentName.toString()),
                           onChanged: (value) {
-                            for (int i = 0; i < secretMaps.length; i++) {
-                              if (secretMaps[i].continentName.toString() == value) {
-                                setState(() {
-                                  regions = secretMaps[i].areaNames!;
-                                });
-                              }
-                            }
+                            setState(() {
+                              map.clear();
+                              map.addAll(merchantMapOfMap[value]!);
+                            });
                           },
                           positionCallback: (popupButtonObject, overlay) {
                             final decorationBox = _findBorderBox(popupButtonObject);
@@ -281,8 +301,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                             return RelativeRect.fromSize(
                               Rect.fromPoints(
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
+                                popupButtonObject
+                                    .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
+                                    .translate(0, translateOffset),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
+                                    ancestor: overlay),
                               ),
                               Size(overlay.size.width, overlay.size.height),
                             );
@@ -302,11 +325,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           ),
                           mode: Mode.MENU,
                           showSelectedItems: true,
-                          items: regions,
+                          items: map.keys.toList(),
                           selectedItem: selectedItem,
                           onChanged: (value) {
                             setState(() {
-                              print('g');
+                              selectedRegion = map[value];
                             });
                           },
                           positionCallback: (popupButtonObject, overlay) {
@@ -320,8 +343,11 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
                             return RelativeRect.fromSize(
                               Rect.fromPoints(
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay).translate(0, translateOffset),
-                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero), ancestor: overlay),
+                                popupButtonObject
+                                    .localToGlobal(popupButtonObject.size.bottomLeft(Offset.zero), ancestor: overlay)
+                                    .translate(0, translateOffset),
+                                popupButtonObject.localToGlobal(popupButtonObject.size.bottomRight(Offset.zero),
+                                    ancestor: overlay),
                               ),
                               Size(overlay.size.width, overlay.size.height),
                             );
@@ -341,10 +367,18 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                     child: PhotoView.customChild(
                       backgroundDecoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(15)),
                       child: Image.asset(
-                        "assets/map/test1.png",
+                        "assets/map/$selectedRegion.png",
                       ),
                       initialScale: 1.0,
                     ),
+                  ),
+                ),
+                StatefulBuilder(
+                  builder: (context, setState) => Container(
+                    child: AdWidget(ad: bannerAd),
+                    width: bannerAd.size.width.toDouble(),
+                    height: 100.0,
+                    alignment: Alignment.center,
                   ),
                 ),
               ],

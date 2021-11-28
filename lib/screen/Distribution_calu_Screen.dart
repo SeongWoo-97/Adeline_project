@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../constant.dart';
 
@@ -29,7 +30,18 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
   double? memberNum = 4;
   final key = GlobalKey<FormState>();
   TextEditingController itemPriceController = TextEditingController(text: '0');
+  BannerAd bannerAd = BannerAd(
+    adUnitId: 'ca-app-pub-2659418845004468/1781199037',
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
 
+  @override
+  void initState() {
+    super.initState();
+    bannerAd.load();
+  }
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -213,11 +225,20 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                             ),
                           ],
                         ),
-                      )
+                      ),
+
                     ],
                   ),
                 ),
-              )
+              ),
+              StatefulBuilder(
+                builder: (context, setState) => Container(
+                  child: AdWidget(ad: bannerAd),
+                  width: bannerAd.size.width.toDouble(),
+                  height: 60.0,
+                  alignment: Alignment.center,
+                ),
+              ),
             ],
           ),
         ));

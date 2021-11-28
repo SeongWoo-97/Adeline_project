@@ -48,6 +48,10 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
   void initState() {
     super.initState();
     characterModel = widget.charInfo;
+    characterModel.dailyContentList[0].saveRestGauge = 0;
+    characterModel.dailyContentList[1].saveRestGauge = 0;
+    characterModel.dailyContentList[2].saveRestGauge = 0;
+
     nickNameController = TextEditingController(text: characterModel.nickName);
     levelController = TextEditingController(text: characterModel.level);
     chaosGaugeController = TextEditingController(text: characterModel.dailyContentList[0].restGauge.toString());
@@ -79,11 +83,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                   gaugeErrorToast();
                   await Future.delayed(Duration(seconds: 1, milliseconds: 500));
                 }
-                if (nickNameError == false &&
-                    levelError == false &&
-                    chaosError == false &&
-                    guardianError == false &&
-                    eponaError == false) {
+                if (nickNameError == false && levelError == false && chaosError == false && guardianError == false && eponaError == false) {
                   formKey.currentState!.save();
                   formKey2.currentState!.save();
                   Navigator.pop(context, characterModel);
@@ -105,11 +105,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                   gaugeErrorToast();
                   await Future.delayed(Duration(seconds: 1, milliseconds: 500));
                 }
-                if (nickNameError == false &&
-                    levelError == false &&
-                    chaosError == false &&
-                    guardianError == false &&
-                    eponaError == false) {
+                if (nickNameError == false && levelError == false && chaosError == false && guardianError == false && eponaError == false) {
                   formKey.currentState!.save();
                   formKey2.currentState!.save();
                   Navigator.pop(context, characterModel);
@@ -334,10 +330,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 },
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    if (value.length == 0 ||
-                                                        int.parse(value.toString()) % 10 != 0 ||
-                                                        int.parse(value.toString()) < 0 ||
-                                                        int.parse(value.toString()) > 100) {
+                                                    if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                       chaosError = true;
                                                     } else {
                                                       chaosError = false;
@@ -359,13 +352,11 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     decoration: InputDecoration(
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -374,10 +365,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     },
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        if (value.length == 0 ||
-                                                            int.parse(value.toString()) % 10 != 0 ||
-                                                            int.parse(value.toString()) < 0 ||
-                                                            int.parse(value.toString()) > 100) {
+                                                        if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                           chaosError = true;
                                                         } else {
                                                           chaosError = false;
@@ -427,8 +415,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               height: 25,
                                             ),
                                             onTap: () {
-                                              if (characterModel.dailyContentList[0].clearNum <
-                                                  characterModel.dailyContentList[0].maxClearNum) {
+                                              if (characterModel.dailyContentList[0].clearNum < characterModel.dailyContentList[0].maxClearNum) {
                                                 characterModel.dailyContentList[0].clearNum += 1;
                                                 setState(() {});
                                               } else {
@@ -473,10 +460,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 },
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    if (value.length == 0 ||
-                                                        int.parse(value.toString()) % 10 != 0 ||
-                                                        int.parse(value.toString()) < 0 ||
-                                                        int.parse(value.toString()) > 100) {
+                                                    if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                       guardianError = true;
                                                     } else {
                                                       guardianError = false;
@@ -498,13 +482,11 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     decoration: InputDecoration(
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -513,10 +495,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     },
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        if (value.length == 0 ||
-                                                            int.parse(value.toString()) % 10 != 0 ||
-                                                            int.parse(value.toString()) < 0 ||
-                                                            int.parse(value.toString()) > 100) {
+                                                        if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                           guardianError = true;
                                                         } else {
                                                           guardianError = false;
@@ -566,8 +545,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               height: 25,
                                             ),
                                             onTap: () {
-                                              if (characterModel.dailyContentList[1].clearNum <
-                                                  characterModel.dailyContentList[1].maxClearNum) {
+                                              if (characterModel.dailyContentList[1].clearNum < characterModel.dailyContentList[1].maxClearNum) {
                                                 characterModel.dailyContentList[1].clearNum += 1;
                                                 setState(() {});
                                               } else {
@@ -612,10 +590,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                 },
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    if (value.length == 0 ||
-                                                        int.parse(value.toString()) % 10 != 0 ||
-                                                        int.parse(value.toString()) < 0 ||
-                                                        int.parse(value.toString()) > 100) {
+                                                    if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                       eponaError = true;
                                                     } else {
                                                       eponaError = false;
@@ -637,13 +612,11 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     decoration: InputDecoration(
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -652,10 +625,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                     },
                                                     onChanged: (value) {
                                                       setState(() {
-                                                        if (value.length == 0 ||
-                                                            int.parse(value.toString()) % 10 != 0 ||
-                                                            int.parse(value.toString()) < 0 ||
-                                                            int.parse(value.toString()) > 100) {
+                                                        if (value.length == 0 || int.parse(value.toString()) % 10 != 0 || int.parse(value.toString()) < 0 || int.parse(value.toString()) > 100) {
                                                           eponaError = true;
                                                         } else {
                                                           eponaError = false;
@@ -705,8 +675,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               height: 25,
                                             ),
                                             onTap: () {
-                                              if (characterModel.dailyContentList[2].clearNum <
-                                                  characterModel.dailyContentList[2].maxClearNum) {
+                                              if (characterModel.dailyContentList[2].clearNum < characterModel.dailyContentList[2].maxClearNum) {
                                                 characterModel.dailyContentList[2].clearNum += 1;
                                                 setState(() {});
                                               } else {
@@ -753,10 +722,76 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 onPressed: () async {
                                   controller.clear();
                                   await showPlatformDialog(
-                                      context: context,
-                                      builder: (_) {
-                                        return StatefulBuilder(builder: (context, setState) {
-                                          return PlatformAlertDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return StatefulBuilder(builder: (context, setState) {
+                                        return PlatformWidgetBuilder(
+                                          cupertino: (context,_,__) => PlatformAlertDialog(
+                                            content: Column(
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width * 0.7,
+                                                  height: 60,
+                                                  child: Form(
+                                                    key: key,
+                                                    child: TextFormField(
+                                                      controller: controller,
+                                                    ),
+                                                  ),
+                                                ),
+                                                GridView.builder(
+                                                    itemCount: iconList.length,
+                                                    shrinkWrap: true,
+                                                    scrollDirection: Axis.vertical,
+                                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                                      maxCrossAxisExtent: 55,
+                                                      mainAxisSpacing: 10,
+                                                      crossAxisSpacing: 10,
+                                                    ),
+                                                    itemBuilder: (_, index) {
+                                                      // list[index] = IconModel(list[index].iconName);
+                                                      return Padding(
+                                                        padding: EdgeInsets.all(5),
+                                                        child: InkWell(
+                                                          child: Container(
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(10),
+                                                              border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
+                                                            ),
+                                                            child: Image.asset(
+                                                              '${iconList[index].iconName}',
+                                                              width: 100,
+                                                              height: 100,
+                                                            ),
+                                                          ),
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _selected = index;
+                                                              iconName = iconList[index].iconName;
+                                                            });
+                                                          },
+                                                        ),
+                                                      );
+                                                    }),
+                                              ],
+                                            ),
+                                            actions: [
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('취소'),
+                                              ),
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('확인'),
+                                              ),
+                                            ],
+                                          ),
+                                          material: (context,_,__) => AlertDialog(
                                             title: Form(
                                               key: key,
                                               child: TextFormField(
@@ -782,9 +817,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                         child: Container(
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(10),
-                                                            border: Border.all(
-                                                                color: _selected == index ? Colors.grey : Colors.white,
-                                                                width: 1.5),
+                                                            border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
                                                           ),
                                                           child: Image.asset(
                                                             '${iconList[index].iconName}',
@@ -811,16 +844,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               ),
                                               PlatformDialogAction(
                                                 onPressed: () {
-                                                  characterModel.dailyContentList
-                                                      .add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                  characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text('확인'),
                                               ),
                                             ],
-                                          );
-                                        });
+                                          ),
+                                        );
                                       });
+                                    },
+                                  );
                                   setState(() {});
                                 },
                               )
@@ -885,9 +919,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                                         child: Container(
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(10),
-                                                            border: Border.all(
-                                                                color: _selected == index ? Colors.grey : Colors.white,
-                                                                width: 1.5),
+                                                            border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
                                                           ),
                                                           child: Image.asset(
                                                             '${iconList[index].iconName}',
@@ -914,8 +946,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               ),
                                               PlatformDialogAction(
                                                 onPressed: () {
-                                                  characterModel.dailyContentList
-                                                      .add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                  characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text('확인'),
@@ -1116,9 +1147,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(10),
-                                                  border: Border.all(
-                                                      color: _selected == index ? Colors.grey : Colors.white,
-                                                      width: 1.5),
+                                                  border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
                                                 ),
                                                 child: Image.asset(
                                                   '${iconList[index].iconName}',
@@ -1145,8 +1174,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                     ),
                                     PlatformDialogAction(
                                       onPressed: () {
-                                        characterModel.dailyContentList
-                                            .add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                        characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
                                         Navigator.pop(context);
                                       },
                                       child: Text('확인'),
@@ -1280,9 +1308,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(10),
-                                                  border: Border.all(
-                                                      color: _selected == index ? Colors.grey : Colors.white,
-                                                      width: 1.5),
+                                                  border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
                                                 ),
                                                 child: Image.asset(
                                                   '${iconList[index].iconName}',
@@ -1309,8 +1335,7 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                     ),
                                     PlatformDialogAction(
                                       onPressed: () {
-                                        characterModel.dailyContentList
-                                            .add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                        characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
                                         Navigator.pop(context);
                                       },
                                       child: Text('확인'),

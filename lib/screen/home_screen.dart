@@ -41,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> listCard = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
+  DateTime now = DateTime.utc(2021, 12, 8, 20);
+  // DateTime now = DateTime.now();
 
   @override
   void initState() {
@@ -49,8 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
     changeList = list;
     // 휴식게이지 로직 //
-    // DateTime now = DateTime.now();
-    DateTime now = DateTime.utc(2021,11,27,7);
 
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
@@ -59,58 +59,32 @@ class _HomeScreenState extends State<HomeScreen> {
           DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
+          list[i].dailyContentList[j].saveLateRevision = DateTime.utc(now.year, now.month, now.day, 6);
+          if (list[i].dailyContentList[j].lateRevision.day != now.day && now.hour >= 6) {
+            print('${list[i].nickName} ,now:$now, lateRevision:$lateRevision');
+            if(now.difference(lateRevision).inDays == 1) {
+              list[i].dailyContentList[j].restGauge += (maxClearNum - clearNum) * 10;
+              list[i].dailyContentList[j].clearNum = 0;
+              list[i].dailyContentList[j].saveRestGauge = 0;
+            }
 
-          /// 현재시간과 최근수정일에 일수 차이가 0 일때
-          if (list[i].dailyContentList[j].restGauge >= 100) {
-            // print('${list[i].nickName} : 휴식게이지 100 이상');
-            list[i].dailyContentList[j].restGauge = 100;
-          } else if (now.difference(lateRevision).inDays == 0) {
-            /// 기존 휴식게이지 출력
-            if (now.hour < 6) {
-              print('${list[i].nickName} : inDays == 0, 오전6시 전');
-              list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
-            } else if (now.hour >= 6 && lateRevision.hour < 6) {
-              print('${list[i].nickName} : inDays == 0, 오전6시 후');
-              list[i].dailyContentList[j].restGauge = (maxClearNum - clearNum) * 10;
-              list[i].dailyContentList[j].clearNum = 0;
-              list[i].dailyContentList[j].saveRestGauge = 0;
-            }
-          } else if (now.difference(lateRevision).inDays == 1) {
-            /// 현재시간과 최근수정일이 1일 차이 일때
-            if (now.hour < 6) {
-              /// 오전 6시 전 이면 기존 휴식게이지 출력
-              // print('${list[i].nickName} : inDays == 1, 오전6시 전');
-              list[i].dailyContentList[j].restGauge = list[i].dailyContentList[j].restGauge;
-              list[i].dailyContentList[j].clearNum = 0;
-              list[i].dailyContentList[j].saveRestGauge = 0;
-            } else if (now.hour >= 6) {
-              /// 오전 6시 후 면 전날 남은횟수 * 10 해서 휴식게이지 출력
-              // print('${list[i].nickName} : inDays == 1, 오전6시 후');
-              list[i].dailyContentList[j].restGauge = (maxClearNum - clearNum) * 10;
-              list[i].dailyContentList[j].clearNum = 0;
-              list[i].dailyContentList[j].saveRestGauge = 0;
-            }
-          } else if (now.difference(lateRevision).inDays > 1) {
-            /// 현재시간과 최근수정일이 이틀 이상 일때
-            if (now.hour < 6) {
-              // print('${list[i].nickName} : inDays > 1, 오전6시 전');
-              int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays - 1;
-              list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
-              list[i].dailyContentList[j].clearNum = 0;
-              list[i].dailyContentList[j].saveRestGauge = 0;
-            } else if (now.hour >= 6) {
-              // print('${list[i].nickName} : inDays > 1, 오전6시 후');
+            else if(now.difference(lateRevision).inDays > 1) {
               int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays;
-              // print('a : $a');
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
+              list[i].dailyContentList[j].clearNum = 0;
+              list[i].dailyContentList[j].saveRestGauge = 0;
+
               if (list[i].dailyContentList[j].restGauge >= 100) {
                 list[i].dailyContentList[j].restGauge = 100;
               }
-              list[i].dailyContentList[j].clearNum = 0;
-              list[i].dailyContentList[j].saveRestGauge = 0;
             }
+            if (list[i].dailyContentList[j].restGauge >= 100) {
+              // print('${list[i].nickName} : 휴식게이지 100 이상');
+              list[i].dailyContentList[j].restGauge = 100;
+            }
+            list[i].dailyContentList[j].lateRevision = DateTime.utc(now.year, now.month, now.day, 6);
           }
-          list[i].dailyContentList[j].saveLateRevision = list[i].dailyContentList[j].lateRevision;
+
         }
       }
     }
@@ -128,17 +102,16 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
+
     // 주간콘텐츠 초기화 로직 //
     DateTime nowDate = DateTime.utc(now.year, now.month, now.day, 6); // 오전6시를 고정시키기 위한 변수
 
-
     print(now.difference(expeditionModel.nextWednesday).inSeconds);
     if (now.difference(expeditionModel.nextWednesday).inSeconds > 0 && now.hour >= 6) {
-
       if (expeditionModel.nextWednesday.weekday == 3) {
         expeditionModel.nextWednesday = nowDate.add(Duration(days: 7));
       } else {
-        while(expeditionModel.nextWednesday.weekday != 3){
+        while (expeditionModel.nextWednesday.weekday != 3) {
           nowDate = nowDate.add(Duration(days: 1));
           expeditionModel.nextWednesday = nowDate;
         }
@@ -153,8 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
       expeditionModel.rehearsalCheck = false;
       expeditionModel.dejavuCheck = false;
       expeditionModel.challengeAbyssCheck = false;
-
-
     }
     print('nextWednesday : ${expeditionModel.nextWednesday}');
     // 저장
@@ -728,16 +699,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             setState(() {
                                                               if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
                                                                 list[i].dailyContentList[index].clearNum += 1;
-                                                                list[i].dailyContentList[index].lateRevision = DateTime.now();
                                                                 if (list[i].dailyContentList[index].restGauge >= 20) {
                                                                   list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
                                                                   list[i].dailyContentList[index].saveRestGauge += 20;
                                                                 }
                                                               } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
                                                                 list[i].dailyContentList[index].clearNum = 0;
-                                                                list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge + list[i].dailyContentList[index].saveRestGauge;
+                                                                list[i].dailyContentList[index].restGauge += list[i].dailyContentList[index].saveRestGauge;
                                                                 list[i].dailyContentList[index].saveRestGauge = 0;
-                                                                list[i].dailyContentList[index].lateRevision = list[i].dailyContentList[index].saveLateRevision;
                                                               }
                                                               box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                                                             });
@@ -861,7 +830,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     builder: (context, setState) => Container(
                                       child: AdWidget(ad: list[i].bannerAd),
                                       width: list[i].bannerAd.size.width.toDouble(),
-                                      height: 100.0,
+                                      height: 60.0,
                                       alignment: Alignment.center,
                                     ),
                                   ),
