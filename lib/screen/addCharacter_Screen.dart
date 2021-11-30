@@ -56,7 +56,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
   @override
   void initState() {
     super.initState();
-    characterModel = CharacterModel(0, '', '', '', weeklyContentList);
+    characterModel = CharacterModel('', '', '', weeklyContentList);
   }
 
   @override

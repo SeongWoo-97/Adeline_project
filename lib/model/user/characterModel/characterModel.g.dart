@@ -17,7 +17,6 @@ class CharacterModelAdapter extends TypeAdapter<CharacterModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return CharacterModel(
-      fields[0] as int,
       fields[1] as String?,
       fields[2] as dynamic,
       fields[3] as dynamic,
@@ -28,9 +27,7 @@ class CharacterModelAdapter extends TypeAdapter<CharacterModel> {
   @override
   void write(BinaryWriter writer, CharacterModel obj) {
     writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.id)
+      ..writeByte(5)
       ..writeByte(1)
       ..write(obj.nickName)
       ..writeByte(2)

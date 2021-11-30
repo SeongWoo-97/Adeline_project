@@ -19,7 +19,7 @@ class RestGaugeContent {
   @HiveField(6)
   bool isChecked = true; // 컨텐츠 사용여부
   @HiveField(7)
-  bool clearCheck = false;
+  bool clearCheck = false; // 클리어 체크여부
   @HiveField(8)
   int saveRestGauge = 0;
   @HiveField(9)

@@ -283,7 +283,7 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                           mode: Mode.MENU,
                           selectedItem: '',
                           showSelectedItems: true,
-                          items: List.generate(secretMaps.length, (index) => secretMaps[index].continentName.toString()),
+                          items: merchantMapOfMap.keys.toList(),
                           onChanged: (value) {
                             setState(() {
                               map.clear();

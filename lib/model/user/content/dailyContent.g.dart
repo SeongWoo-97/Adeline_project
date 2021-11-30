@@ -19,9 +19,10 @@ class DailyContentAdapter extends TypeAdapter<DailyContent> {
     return DailyContent(
       fields[0] as String,
       fields[1] as String,
-      fields[4] as bool,
-      isChecked: fields[2] as bool,
-    )..clearCheck = fields[3] as bool;
+      fields[2] as bool,
+    )
+      ..clearCheck = fields[3] as bool
+      ..testBool = fields[4] as bool;
   }
 
   @override
@@ -37,7 +38,7 @@ class DailyContentAdapter extends TypeAdapter<DailyContent> {
       ..writeByte(3)
       ..write(obj.clearCheck)
       ..writeByte(4)
-      ..write(obj.view);
+      ..write(obj.testBool);
   }
 
   @override

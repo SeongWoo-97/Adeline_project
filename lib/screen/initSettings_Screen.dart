@@ -465,7 +465,6 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
 
   // 캐릭터 List 가져오기
   getCharList() async {
-    int id = 0;
     characterModelList.clear();
     nickNameList = webScraper.getElementTitle('#expand-character-list > ul > li > span > button > span');
     getCharacterNickName.value = nickNameList[0];
@@ -502,27 +501,35 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
         int itemLevel = int.parse(_level.toString());
         if (itemLevel >= 1325 && itemLevel < 1370) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
           ];
         } else if (itemLevel >= 1370 && itemLevel < 1415) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('오레하의 우물', 'assets/week/AbyssDungeon.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
           ];
         } else if (itemLevel >= 1415 && itemLevel < 1430) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
           ];
         } else if (itemLevel >= 1430 && itemLevel < 1475) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('아르고스', 'assets/week/AbyssRaid.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
@@ -530,7 +537,9 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ];
         } else if (itemLevel >= 1475 && itemLevel < 1490) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
             WeeklyContent('비아키스', 'assets/week/Crops.png', true),
@@ -538,7 +547,9 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ];
         } else if (itemLevel >= 1490) {
           weeklyContentList = [
-            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', true),
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
             WeeklyContent('발탄', 'assets/week/Crops.png', true),
             WeeklyContent('비아키스', 'assets/week/Crops.png', true),
@@ -547,10 +558,13 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
           ];
         } else {
           weeklyContentList = [
+            WeeklyContent('주간 에포나', 'assets/week/WeeklyEpona.png', false),
+            WeeklyContent('실마엘 혈석 교환','assets/etc/GuildCoin.png',false),
+            WeeklyContent('해적주화 교환','assets/etc/PirateCoin.png',false),
             WeeklyContent('도전가디언 토벌', 'assets/daily/Guardian.png', true),
           ];
         }
-        CharacterModel characterModel = CharacterModel(id, _nickName, _level, _job[0], weeklyContentList);
+        CharacterModel characterModel = CharacterModel(_nickName, _level, _job[0], weeklyContentList);
         characterModelList.add(characterModel);
       }
       // else {

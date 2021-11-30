@@ -12,15 +12,13 @@ class DailyContent  {
   @HiveField(1)
   String iconName; // 아이콘 위치이름
   @HiveField(2)
-  bool isChecked = true; // 컨텐츠 사용 여부 [ 컨텐츠 셋팅에서 사용 그리고 Home 에서 View 여부]
-  // [ 컨텐츠 셋팅에서 사용 그리고 Home 에서 View 여부] 이런 개소리를 적어놓았는데
-  // 사용할꺼면 View 는 자동적으로 따라오는 건데 뭘 나눠 ㅋㅋ ㅠㅠ 바보야
+  bool isChecked = true;
   @HiveField(3)
   bool clearCheck = false;
   @HiveField(4)
-  bool view; // 이부분은 삭제되어야할 부분
+  bool testBool = false;
 
-  DailyContent(this.name, this.iconName, this.view, {this.isChecked = false});
+  DailyContent(this.name, this.iconName, this.isChecked);
 }
 // 일일컨텐츠 기준
 // 사용자들은 컨텐츠가 표시되고, 숙제 체크여부 하고, 휴식게이지와 연결되고(이건 따로 연결해야할듯?)

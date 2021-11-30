@@ -8,8 +8,6 @@ part 'characterModel.g.dart';
 
 @HiveType(typeId: 2)
 class CharacterModel {
-  @HiveField(0)
-  int id;
 
   @HiveField(1)
   String? nickName;
@@ -46,5 +44,5 @@ class CharacterModel {
     listener: BannerAdListener(),
   );
 
-  CharacterModel(this.id, this.nickName, this.level, this.job,this.weeklyContentList,{this.expanded = false});
+  CharacterModel(this.nickName, this.level, this.job,this.weeklyContentList,{this.expanded = false});
 }
