@@ -8,6 +8,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../constant.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
+import '../constant.dart';
+
 class DistributionCaluScreen extends StatefulWidget {
   const DistributionCaluScreen({Key? key}) : super(key: key);
 
@@ -36,6 +42,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
     super.initState();
     bannerAd.load();
   }
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -63,8 +70,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                       buttonValues: [4, 8],
                       radioButtonValue: (values) {
                         toast('$values인 선택');
-                        memberNum = double.parse(values.toString());
-                        key.currentState!.save();
+                        bidPrice(itemPriceController.text, double.parse(values.toString()));
                       },
                       elevation: 0,
                       defaultSelected: 4,
@@ -79,7 +85,8 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                       selectedColor: Colors.black26,
                       width: MediaQuery.of(context).size.width * 0.453,
                       absoluteZeroSpacing: false,
-                      customShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: Colors.grey)),
+                      customShape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: Colors.grey)),
                       enableShape: true,
                     ),
                   )
@@ -103,20 +110,14 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                       ),
                       onChanged: (value) {
                         if (memberNum != null) {
-                          setState(() {
-                            int num = (int.parse(value).toDouble() * 0.95 * ((memberNum! - 1) / memberNum!)).round();
-                            distributionValue1 = (num / 1.1).round();
-                            distributionValue2 = num;
-                          });
+                            bidPrice(value, memberNum!);
                         }
                       },
                       onSaved: (value) {
                         if (memberNum != null) {
-                          setState(() {
-                            int num = (int.parse(value!).toDouble() * 0.95 * ((memberNum! - 1) / memberNum!)).round();
-                            distributionValue1 = (num / 1.1).round();
-                            distributionValue2 = num;
-                          });
+                          if(value != null){
+                            bidPrice(value, memberNum!);
+                          }
                         }
                       },
                     ),
@@ -144,8 +145,18 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      onSaved: (value) {},
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        if (memberNum != null) {
+                          bidPrice(value, memberNum!);
+                        }
+                      },
+                      onSaved: (value) {
+                        if (memberNum != null) {
+                          if(value != null){
+                            bidPrice(value, memberNum!);
+                          }
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -206,12 +217,9 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                                 style: TextStyle(color: Colors.black),
                                 children: <TextSpan>[
                                   TextSpan(
-                                    text: '${(int.parse(itemPriceController.text) - distributionValue1 - (int.parse(itemPriceController.text) * 0.05)).round()}',
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      decoration: TextDecoration.underline,
-                                      fontSize: 16
-                                    ),
+                                    text:
+                                    '${(int.parse(itemPriceController.text) - distributionValue1 - (int.parse(itemPriceController.text) * 0.05)).round()}',
+                                    style: TextStyle(color: Colors.green, decoration: TextDecoration.underline, fontSize: 16),
                                   ),
                                   TextSpan(text: ' 골드 이득'),
                                 ],
@@ -220,7 +228,6 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                           ],
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -248,5 +255,13 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
       timeInSecForIosWeb: 1,
       backgroundColor: Colors.grey,
     );
+  }
+
+  void bidPrice(String price, double memberNum) {
+    setState(() {
+      int num = (int.parse(price).toDouble() * 0.95 * ((memberNum - 1) / memberNum)).round();
+      distributionValue1 = (num / 1.1).round();
+      distributionValue2 = num;
+    });
   }
 }

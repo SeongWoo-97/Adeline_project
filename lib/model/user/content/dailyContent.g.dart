@@ -22,13 +22,14 @@ class DailyContentAdapter extends TypeAdapter<DailyContent> {
       fields[2] as bool,
     )
       ..clearCheck = fields[3] as bool
-      ..testBool = fields[4] as bool;
+      ..testBool = fields[4] as bool
+      ..gold = fields[5] as int;
   }
 
   @override
   void write(BinaryWriter writer, DailyContent obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class DailyContentAdapter extends TypeAdapter<DailyContent> {
       ..writeByte(3)
       ..write(obj.clearCheck)
       ..writeByte(4)
-      ..write(obj.testBool);
+      ..write(obj.testBool)
+      ..writeByte(5)
+      ..write(obj.gold);
   }
 
   @override

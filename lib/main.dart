@@ -1,4 +1,3 @@
-import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/screen/MainMenu.dart';
@@ -11,6 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'model/user/characterModel/characterModel.dart';
 import 'model/user/content/dailyContent.dart';
+import 'model/user/content/restGaugeContent.dart';
 import 'model/user/user.dart';
 
 bool dbCheck = false;

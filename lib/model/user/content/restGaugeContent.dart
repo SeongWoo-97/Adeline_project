@@ -15,7 +15,7 @@ class RestGaugeContent {
   @HiveField(4)
   int restGauge = 0; // 휴식 게이지
   @HiveField(5)
-  DateTime lateRevision = DateTime.now(); // 최근 수정일
+  DateTime lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6); // 최근 수정일
   @HiveField(6)
   bool isChecked = true; // 컨텐츠 사용여부
   @HiveField(7)

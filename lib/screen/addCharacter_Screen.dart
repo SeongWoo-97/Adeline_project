@@ -75,12 +75,11 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
           ),
           leading: PlatformIconButton(
             material: (_, __) => MaterialIconButtonData(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.blue,
-              ),
-              onPressed: () => Navigator.pop(context)
-            ),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.blue,
+                ),
+                onPressed: () => Navigator.pop(context)),
           ),
           trailingActions: [
             PlatformIconButton(
@@ -90,7 +89,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                   color: Colors.blue,
                 ),
                 onPressed: () {
-                  if (nickNameController.text.isEmpty || levelController.text.isEmpty || eponaGaugeController.text.isEmpty){
+                  if (nickNameController.text.isEmpty || levelController.text.isEmpty || eponaGaugeController.text.isEmpty) {
                     toast('입력하지 않은 값들이 존재합니다.');
                   } else if (nickNameError == false &&
                       levelError == false &&
@@ -103,7 +102,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                   }
                 },
               ),
-              cupertino: (_,__) => CupertinoIconButtonData(
+              cupertino: (_, __) => CupertinoIconButtonData(
                 icon: Icon(
                   Icons.save_alt_outlined,
                   color: Colors.blue,
@@ -150,17 +149,12 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                         Row(
                           children: [
                             Flexible(
-                              child:  PlatformWidgetBuilder(
+                              child: PlatformWidgetBuilder(
                                 cupertino: (_, child, __) => Padding(
                                   padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                                   child: PlatformTextFormField(
                                     textAlign: TextAlign.center,
                                     controller: nickNameController,
-                                    // iOS 수정필요
-                                    // decoration: BoxDecoration(
-                                    //   border: Border.all(color: nickNameError ? Colors.red : Colors.grey),
-                                    //   borderRadius: BorderRadius.circular(7),
-                                    // ),
                                     onChanged: (value) {
                                       setState(() {
                                         if (value.isEmpty || value.length >= 12) {
@@ -221,7 +215,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                             children: [
                               Flexible(
                                 child: PlatformWidgetBuilder(
-                                  cupertino: (_,child,__) => PlatformTextFormField(
+                                  cupertino: (_, child, __) => PlatformTextFormField(
                                     controller: jobController,
                                     textAlign: TextAlign.center,
                                     material: (_, __) => MaterialTextFormFieldData(
@@ -236,7 +230,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                     hintText: '직업',
                                     onChanged: (value) {
                                       setState(() {
-                                        if (value.isEmpty) {
+                                        if (value.isEmpty || value.length >= 8) {
                                           jobError = true;
                                         } else {
                                           jobError = false;
@@ -247,7 +241,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                       characterModel.job = value;
                                     },
                                   ),
-                                  material: (_,child,__) => ConstrainedBox(
+                                  material: (_, child, __) => ConstrainedBox(
                                     constraints: BoxConstraints(
                                       maxHeight: 35,
                                     ),
@@ -270,7 +264,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         ),
                                         onChanged: (value) {
                                           setState(() {
-                                            if (value.isEmpty) {
+                                            if (value.isEmpty || value.length >= 8) {
                                               jobError = true;
                                             } else {
                                               jobError = false;
@@ -282,13 +276,12 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         },
                                       ),
                                     ),
-
                                   ),
                                 ),
                               ),
                               Flexible(
                                 child: PlatformWidgetBuilder(
-                                  cupertino: (_,child,__) => PlatformTextFormField(
+                                  cupertino: (_, child, __) => PlatformTextFormField(
                                     controller: levelController,
                                     textAlign: TextAlign.center,
                                     textInputAction: TextInputAction.done,
@@ -302,7 +295,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         border: Border.all(color: levelError ? Colors.red : Colors.grey),
                                         borderRadius: BorderRadius.circular(7),
                                       ),
-                                      maxLength: 12,
+                                      maxLength: 4,
                                       keyboardType: TextInputType.number,
                                     ),
                                     hintText: '레벨',
@@ -320,7 +313,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                       characterModel.level = int.parse(value.toString()).toString();
                                     },
                                   ),
-                                  material: (_,child,__) => ConstrainedBox(
+                                  material: (_, child, __) => ConstrainedBox(
                                     constraints: BoxConstraints(
                                       maxHeight: 35,
                                     ),
@@ -358,7 +351,6 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         },
                                       ),
                                     ),
-
                                   ),
                                 ),
                               ),
@@ -377,7 +369,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 5,bottom: 5),
+                          padding: const EdgeInsets.only(left: 5, bottom: 5),
                           child: Text(
                             '휴식게이지',
                             style: TextStyle(fontSize: 18, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
@@ -441,12 +433,12 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
                                                         borderSide:
-                                                        BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
                                                         borderSide:
-                                                        BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
+                                                            BorderSide(color: chaosError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -473,7 +465,10 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         )
                                       ],
                                     ),
-                                    Text('클리어 횟수',style: contentStyle,),
+                                    Text(
+                                      '클리어 횟수',
+                                      style: contentStyle,
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                                       child: Row(
@@ -576,13 +571,13 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                     decoration: InputDecoration(
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                        BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(
+                                                            color: guardianError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
-                                                        borderSide:
-                                                        BorderSide(color: guardianError ? Colors.red : Colors.grey, width: 0.5),
+                                                        borderSide: BorderSide(
+                                                            color: guardianError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -609,7 +604,10 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         )
                                       ],
                                     ),
-                                    Text('클리어 횟수',style: contentStyle,),
+                                    Text(
+                                      '클리어 횟수',
+                                      style: contentStyle,
+                                    ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
                                       child: Row(
@@ -713,12 +711,12 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                       contentPadding: EdgeInsets.zero,
                                                       enabledBorder: OutlineInputBorder(
                                                         borderSide:
-                                                        BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                       focusedBorder: OutlineInputBorder(
                                                         borderSide:
-                                                        BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
+                                                            BorderSide(color: eponaError ? Colors.red : Colors.grey, width: 0.5),
                                                         borderRadius: BorderRadius.circular(5),
                                                       ),
                                                     ),
@@ -745,7 +743,10 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         )
                                       ],
                                     ),
-                                    Text('클리어 횟수',style: contentStyle,),
+                                    Text(
+                                      '클리어 횟수',
+                                      style: contentStyle,
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                                       child: Row(
@@ -817,8 +818,11 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add,color: Colors.blue,),
-                                iconSize: 30,
+                                icon: Icon(
+                                  Icons.add,
+                                  size: 30,
+                                  color: Colors.blue,
+                                ),
                                 onPressed: () async {
                                   controller.clear();
                                   await showDialog(
@@ -839,7 +843,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                   shrinkWrap: true,
                                                   scrollDirection: Axis.vertical,
                                                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                                    maxCrossAxisExtent: 65,
+                                                    maxCrossAxisExtent: 60,
                                                     mainAxisSpacing: 10,
                                                     crossAxisSpacing: 10,
                                                   ),
@@ -872,24 +876,20 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                   }),
                                             ),
                                             actions: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      characterModel.dailyContentList.add(
-                                                          DailyContent(controller.text.toString(), iconName.toString(), true));
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('확인'),
-                                                  ),
-                                                  ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text('취소')),
-                                                ],
-                                              )
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('취소'),
+                                              ),
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  characterModel.dailyContentList
+                                                      .add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('확인'),
+                                              ),
                                             ],
                                           );
                                         });
@@ -921,8 +921,11 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.add,color: Colors.blue,),
-                                iconSize: 30,
+                                icon: Icon(
+                                  Icons.add,
+                                  size: 30,
+                                  color: Colors.blue,
+                                ),
                                 onPressed: () async {
                                   controller.clear();
                                   await showDialog(
@@ -943,7 +946,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                   shrinkWrap: true,
                                                   scrollDirection: Axis.vertical,
                                                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                                    maxCrossAxisExtent: 65,
+                                                    maxCrossAxisExtent: 60,
                                                     mainAxisSpacing: 10,
                                                     crossAxisSpacing: 10,
                                                   ),
@@ -954,10 +957,11 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                       child: InkWell(
                                                         child: Container(
                                                           decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(10),
-                                                              border: Border.all(
-                                                                  color: _selected == index ? Colors.grey : Colors.white,
-                                                                  width: 1.5)),
+                                                            borderRadius: BorderRadius.circular(10),
+                                                            border: Border.all(
+                                                                color: _selected == index ? Colors.grey : Colors.white,
+                                                                width: 1.5),
+                                                          ),
                                                           child: Image.asset(
                                                             '${iconList[index].iconName}',
                                                             width: 100,
@@ -975,24 +979,20 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                                   }),
                                             ),
                                             actions: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      characterModel.weeklyContentList.add(
-                                                          WeeklyContent(controller.text.toString(), iconName.toString(), true));
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('확인'),
-                                                  ),
-                                                  ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text('취소')),
-                                                ],
-                                              )
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('취소'),
+                                              ),
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  characterModel.weeklyContentList
+                                                      .add(WeeklyContent(controller.text.toString(), iconName.toString(), true));
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('확인'),
+                                              ),
                                             ],
                                           );
                                         });
@@ -1110,7 +1110,7 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                             context: context,
                             builder: (_) {
                               return StatefulBuilder(builder: (context, setState) {
-                                return AlertDialog(
+                                return PlatformAlertDialog(
                                   title: Form(
                                     key: key,
                                     child: TextFormField(
@@ -1124,20 +1124,20 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         shrinkWrap: true,
                                         scrollDirection: Axis.vertical,
                                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                          maxCrossAxisExtent: 65,
+                                          maxCrossAxisExtent: 60,
                                           mainAxisSpacing: 10,
                                           crossAxisSpacing: 10,
                                         ),
                                         itemBuilder: (_, index) {
-                                          // list[index] = IconModel(list[index].iconName);
                                           return Padding(
                                             padding: EdgeInsets.all(8),
                                             child: InkWell(
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    border: Border.all(
-                                                        color: _selected == index ? Colors.grey : Colors.white, width: 1.5)),
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                      color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
+                                                ),
                                                 child: Image.asset(
                                                   '${iconList[index].iconName}',
                                                   width: 100,
@@ -1155,25 +1155,20 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
                                         }),
                                   ),
                                   actions: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            characterModel.dailyContentList[i] =
-                                                DailyContent(controller.text, iconName.toString(), true);
-
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('확인'),
-                                        ),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('취소')),
-                                      ],
-                                    )
+                                    PlatformDialogAction(
+                                      child: Text('취소'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    PlatformDialogAction(
+                                      child: Text('확인'),
+                                      onPressed: () {
+                                        characterModel.dailyContentList[i] =
+                                            DailyContent(controller.text.toString(), iconName.toString(), true);
+                                        Navigator.pop(context);
+                                      },
+                                    ),
                                   ],
                                 );
                               });
@@ -1184,16 +1179,12 @@ class _AddCharacterScreenState extends State<AddCharacterScreen> {
               ),
             ],
           ),
-
-          /// _isChecked 를 characterModel -> dailyContent 에서 가져오기
-          /// model 에 _isChecked bool 형태로 추가하기
           value: characterModel.dailyContentList[i].isChecked,
           onChanged: (value) {
             setState(() {
               characterModel.dailyContentList[i].isChecked = value!;
             });
           },
-          // CheckBoxTile 위아래 padding 삭제
           contentPadding: EdgeInsets.fromLTRB(0, 0, 5, 0),
         ),
       );

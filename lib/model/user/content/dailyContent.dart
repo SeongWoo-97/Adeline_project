@@ -17,6 +17,8 @@ class DailyContent  {
   bool clearCheck = false;
   @HiveField(4)
   bool testBool = false;
+  @HiveField(5)
+  int gold = 0;
 
   DailyContent(this.name, this.iconName, this.isChecked);
 }

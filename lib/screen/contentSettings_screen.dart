@@ -729,6 +729,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                             key: key,
                                             child: TextFormField(
                                               controller: controller,
+                                              decoration: InputDecoration(
+                                                  contentPadding: EdgeInsets.zero,
+                                                  hintText: '콘텐츠 이름',
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                    borderRadius: BorderRadius.circular(5),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                    borderRadius: BorderRadius.circular(5),
+                                                  )),
                                             ),
                                           ),
                                           content: Container(
@@ -982,19 +993,26 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Flexible(
-                          child: PlatformWidgetBuilder(
-                            cupertino: (_, child, __) => Padding(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              child: PlatformTextFormField(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 35,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 5, left: 5),
+                              child: TextFormField(
                                 textAlign: TextAlign.center,
                                 controller: nickNameController,
-                                cupertino: (_, __) => CupertinoTextFormFieldData(
-                                  textInputAction: TextInputAction.done,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: levelError ? Colors.red : Colors.grey),
-                                    borderRadius: BorderRadius.circular(7),
+                                decoration: InputDecoration(
+                                  hintText: '닉네임',
+                                  contentPadding: EdgeInsets.zero,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                  maxLength: 12,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
                                 ),
                                 onChanged: (value) {
                                   setState(() {
@@ -1008,42 +1026,6 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 onSaved: (value) {
                                   characterModel.nickName = value;
                                 },
-                              ),
-                            ),
-                            material: (_, child, __) => ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight: 35,
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 5, left: 5),
-                                child: TextFormField(
-                                  textAlign: TextAlign.center,
-                                  controller: nickNameController,
-                                  decoration: InputDecoration(
-                                    hintText: '닉네임',
-                                    contentPadding: EdgeInsets.zero,
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: nickNameError ? Colors.red : Colors.grey, width: 0.5),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value.isEmpty || value.length >= 12) {
-                                        nickNameError = true;
-                                      } else {
-                                        nickNameError = false;
-                                      }
-                                    });
-                                  },
-                                  onSaved: (value) {
-                                    characterModel.nickName = value;
-                                  },
-                                ),
                               ),
                             ),
                           ),
@@ -1563,264 +1545,11 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                 icon: Icon(
                                   Icons.add,
                                   size: 30,
-                                ),
-                                onPressed: () {
-                                  controller.clear();
-                                  showCupertinoDialog(
-                                      context: context,
-                                      builder: (_) {
-                                        return CupertinoAlertDialog(
-                                          title: Form(
-                                            key: key,
-                                            child: TextFormField(
-                                              controller: controller,
-                                            ),
-                                          ),
-                                          content: Container(
-                                            width: MediaQuery.of(context).size.width * 0.7,
-                                            child: GridView.builder(
-                                                itemCount: iconList.length,
-                                                shrinkWrap: true,
-                                                scrollDirection: Axis.vertical,
-                                                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                                  maxCrossAxisExtent: 60,
-                                                  mainAxisSpacing: 10,
-                                                  crossAxisSpacing: 10,
-                                                ),
-                                                itemBuilder: (_, index) {
-                                                  // list[index] = IconModel(list[index].iconName);
-                                                  return Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: InkWell(
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(10),
-                                                          border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
-                                                        ),
-                                                        child: Image.asset(
-                                                          '${iconList[index].iconName}',
-                                                          width: 100,
-                                                          height: 100,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _selected = index;
-                                                          iconName = iconList[index].iconName;
-                                                        });
-                                                      },
-                                                    ),
-                                                  );
-                                                }),
-                                          ),
-                                          actions: [
-                                            CupertinoDialogAction(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('취소'),
-                                            ),
-                                            CupertinoDialogAction(
-                                              onPressed: () {
-                                                characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('확인'),
-                                            ),
-                                          ],
-                                        );
-                                      });
-                                  setState(() {});
-                                },
-                              )
-                              // PlatformWidgetBuilder(
-                              //   cupertino: (context, _, __) => IconButton(
-                              //     icon: Icon(
-                              //       Icons.add,
-                              //       size: 30,
-                              //     ),
-                              //     onPressed: () {
-                              //       controller.clear();
-                              //       showCupertinoDialog(
-                              //           context: context,
-                              //           builder: (_) {
-                              //             return CupertinoAlertDialog(
-                              //               title: Form(
-                              //                 key: key,
-                              //                 child: TextFormField(
-                              //                   controller: controller,
-                              //                 ),
-                              //               ),
-                              //               content: Container(
-                              //                 width: MediaQuery.of(context).size.width * 0.7,
-                              //                 child: GridView.builder(
-                              //                     itemCount: iconList.length,
-                              //                     shrinkWrap: true,
-                              //                     scrollDirection: Axis.vertical,
-                              //                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                              //                       maxCrossAxisExtent: 60,
-                              //                       mainAxisSpacing: 10,
-                              //                       crossAxisSpacing: 10,
-                              //                     ),
-                              //                     itemBuilder: (_, index) {
-                              //                       // list[index] = IconModel(list[index].iconName);
-                              //                       return Padding(
-                              //                         padding: EdgeInsets.all(8),
-                              //                         child: InkWell(
-                              //                           child: Container(
-                              //                             decoration: BoxDecoration(
-                              //                               borderRadius: BorderRadius.circular(10),
-                              //                               border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
-                              //                             ),
-                              //                             child: Image.asset(
-                              //                               '${iconList[index].iconName}',
-                              //                               width: 100,
-                              //                               height: 100,
-                              //                             ),
-                              //                           ),
-                              //                           onTap: () {
-                              //                             setState(() {
-                              //                               _selected = index;
-                              //                               iconName = iconList[index].iconName;
-                              //                             });
-                              //                           },
-                              //                         ),
-                              //                       );
-                              //                     }),
-                              //               ),
-                              //               actions: [
-                              //                 CupertinoDialogAction(
-                              //                   onPressed: () {
-                              //                     Navigator.pop(context);
-                              //                   },
-                              //                   child: Text('취소'),
-                              //                 ),
-                              //                 CupertinoDialogAction(
-                              //                   onPressed: () {
-                              //                     characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
-                              //                     Navigator.pop(context);
-                              //                   },
-                              //                   child: Text('확인'),
-                              //                 ),
-                              //               ],
-                              //             );
-                              //           });
-                              //       setState(() {});
-                              //     },
-                              //   ),
-                              //   material: (context, _, __) => IconButton(
-                              //     icon: Icon(
-                              //       Icons.add,
-                              //       color: Colors.blue,
-                              //     ),
-                              //     iconSize: 30,
-                              //     onPressed: () async {
-                              //       controller.clear();
-                              //       await showPlatformDialog(
-                              //         context: context,
-                              //         builder: (_) {
-                              //           return StatefulBuilder(builder: (context, setState) {
-                              //             return PlatformWidgetBuilder(
-                              //               material: (context, _, __) => AlertDialog(
-                              //                 title: Form(
-                              //                   key: key,
-                              //                   child: TextFormField(
-                              //                     controller: controller,
-                              //                   ),
-                              //                 ),
-                              //                 content: Container(
-                              //                   width: MediaQuery.of(context).size.width * 0.7,
-                              //                   child: GridView.builder(
-                              //                       itemCount: iconList.length,
-                              //                       shrinkWrap: true,
-                              //                       scrollDirection: Axis.vertical,
-                              //                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                              //                         maxCrossAxisExtent: 60,
-                              //                         mainAxisSpacing: 10,
-                              //                         crossAxisSpacing: 10,
-                              //                       ),
-                              //                       itemBuilder: (_, index) {
-                              //                         // list[index] = IconModel(list[index].iconName);
-                              //                         return Padding(
-                              //                           padding: EdgeInsets.all(8),
-                              //                           child: InkWell(
-                              //                             child: Container(
-                              //                               decoration: BoxDecoration(
-                              //                                 borderRadius: BorderRadius.circular(10),
-                              //                                 border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
-                              //                               ),
-                              //                               child: Image.asset(
-                              //                                 '${iconList[index].iconName}',
-                              //                                 width: 100,
-                              //                                 height: 100,
-                              //                               ),
-                              //                             ),
-                              //                             onTap: () {
-                              //                               setState(() {
-                              //                                 _selected = index;
-                              //                                 iconName = iconList[index].iconName;
-                              //                               });
-                              //                             },
-                              //                           ),
-                              //                         );
-                              //                       }),
-                              //                 ),
-                              //                 actions: [
-                              //                   PlatformDialogAction(
-                              //                     onPressed: () {
-                              //                       Navigator.pop(context);
-                              //                     },
-                              //                     child: Text('취소'),
-                              //                   ),
-                              //                   PlatformDialogAction(
-                              //                     onPressed: () {
-                              //                       characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
-                              //                       Navigator.pop(context);
-                              //                     },
-                              //                     child: Text('확인'),
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //             );
-                              //           });
-                              //         },
-                              //       );
-                              //       setState(() {});
-                              //     },
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                          ListView(
-                            shrinkWrap: true,
-                            children: dailyContents(),
-                          )
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(3, 0, 5, 0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 3),
-                                child: Text(
-                                  '주간 콘텐츠',
-                                  style: TextStyle(fontSize: 18, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.add,
                                   color: Colors.blue,
                                 ),
-                                iconSize: 30,
                                 onPressed: () async {
                                   controller.clear();
-                                  await showPlatformDialog(
+                                  await showDialog(
                                       context: context,
                                       builder: (_) {
                                         return StatefulBuilder(builder: (context, setState) {
@@ -1829,6 +1558,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               key: key,
                                               child: TextFormField(
                                                 controller: controller,
+                                                decoration: InputDecoration(
+                                                    contentPadding: EdgeInsets.only(left: 5),
+                                                    hintText: '콘텐츠 이름',
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    )),
                                               ),
                                             ),
                                             content: Container(
@@ -1877,7 +1617,118 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                               ),
                                               PlatformDialogAction(
                                                 onPressed: () {
-                                                  characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true,));
+                                                  characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('확인'),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                      });
+                                  setState(() {});
+                                },
+                              )
+                            ],
+                          ),
+                          ListView(
+                            shrinkWrap: true,
+                            children: dailyContents(),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(3, 0, 5, 0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 3),
+                                child: Text(
+                                  '주간 콘텐츠',
+                                  style: TextStyle(fontSize: 18, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.add,
+                                  color: Colors.blue,
+                                ),
+                                iconSize: 30,
+                                onPressed: () async {
+                                  controller.clear();
+                                  await showPlatformDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return StatefulBuilder(builder: (context, setState) {
+                                          return AlertDialog(
+                                            title: Form(
+                                              key: key,
+                                              child: TextFormField(
+                                                controller: controller,
+                                                decoration: InputDecoration(
+                                                    contentPadding: EdgeInsets.only(left: 5),
+                                                    hintText: '콘텐츠 이름',
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    )),
+                                              ),
+                                            ),
+                                            content: Container(
+                                              width: MediaQuery.of(context).size.width * 0.7,
+                                              child: GridView.builder(
+                                                  itemCount: iconList.length,
+                                                  shrinkWrap: true,
+                                                  scrollDirection: Axis.vertical,
+                                                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                                    maxCrossAxisExtent: 60,
+                                                    mainAxisSpacing: 10,
+                                                    crossAxisSpacing: 10,
+                                                  ),
+                                                  itemBuilder: (_, index) {
+                                                    // list[index] = IconModel(list[index].iconName);
+                                                    return Padding(
+                                                      padding: EdgeInsets.all(8),
+                                                      child: InkWell(
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(10),
+                                                            border: Border.all(color: _selected == index ? Colors.grey : Colors.white, width: 1.5),
+                                                          ),
+                                                          child: Image.asset(
+                                                            '${iconList[index].iconName}',
+                                                            width: 100,
+                                                            height: 100,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            _selected = index;
+                                                            iconName = iconList[index].iconName;
+                                                          });
+                                                        },
+                                                      ),
+                                                    );
+                                                  }),
+                                            ),
+                                            actions: [
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('취소'),
+                                              ),
+                                              PlatformDialogAction(
+                                                onPressed: () {
+                                                  characterModel.weeklyContentList.add(WeeklyContent(controller.text.toString(), iconName.toString(), true,));
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text('확인'),
@@ -1900,59 +1751,6 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                     ),
                   ],
                 ),
-
-                /// 태양의 회랑 및 디멘션 큐브 티켓 갯수 추후 추가예정
-                // Padding(
-                //   padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                //   child: Card(
-                //     shape: RoundedRectangleBorder(
-                //       side: BorderSide(color: Colors.black26, width: 1),
-                //       borderRadius: BorderRadius.circular(5),
-                //     ),
-                //     child: Column(
-                //       children: [
-                //         Row(
-                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //           children: [
-                //             Padding(
-                //               padding: const EdgeInsets.only(left: 15),
-                //               child: Text(
-                //                 '기타 콘텐츠',
-                //                 style: TextStyle(
-                //                     fontSize: 19,
-                //                     fontFamily: 'NotoSansKR',
-                //                     fontWeight: FontWeight.w300),
-                //               ),
-                //             ),
-                //             Padding(
-                //               padding: const EdgeInsets.only(right: 5),
-                //               child: IconButton(
-                //                 icon: Icon(Icons.add),
-                //                 iconSize: 30,
-                //                 onPressed: () {},
-                //               ),
-                //             )
-                //           ],
-                //         ),
-                //         ConstrainedBox(
-                //           constraints: BoxConstraints(),
-                //           child: Padding(
-                //             padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                //             child: ListView(
-                //               shrinkWrap: true,
-                //               children: [
-                //                 Padding(
-                //                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 7),
-                //                   child: ticketContents(),
-                //                 )
-                //               ],
-                //             ),
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -2059,6 +1857,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                     key: key,
                                     child: TextFormField(
                                       controller: controller,
+                                      decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(left: 5),
+                                          hintText: '콘텐츠 이름',
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                            borderRadius: BorderRadius.circular(5),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                            borderRadius: BorderRadius.circular(5),
+                                          )),
                                     ),
                                   ),
                                   content: Container(
@@ -2073,7 +1882,6 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                           crossAxisSpacing: 10,
                                         ),
                                         itemBuilder: (_, index) {
-                                          // list[index] = IconModel(list[index].iconName);
                                           return Padding(
                                             padding: EdgeInsets.all(8),
                                             child: InkWell(
@@ -2100,17 +1908,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                   ),
                                   actions: [
                                     PlatformDialogAction(
+                                      child: Text('취소'),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
-                                      child: Text('취소'),
                                     ),
                                     PlatformDialogAction(
+                                      child: Text('확인'),
                                       onPressed: () {
-                                        characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                        characterModel.dailyContentList[i] = DailyContent(controller.text.toString(), iconName.toString(), true);
                                         Navigator.pop(context);
                                       },
-                                      child: Text('확인'),
                                     ),
                                   ],
                                 );
@@ -2122,16 +1930,12 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
               ),
             ],
           ),
-
-          /// _isChecked 를 characterModel -> dailyContent 에서 가져오기
-          /// model 에 _isChecked bool 형태로 추가하기
           value: characterModel.dailyContentList[i].isChecked,
           onChanged: (value) {
             setState(() {
               characterModel.dailyContentList[i].isChecked = value!;
             });
           },
-          // CheckBoxTile 위아래 padding 삭제
           contentPadding: EdgeInsets.fromLTRB(0, 0, 5, 0),
         ),
       );
@@ -2220,6 +2024,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                     key: key,
                                     child: TextFormField(
                                       controller: controller,
+                                      decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.only(left: 5),
+                                          hintText: '콘텐츠 이름',
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                            borderRadius: BorderRadius.circular(5),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black26, width: 0.5),
+                                            borderRadius: BorderRadius.circular(5),
+                                          )),
                                     ),
                                   ),
                                   content: Container(
@@ -2261,17 +2076,17 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
                                   ),
                                   actions: [
                                     PlatformDialogAction(
+                                      child: Text('취소'),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
-                                      child: Text('취소'),
                                     ),
                                     PlatformDialogAction(
+                                      child: Text('확인'),
                                       onPressed: () {
-                                        characterModel.dailyContentList.add(DailyContent(controller.text.toString(), iconName.toString(), true));
+                                        characterModel.weeklyContentList[i] = WeeklyContent(controller.text.toString(), iconName.toString(), true);
                                         Navigator.pop(context);
                                       },
-                                      child: Text('확인'),
                                     ),
                                   ],
                                 );
@@ -2283,16 +2098,12 @@ class _ContentSettingsScreenState extends State<ContentSettingsScreen> {
               ),
             ],
           ),
-
-          /// _isChecked 를 characterModel -> dailyContent 에서 가져오기
-          /// model 에 _isChecked bool 형태로 추가하기
           value: characterModel.weeklyContentList[i].isChecked,
           onChanged: (value) {
             setState(() {
               characterModel.weeklyContentList[i].isChecked = value!;
             });
           },
-          // CheckBoxTile 위아래 padding 삭제
           contentPadding: EdgeInsets.fromLTRB(0, 0, 5, 0),
         ),
       );

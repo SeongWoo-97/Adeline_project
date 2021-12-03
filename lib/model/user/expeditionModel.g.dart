@@ -27,13 +27,14 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..rehearsalCheck = fields[8] as bool
       ..dejavuCheck = fields[9] as bool
       ..recentInitDateTime = fields[10] as DateTime
-      ..nextWednesday = fields[11] as DateTime;
+      ..nextWednesday = fields[11] as DateTime
+      ..totalGold = fields[12] as int;
   }
 
   @override
   void write(BinaryWriter writer, ExpeditionModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(1)
       ..write(obj.islandCheck)
       ..writeByte(2)
@@ -55,7 +56,9 @@ class ExpeditionModelAdapter extends TypeAdapter<ExpeditionModel> {
       ..writeByte(10)
       ..write(obj.recentInitDateTime)
       ..writeByte(11)
-      ..write(obj.nextWednesday);
+      ..write(obj.nextWednesday)
+      ..writeByte(12)
+      ..write(obj.totalGold);
   }
 
   @override

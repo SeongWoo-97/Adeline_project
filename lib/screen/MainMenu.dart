@@ -58,19 +58,19 @@ class _MainMenuState extends State<MainMenu> {
       stateManagement: true, // Default is true.
       hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(5.0),
         colorBehindNavBar: Colors.white,
       ),
       popAllScreensOnTapOfSelectedTab: true,
       popActionScreens: PopActionScreensType.all,
       itemAnimationProperties: ItemAnimationProperties( // Navigation Bar's items animation properties.
-        duration: Duration(milliseconds: 200),
+        duration: Duration(milliseconds: 300),
         curve: Curves.ease,
       ),
       screenTransitionAnimation: ScreenTransitionAnimation( // Screen transition animation on change of selected tab.
         animateTabTransition: true,
         curve: Curves.ease,
-        duration: Duration(milliseconds: 200),
+        duration: Duration(milliseconds: 300),
       ),
       navBarStyle: NavBarStyle.style3, // Choose the nav bar style with this property.
     );

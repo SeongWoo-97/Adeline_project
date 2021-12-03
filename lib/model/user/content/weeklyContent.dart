@@ -12,6 +12,8 @@ class WeeklyContent   {
   bool isChecked = true;
   @HiveField(3)
   bool clearCheck = false;
+  @HiveField(4)
+  int gold = 0;
 
   WeeklyContent(this.name, this.iconName, this.isChecked);
 }

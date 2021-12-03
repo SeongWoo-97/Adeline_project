@@ -26,4 +26,6 @@ class ExpeditionModel {
   DateTime recentInitDateTime = DateTime.now();
   @HiveField(11)
   DateTime nextWednesday = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
+  @HiveField(12)
+  int totalGold = 0;
 }

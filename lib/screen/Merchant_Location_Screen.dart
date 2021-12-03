@@ -262,6 +262,10 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                               child: ListTile(title: Text(suggestion)),
                             );
                           },
+                          noItemsFoundBuilder: (BuildContext context) => Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text("검색 결과가 존재하지 않습니다."),
+                          ),
                           minCharsForSuggestions: 1,
                         ),
                       ),
@@ -324,6 +328,10 @@ class _MerchantLocationScreenState extends State<MerchantLocationScreen> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                           ),
                           mode: Mode.MENU,
+                          emptyBuilder: (context,searchEntry) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("대륙을 선택해 주세요.",style: contentStyle.copyWith(color: Colors.grey),),
+                          ),
                           showSelectedItems: true,
                           items: map.keys.toList(),
                           selectedItem: selectedItem,

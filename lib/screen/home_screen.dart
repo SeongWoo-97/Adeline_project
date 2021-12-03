@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> listCard = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
-  DateTime now = DateTime.utc(2021, 12, 8, 20);
-  // DateTime now = DateTime.now();
+  DateTime now = DateTime.now();
+  // DateTime now = DateTime.utc(2021,12,3,11);
 
   @override
   void initState() {
@@ -51,15 +51,16 @@ class _HomeScreenState extends State<HomeScreen> {
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
     changeList = list;
     // 휴식게이지 로직 //
-
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
-          DateTime lateRevision = list[i].dailyContentList[j].lateRevision;
+          DateTime dateTime = list[i].dailyContentList[j].lateRevision;
+          DateTime lateRevision = DateTime.utc(dateTime.year,dateTime.month,dateTime.day,6);
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
           list[i].dailyContentList[j].saveLateRevision = DateTime.utc(now.year, now.month, now.day, 6);
+
           if (list[i].dailyContentList[j].lateRevision.day != now.day && now.hour >= 6) {
             print('${list[i].nickName} ,now:$now, lateRevision:$lateRevision');
             if(now.difference(lateRevision).inDays == 1) {
@@ -79,10 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             }
             if (list[i].dailyContentList[j].restGauge >= 100) {
-              // print('${list[i].nickName} : 휴식게이지 100 이상');
               list[i].dailyContentList[j].restGauge = 100;
             }
-            list[i].dailyContentList[j].lateRevision = DateTime.utc(now.year, now.month, now.day, 6);
+            list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+            print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (lateRevision:$lateRevision)');
+            print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (list[i].dailyContentList[j].lateRevision:${list[i].dailyContentList[j].lateRevision})');
           }
 
         }

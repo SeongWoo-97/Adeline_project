@@ -22,7 +22,7 @@ class InitSettingsScreen extends StatefulWidget {
 }
 
 class _InitSettingsScreenState extends State<InitSettingsScreen> {
-  TextEditingController textEditingController = TextEditingController(text: '도기');
+  TextEditingController textEditingController = TextEditingController();
   final webScraper = WebScraper('https://lostark.game.onstove.com');
   int _currentStep = 0;
   late List<String?> job;
@@ -132,6 +132,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
                     controller: textEditingController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.zero,
+                        hintText: '닉네임',
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black26, width: 0.5),
                           borderRadius: BorderRadius.circular(5),
