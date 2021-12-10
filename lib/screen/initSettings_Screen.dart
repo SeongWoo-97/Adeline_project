@@ -4,7 +4,6 @@ import 'package:adeline_app/model/user/expeditionModel.dart';
 import 'package:adeline_app/model/user/user.dart';
 import 'package:adeline_app/screen/MainMenu.dart';
 import 'package:adeline_app/screen/contentSettings_screen.dart';
-import 'package:adeline_app/screen/home_screen.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_list.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:drag_and_drop_lists/drag_handle.dart';

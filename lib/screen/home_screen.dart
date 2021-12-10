@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> listCard = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
-  DateTime now = DateTime.now();
+  DateTime now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
   // DateTime now = DateTime.utc(2021,12,3,11);
 
   @override
@@ -50,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
     list = Hive.box<User>('localDB').get('user')!.characterList;
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
     changeList = list;
+
+    if(DateTime.now().hour < 6) {
+      now = DateTime.now();
+    } else {
+      now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+    }
     // 휴식게이지 로직 //
     for (int i = 0; i < list.length; i++) {
       list[i].bannerAd.load();
@@ -67,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
               list[i].dailyContentList[j].restGauge += (maxClearNum - clearNum) * 10;
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
+              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
             }
 
             else if(now.difference(lateRevision).inDays > 1) {
@@ -74,15 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
-
+              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
               if (list[i].dailyContentList[j].restGauge >= 100) {
                 list[i].dailyContentList[j].restGauge = 100;
               }
             }
             if (list[i].dailyContentList[j].restGauge >= 100) {
               list[i].dailyContentList[j].restGauge = 100;
+              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
             }
-            list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+            // list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
             print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (lateRevision:$lateRevision)');
             print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (list[i].dailyContentList[j].lateRevision:${list[i].dailyContentList[j].lateRevision})');
           }
@@ -109,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DateTime nowDate = DateTime.utc(now.year, now.month, now.day, 6); // 오전6시를 고정시키기 위한 변수
 
     print(now.difference(expeditionModel.nextWednesday).inSeconds);
-    if (now.difference(expeditionModel.nextWednesday).inSeconds > 0 && now.hour >= 6) {
+    if (now == expeditionModel.nextWednesday && now.hour >= 6) {
       if (expeditionModel.nextWednesday.weekday == 3) {
         expeditionModel.nextWednesday = nowDate.add(Duration(days: 7));
       } else {
@@ -118,6 +126,16 @@ class _HomeScreenState extends State<HomeScreen> {
           expeditionModel.nextWednesday = nowDate;
         }
       }
+      // 주간초기화 백업본
+      // if (now.difference(expeditionModel.nextWednesday).inSeconds > 0 && now.hour >= 6) {
+      //   if (expeditionModel.nextWednesday.weekday == 3) {
+      //     expeditionModel.nextWednesday = nowDate.add(Duration(days: 7));
+      //   } else {
+      //     while (expeditionModel.nextWednesday.weekday != 3) {
+      //       nowDate = nowDate.add(Duration(days: 1));
+      //       expeditionModel.nextWednesday = nowDate;
+      //     }
+      //   }
 
       for (int i = 0; i < list.length; i++) {
         for (int j = 0; j < list[i].weeklyContentList.length; j++) {
@@ -139,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text('Home', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
+        title: Text('HOME', style: contentStyle.copyWith(fontSize: 15, color: Colors.black)),
         material: (_, __) => MaterialAppBarData(
           backgroundColor: Colors.white,
           elevation: .5,
@@ -858,7 +876,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
+  // Text('${restGaugeContent.lateRevision.year}년${restGaugeContent.lateRevision.month}월${restGaugeContent.lateRevision.day}일\n${restGaugeContent.lateRevision.hour}시${restGaugeContent.lateRevision.minute}분')
   Widget restGaugeContentTile(RestGaugeContent restGaugeContent) {
     if (restGaugeContent.isChecked == false) {
       return Container();

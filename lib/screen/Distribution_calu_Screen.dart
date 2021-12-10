@@ -8,12 +8,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../constant.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-
-import '../constant.dart';
-
 class DistributionCaluScreen extends StatefulWidget {
   const DistributionCaluScreen({Key? key}) : super(key: key);
 

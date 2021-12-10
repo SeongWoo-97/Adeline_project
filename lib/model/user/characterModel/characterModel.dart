@@ -1,4 +1,3 @@
-import 'package:adeline_app/model/user/content/dailyContent.dart';
 import 'package:adeline_app/model/user/content/restGaugeContent.dart';
 import 'package:adeline_app/model/user/content/weeklyContent.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';

@@ -3,10 +3,10 @@ import 'package:adeline_app/screen/Merchant_Location_Screen.dart';
 import 'package:adeline_app/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-import '../constant.dart';
+
 
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
