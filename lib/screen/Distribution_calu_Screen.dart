@@ -79,8 +79,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                       selectedColor: Colors.black26,
                       width: MediaQuery.of(context).size.width * 0.453,
                       absoluteZeroSpacing: false,
-                      customShape:
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: Colors.grey)),
+                      customShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: Colors.grey)),
                       enableShape: true,
                     ),
                   )
@@ -88,7 +87,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
               ),
               PlatformWidgetBuilder(
                 cupertino: (_, child, __) => Padding(
-                  padding: const EdgeInsets.fromLTRB(9, 0, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: Form(
                     key: key,
                     child: PlatformTextFormField(
@@ -122,7 +121,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                     maxHeight: 45,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 7, 10, 7),
+                    padding: const EdgeInsets.fromLTRB(14, 7, 14, 7),
                     child: TextFormField(
                       controller: itemPriceController,
                       textAlign: TextAlign.center,
@@ -213,7 +212,7 @@ class _DistributionCaluScreenState extends State<DistributionCaluScreen> {
                                   TextSpan(
                                     text:
                                     '${(int.parse(itemPriceController.text) - distributionValue1 - (int.parse(itemPriceController.text) * 0.05)).round()}',
-                                    style: TextStyle(color: Colors.green, decoration: TextDecoration.underline, fontSize: 16),
+                                    style: TextStyle(color: Colors.green, decoration: TextDecoration.underline, fontSize: 18),
                                   ),
                                   TextSpan(text: ' 골드 이득'),
                                 ],

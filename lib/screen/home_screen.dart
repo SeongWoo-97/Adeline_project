@@ -41,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> listCard = [];
   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   List<BannerAd> bannerAdList = [];
-  DateTime now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+  DateTime now = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
+
   // DateTime now = DateTime.utc(2021,12,3,11);
 
   @override
@@ -51,10 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
     expeditionModel = Hive.box<User>('localDB').get('user')!.expeditionModel!;
     changeList = list;
 
-    if(DateTime.now().hour < 6) {
+    if (DateTime.now().hour < 6) {
       now = DateTime.now();
     } else {
-      now = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+      now = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
     }
     // 휴식게이지 로직 //
     for (int i = 0; i < list.length; i++) {
@@ -62,39 +63,42 @@ class _HomeScreenState extends State<HomeScreen> {
       for (int j = 0; j < list[i].dailyContentList.length; j++) {
         if (list[i].dailyContentList[j] is RestGaugeContent) {
           DateTime dateTime = list[i].dailyContentList[j].lateRevision;
-          DateTime lateRevision = DateTime.utc(dateTime.year,dateTime.month,dateTime.day,6);
+          DateTime lateRevision = DateTime.utc(dateTime.year, dateTime.month, dateTime.day, 6);
           int clearNum = list[i].dailyContentList[j].clearNum;
           int maxClearNum = list[i].dailyContentList[j].maxClearNum;
           list[i].dailyContentList[j].saveLateRevision = DateTime.utc(now.year, now.month, now.day, 6);
 
           if (list[i].dailyContentList[j].lateRevision.day != now.day && now.hour >= 6) {
             print('${list[i].nickName} ,now:$now, lateRevision:$lateRevision');
-            if(now.difference(lateRevision).inDays == 1) {
+            if (now.difference(lateRevision).inDays == 1) {
               list[i].dailyContentList[j].restGauge += (maxClearNum - clearNum) * 10;
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
-              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
-            }
-
-            else if(now.difference(lateRevision).inDays > 1) {
-              int a = DateTime.utc(now.year, now.month, now.day).difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1)).inDays;
+              list[i].dailyContentList[j].lateRevision =
+                  DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
+            } else if (now.difference(lateRevision).inDays > 1) {
+              int a = DateTime.utc(now.year, now.month, now.day)
+                  .difference(DateTime.utc(lateRevision.year, lateRevision.month, lateRevision.day + 1))
+                  .inDays;
               list[i].dailyContentList[j].restGauge = ((maxClearNum - clearNum) * 10) + (a * maxClearNum * 10);
               list[i].dailyContentList[j].clearNum = 0;
               list[i].dailyContentList[j].saveRestGauge = 0;
-              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+              list[i].dailyContentList[j].lateRevision =
+                  DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
               if (list[i].dailyContentList[j].restGauge >= 100) {
                 list[i].dailyContentList[j].restGauge = 100;
               }
             }
             if (list[i].dailyContentList[j].restGauge >= 100) {
               list[i].dailyContentList[j].restGauge = 100;
-              list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
+              list[i].dailyContentList[j].lateRevision =
+                  DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 6);
             }
             // list[i].dailyContentList[j].lateRevision = DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,6);
             print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (lateRevision:$lateRevision)');
-            print('${list[i].nickName} : ${list[i].dailyContentList[j].name} : (list[i].dailyContentList[j].lateRevision:${list[i].dailyContentList[j].lateRevision})');
+            print(
+                '${list[i].nickName} : ${list[i].dailyContentList[j].name} : (list[i].dailyContentList[j].lateRevision:${list[i].dailyContentList[j].lateRevision})');
           }
-
         }
       }
     }
@@ -224,7 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: PlatformText('초기화'),
                                     // 캐릭터 순서 페이지로 이동
                                     onPressed: () {
-                                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
+                                      Navigator.pushAndRemoveUntil(context,
+                                          MaterialPageRoute(builder: (context) => InitSettingsScreen()), (route) => false);
                                       box.delete('user');
                                     },
                                   ),
@@ -238,11 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         behavior: HitTestBehavior.translucent,
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
-                          CharacterModel? characterModel = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
+                          CharacterModel? characterModel =
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => AddCharacterScreen()));
                           if (characterModel != null) {
                             list.add(characterModel);
                             box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomeScreen()), (route) => false);
+                            Navigator.pushAndRemoveUntil(
+                                context, MaterialPageRoute(builder: (context) => HomeScreen()), (route) => false);
                           }
                         },
                         child: Container(
@@ -283,7 +290,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () async {
                           _customPopupMenuController.hideMenu();
 
-                          list = await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
+                          list =
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => OrderAndDeleteScreen(list)));
                           setState(() => {});
                           box.put('user', User(characterList: list, expeditionModel: expeditionModel));
                         },
@@ -355,10 +363,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                    padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
                     child: Text(
                       '원정대 콘텐츠',
-                      style: TextStyle(fontSize: 17, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
+                      style: TextStyle(fontSize: 16, fontFamily: 'NotoSansKR', fontWeight: FontWeight.w300),
                     ),
                   ),
                   Padding(
@@ -427,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(3.0),
-                                      child: Image.asset('assets/expedition/Dejavu.png', width: 25, height: 25),
+                                      child: Image.asset('assets/week/Crops.png', width: 25, height: 25),
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -573,302 +581,334 @@ class _HomeScreenState extends State<HomeScreen> {
 
             /// 캐릭터 ExpansionPanel
             Expanded(
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: BorderSide(color: Colors.grey, width: 0.8),
-                ),
-                margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                child: ListView.builder(
-                  itemCount: list.length,
-                  itemBuilder: (context, i) {
-                    String level = list[i].level;
-                    bool dailyEmptyCheck = dailyEmptyChecking(list[i].dailyContentList);
-                    bool weeklyEmptyCheck = weeklyEmptyChecking(list[i].weeklyContentList);
-                    bool dailyClearCheck = dailyClearChecking(list[i].dailyContentList);
-                    bool weeklyClearCheck = weeklyClearChecking(list[i].weeklyContentList);
-                    // AdWidget adWidget = AdWidget(ad: myBanner);
-
-                    return Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 0, 3),
-                      child: ExpansionPanelList(
-                        animationDuration: Duration(microseconds: 1000),
-                        expandedHeaderPadding: EdgeInsets.only(bottom: 0.0),
-                        elevation: 1,
-                        children: [
-                          ExpansionPanel(
-                              headerBuilder: (BuildContext context, bool isExpanded) {
-                                return InkWell(
-                                  child: Container(
-                                      padding: EdgeInsets.only(bottom: 5),
-                                      child: ListTile(
-                                        title: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                                  child: Text(
-                                                    list[i].nickName.toString(),
-                                                    style: contentStyle,
-                                                  ),
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text('Lv.$level ${list[i].job}', style: contentStyle.copyWith(color: Colors.grey, fontSize: 13)),
-                                                    SizedBox(
-                                                      height: 3,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        list[i].dailyContentList[0].isChecked
-                                                            ? Row(
-                                                                children: [
-                                                                  Image.asset(
-                                                                    '${list[i].dailyContentList[0].iconName}',
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets.only(left: 5, right: 5),
-                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[0].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            : Container(),
-                                                        list[i].dailyContentList[1].isChecked
-                                                            ? Row(
-                                                                children: [
-                                                                  Image.asset(
-                                                                    '${list[i].dailyContentList[1].iconName}',
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets.only(left: 5, right: 5),
-                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[1].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            : Container(),
-                                                        list[i].dailyContentList[2].isChecked
-                                                            ? Row(
-                                                                children: [
-                                                                  Image.asset(
-                                                                    '${list[i].dailyContentList[2].iconName}',
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets.only(left: 5),
-                                                                    child: Container(width: 30, child: Text('${list[i].dailyContentList[2].restGauge}', style: contentStyle.copyWith(fontSize: 14))),
-                                                                  ),
-                                                                ],
-                                                              )
-                                                            : Container(),
-                                                      ],
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [clearIcon('일일', Colors.red, dailyEmptyCheck, dailyClearCheck), clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)],
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                  onLongPress: () async {
-                                    list[i] = await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(list[i])));
-                                    box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                    setState(() {});
-                                  },
-                                  onTap: () {
-                                    setState(() {
-                                      list[i].expanded = !list[i].expanded;
-                                    });
-                                  },
-                                );
-                              },
-                              body: Column(
+              child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, i) {
+                  String level = list[i].level;
+                  bool dailyEmptyCheck = dailyEmptyChecking(list[i].dailyContentList);
+                  bool weeklyEmptyCheck = weeklyEmptyChecking(list[i].weeklyContentList);
+                  bool dailyClearCheck = dailyClearChecking(list[i].dailyContentList);
+                  bool weeklyClearCheck = weeklyClearChecking(list[i].weeklyContentList);
+                  Color collapsedBackgroundColor = (dailyClearCheck || dailyEmptyCheck) && (weeklyClearCheck || weeklyEmptyCheck) == true ? Colors.black12 : Colors.white;
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(15),
+                          color: collapsedBackgroundColor),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: ExpansionTile(
+                          tilePadding: EdgeInsets.fromLTRB(12, 0, 10, 0),
+                          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                          textColor: Colors.black,
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      dailyEmptyCheck
-                                          ? Container()
-                                          : Flexible(
-                                              child: Column(
-                                                children: [
-                                                  Text(
-                                                    '일일 콘텐츠',
-                                                    style: contentStyle,
-                                                  ),
-                                                  ListView.builder(
-                                                    shrinkWrap: true,
-                                                    itemCount: list[i].dailyContentList.length,
-                                                    itemBuilder: (context, index) {
-                                                      if (list[i].dailyContentList[index] is RestGaugeContent) {
-                                                        return InkWell(
-                                                          child: restGaugeContentTile(list[i].dailyContentList[index]),
-                                                          onTap: () {
-                                                            setState(() {
-                                                              if (list[i].dailyContentList[index].maxClearNum != list[i].dailyContentList[index].clearNum) {
-                                                                list[i].dailyContentList[index].clearNum += 1;
-                                                                if (list[i].dailyContentList[index].restGauge >= 20) {
-                                                                  list[i].dailyContentList[index].restGauge = list[i].dailyContentList[index].restGauge - 20;
-                                                                  list[i].dailyContentList[index].saveRestGauge += 20;
-                                                                }
-                                                              } else if (list[i].dailyContentList[index].maxClearNum == list[i].dailyContentList[index].clearNum) {
-                                                                list[i].dailyContentList[index].clearNum = 0;
-                                                                list[i].dailyContentList[index].restGauge += list[i].dailyContentList[index].saveRestGauge;
-                                                                list[i].dailyContentList[index].saveRestGauge = 0;
-                                                              }
-                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                            });
-                                                          },
-                                                        );
-                                                      } else if (list[i].dailyContentList[index].isChecked == true) {
-                                                        return InkWell(
-                                                          child: Card(
-                                                            child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Padding(
-                                                                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                      child: Image.asset('${list[i].dailyContentList[index].iconName}', width: 25, height: 25),
-                                                                    ),
-                                                                    Text(list[i].dailyContentList[index].name),
-                                                                  ],
-                                                                ),
-                                                                Checkbox(
-                                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                                  value: list[i].dailyContentList[index].clearCheck,
-                                                                  checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                                                  activeColor: Colors.transparent,
-                                                                  side: BorderSide(color: Colors.grey, width: 1.5),
-                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-                                                                  onChanged: (bool? value) {
-                                                                    setState(() {
-                                                                      list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
-                                                                      box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                                    });
-                                                                  },
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          onTap: () {
-                                                            setState(() {
-                                                              list[i].dailyContentList[index].clearCheck = !list[i].dailyContentList[index].clearCheck;
-                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                            });
-                                                          },
-                                                        );
-                                                      } else {
-                                                        return Container();
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                      weeklyEmptyCheck
-                                          ? Container()
-                                          : Flexible(
-                                              child: Column(
-                                                children: [
-                                                  Text(
-                                                    '주간 콘텐츠',
-                                                    style: contentStyle,
-                                                  ),
-                                                  ListView.builder(
-                                                    shrinkWrap: true,
-                                                    itemCount: list[i].weeklyContentList.length,
-                                                    itemBuilder: (context, index) {
-                                                      if (list[i].weeklyContentList[index].isChecked == true) {
-                                                        return InkWell(
-                                                          child: Card(
-                                                            child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Padding(
-                                                                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                                                      child: Image.asset('${list[i].weeklyContentList[index].iconName}', width: 25, height: 25),
-                                                                    ),
-                                                                    Text(
-                                                                      list[i].weeklyContentList[index].name,
-                                                                      style: contentStyle,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                Checkbox(
-                                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                                  value: list[i].weeklyContentList[index].clearCheck,
-                                                                  checkColor: Color.fromRGBO(119, 210, 112, 1),
-                                                                  activeColor: Colors.transparent,
-                                                                  side: BorderSide(color: Colors.grey, width: 1.5),
-                                                                  shape: RoundedRectangleBorder(
-                                                                    borderRadius: BorderRadius.circular(3),
-                                                                  ),
-                                                                  onChanged: (bool? value) {
-                                                                    setState(() {
-                                                                      list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
-                                                                      box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                                    });
-                                                                  },
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          onTap: () {
-                                                            setState(() {
-                                                              list[i].weeklyContentList[index].clearCheck = !list[i].weeklyContentList[index].clearCheck;
-                                                              box.put('user', User(characterList: list, expeditionModel: expeditionModel));
-                                                            });
-                                                          },
-                                                        );
-                                                      } else {
-                                                        return Container();
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                    ],
-                                  ),
-                                  StatefulBuilder(
-                                    builder: (context, setState) => Container(
-                                      child: AdWidget(ad: list[i].bannerAd),
-                                      width: list[i].bannerAd.size.width.toDouble(),
-                                      height: 60.0,
-                                      alignment: Alignment.center,
+                                  InkWell(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          list[i].nickName.toString(),
+                                          style: contentStyle.copyWith(fontSize: 15),
+                                        ),
+                                        Text('Lv.$level ${list[i].job}',
+                                            style: contentStyle.copyWith(color: Colors.grey, fontSize: 12)),
+                                      ],
                                     ),
+                                    onLongPress: () async {
+                                      list[i] = await Navigator.push(
+                                          context, MaterialPageRoute(builder: (context) => ContentSettingsScreen(list[i])));
+                                      box.put('user', User(characterList: list, expeditionModel: expeditionModel));
+                                      setState(() {});
+                                    },
                                   ),
+                                  Row(
+                                    children: [
+                                      list[i].dailyContentList[0].isChecked
+                                          ? Row(
+                                              children: [
+                                                Image.asset(
+                                                  '${list[i].dailyContentList[0].iconName}',
+                                                  width: 22,
+                                                  height: 22,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 5, right: 5),
+                                                  child: Container(
+                                                      width: 30,
+                                                      child: Text('${list[i].dailyContentList[0].restGauge}',
+                                                          style: contentStyle.copyWith(fontSize: 14))),
+                                                ),
+                                              ],
+                                            )
+                                          : Container(),
+                                      list[i].dailyContentList[1].isChecked
+                                          ? Row(
+                                              children: [
+                                                Image.asset(
+                                                  '${list[i].dailyContentList[1].iconName}',
+                                                  width: 22,
+                                                  height: 22,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 5, right: 5),
+                                                  child: Container(
+                                                      width: 30,
+                                                      child: Text('${list[i].dailyContentList[1].restGauge}',
+                                                          style: contentStyle.copyWith(fontSize: 14))),
+                                                ),
+                                              ],
+                                            )
+                                          : Container(),
+                                      list[i].dailyContentList[2].isChecked
+                                          ? Row(
+                                              children: [
+                                                Image.asset(
+                                                  '${list[i].dailyContentList[2].iconName}',
+                                                  width: 22,
+                                                  height: 22,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 5),
+                                                  child: Container(
+                                                      width: 30,
+                                                      child: Text('${list[i].dailyContentList[2].restGauge}',
+                                                          style: contentStyle.copyWith(fontSize: 14))),
+                                                ),
+                                              ],
+                                            )
+                                          : Container(),
+                                    ],
+                                  )
                                 ],
                               ),
-                              isExpanded: list[i].expanded,
-                              canTapOnHeader: true),
-                        ],
-                        // ExpansionTile 확장
-                        expansionCallback: (int item, bool isExpanded) {
-                          setState(() {
-                            list[i].expanded = !list[i].expanded;
-                          });
-                        },
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  clearIcon('일일', Colors.red, dailyEmptyCheck, dailyClearCheck),
+                                  clearIcon('주간', Colors.indigo, weeklyEmptyCheck, weeklyClearCheck)
+                                ],
+                              )
+                            ],
+                          ),
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    dailyEmptyCheck
+                                        ? Container()
+                                        : Flexible(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  '일일 콘텐츠',
+                                                  style: contentStyle,
+                                                ),
+                                                ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: list[i].dailyContentList.length,
+                                                  itemBuilder: (context, index) {
+                                                    if (list[i].dailyContentList[index] is RestGaugeContent) {
+                                                      return InkWell(
+                                                        child: restGaugeContentTile(list[i].dailyContentList[index]),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            if (list[i].dailyContentList[index].maxClearNum !=
+                                                                list[i].dailyContentList[index].clearNum) {
+                                                              list[i].dailyContentList[index].clearNum += 1;
+                                                              if (list[i].dailyContentList[index].restGauge >= 20) {
+                                                                list[i].dailyContentList[index].restGauge =
+                                                                    list[i].dailyContentList[index].restGauge - 20;
+                                                                list[i].dailyContentList[index].saveRestGauge += 20;
+                                                              }
+                                                            } else if (list[i].dailyContentList[index].maxClearNum ==
+                                                                list[i].dailyContentList[index].clearNum) {
+                                                              list[i].dailyContentList[index].clearNum = 0;
+                                                              list[i].dailyContentList[index].restGauge +=
+                                                                  list[i].dailyContentList[index].saveRestGauge;
+                                                              list[i].dailyContentList[index].saveRestGauge = 0;
+                                                            }
+                                                            box.put('user',
+                                                                User(characterList: list, expeditionModel: expeditionModel));
+                                                          });
+                                                        },
+                                                      );
+                                                    } else if (list[i].dailyContentList[index].isChecked == true) {
+                                                      return InkWell(
+                                                        child: Card(
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                    child: Image.asset(
+                                                                        '${list[i].dailyContentList[index].iconName}',
+                                                                        width: 22,
+                                                                        height: 22),
+                                                                  ),
+                                                                  Text(
+                                                                    list[i].dailyContentList[index].name,
+                                                                    style: contentStyle.copyWith(fontSize: 13),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Checkbox(
+                                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                                value: list[i].dailyContentList[index].clearCheck,
+                                                                checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                                activeColor: Colors.transparent,
+                                                                side: BorderSide(color: Colors.grey, width: 1.5),
+                                                                shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(3)),
+                                                                onChanged: (bool? value) {
+                                                                  setState(() {
+                                                                    list[i].dailyContentList[index].clearCheck =
+                                                                        !list[i].dailyContentList[index].clearCheck;
+                                                                    box.put(
+                                                                        'user',
+                                                                        User(
+                                                                            characterList: list,
+                                                                            expeditionModel: expeditionModel));
+                                                                  });
+                                                                },
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            list[i].dailyContentList[index].clearCheck =
+                                                                !list[i].dailyContentList[index].clearCheck;
+                                                            box.put('user',
+                                                                User(characterList: list, expeditionModel: expeditionModel));
+                                                          });
+                                                        },
+                                                      );
+                                                    } else {
+                                                      return Container();
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                    weeklyEmptyCheck
+                                        ? Container()
+                                        : Flexible(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  '주간 콘텐츠',
+                                                  style: contentStyle,
+                                                ),
+                                                ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: list[i].weeklyContentList.length,
+                                                  itemBuilder: (context, index) {
+                                                    if (list[i].weeklyContentList[index].isChecked == true) {
+                                                      return InkWell(
+                                                        child: Card(
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                                                    child: Image.asset(
+                                                                        '${list[i].weeklyContentList[index].iconName}',
+                                                                        width: 22,
+                                                                        height: 22),
+                                                                  ),
+                                                                  Container(
+                                                                    child: Text(
+                                                                      list[i].weeklyContentList[index].name,
+                                                                      style: contentStyle.copyWith(fontSize: 13),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Checkbox(
+                                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                                value: list[i].weeklyContentList[index].clearCheck,
+                                                                checkColor: Color.fromRGBO(119, 210, 112, 1),
+                                                                activeColor: Colors.transparent,
+                                                                side: BorderSide(color: Colors.grey, width: 1.5),
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(3),
+                                                                ),
+                                                                onChanged: (bool? value) {
+                                                                  setState(() {
+                                                                    list[i].weeklyContentList[index].clearCheck =
+                                                                        !list[i].weeklyContentList[index].clearCheck;
+                                                                    box.put(
+                                                                        'user',
+                                                                        User(
+                                                                            characterList: list,
+                                                                            expeditionModel: expeditionModel));
+                                                                  });
+                                                                },
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            list[i].weeklyContentList[index].clearCheck =
+                                                                !list[i].weeklyContentList[index].clearCheck;
+                                                            box.put('user',
+                                                                User(characterList: list, expeditionModel: expeditionModel));
+                                                          });
+                                                        },
+                                                      );
+                                                    } else {
+                                                      return Container();
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                                StatefulBuilder(
+                                  builder: (context, setState) => Container(
+                                    child: AdWidget(ad: list[i].bannerAd),
+                                    width: list[i].bannerAd.size.width.toDouble(),
+                                    height: 60.0,
+                                    alignment: Alignment.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          onExpansionChanged: (value) {
+                            setState(() {
+                              if ((dailyClearCheck || dailyEmptyCheck) && (weeklyClearCheck || weeklyEmptyCheck) == true) {
+                                collapsedBackgroundColor = Colors.black12;
+                              } else {
+                                collapsedBackgroundColor = Colors.white;
+                              }
+                            });
+                          },
+                          backgroundColor: Colors.white,
+                          iconColor: Colors.grey,
+                          collapsedIconColor: Colors.grey,
+                        ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             )
           ],
@@ -876,7 +916,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  // Text('${restGaugeContent.lateRevision.year}년${restGaugeContent.lateRevision.month}월${restGaugeContent.lateRevision.day}일\n${restGaugeContent.lateRevision.hour}시${restGaugeContent.lateRevision.minute}분')
+
   Widget restGaugeContentTile(RestGaugeContent restGaugeContent) {
     if (restGaugeContent.isChecked == false) {
       return Container();
@@ -889,13 +929,13 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                  child: Image.asset('${restGaugeContent.iconName}', width: 25, height: 25),
+                  child: Image.asset('${restGaugeContent.iconName}', width: 22, height: 22),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
+                  padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
                   child: Text(
                     restGaugeContent.name,
-                    style: contentStyle,
+                    style: contentStyle.copyWith(fontSize: 13),
                   ),
                 ),
               ],

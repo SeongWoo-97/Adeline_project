@@ -618,7 +618,7 @@ class _InitSettingsScreenState extends State<InitSettingsScreen> {
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
-
+//   late DragAndDropList charactersOrder = DragAndDropList(children: []);
   _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
     setState(() {
       var movedItem = charactersOrder.children.removeAt(oldItemIndex);

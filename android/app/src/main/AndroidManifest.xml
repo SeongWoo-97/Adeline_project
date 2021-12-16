@@ -20,7 +20,8 @@
     </queries>
    <application
         android:label="로스트아크 아델라인"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
        <meta-data
            android:name="com.google.android.gms.ads.APPLICATION_ID"
            android:value="ca-app-pub-2659418845004468~2355914105"/>
